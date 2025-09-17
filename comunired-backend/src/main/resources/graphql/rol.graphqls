@@ -1,0 +1,9 @@
+type Rol {
+  id: ID
+  nombre: String
+  descripcion: String
+}
+
+type Query {
+  obtenerRoles: [Rol]
+}
