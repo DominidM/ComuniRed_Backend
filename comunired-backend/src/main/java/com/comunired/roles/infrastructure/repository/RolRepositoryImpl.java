@@ -2,6 +2,8 @@ package com.comunired.roles.infrastructure.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.comunired.roles.domain.entity.Rol;
@@ -18,6 +20,11 @@ public class RolRepositoryImpl implements RolRepository {
     @Override
     public List<Rol> findAll() {
         return rolMongoRepository.findAll();
+    }
+
+    @Override
+    public Page<Rol> findAll(Pageable pageable) {
+        return rolMongoRepository.findAll(pageable);
     }
 
     @Override

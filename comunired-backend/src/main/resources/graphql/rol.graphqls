@@ -1,9 +1,17 @@
-type Rol {
-  id: ID
-  nombre: String
-  descripcion: String
+type Query {
+  obtenerRoles(page: Int!, size: Int!): RolPage!
 }
 
-type Query {
-  obtenerRoles: [Rol]
+type RolPage {
+  content: [Rol!]!
+  totalPages: Int!
+  totalElements: Int!
+  number: Int!
+  size: Int!
+}
+
+type Rol {
+  id: ID!
+  nombre: String!
+  descripcion: String
 }

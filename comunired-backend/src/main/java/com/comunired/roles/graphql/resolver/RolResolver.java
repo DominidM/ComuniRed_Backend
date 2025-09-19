@@ -1,7 +1,7 @@
 package com.comunired.roles.graphql.resolver;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
@@ -18,7 +18,7 @@ public class RolResolver {
     }
 
     @QueryMapping
-    public List<Rol> obtenerRoles() {
-        return rolService.obtenerRoles();
+    public Page<Rol> obtenerRoles(@Argument int page, @Argument int size) {
+        return rolService.obtenerRoles(page, size);
     }
 }
