@@ -1,0 +1,69 @@
+type Query {
+    # Queries de usuarios
+    obtenerUsuarios(page: Int!, size: Int!): UsuarioPage
+    obtenerTodosLosUsuarios: [Usuario]
+    contarUsuariosPorRol(rol_id: String!): Int
+    obtenerUsuarioPorId(id: String!): Usuario
+    
+    # Queries de roles
+    obtenerRoles(page: Int!, size: Int!): RolPage!
+}
+
+type Mutation {
+    crearUsuario(usuario: UsuarioInput!): Usuario
+    actualizarUsuario(id: String!, usuario: UsuarioInput!): Usuario
+    eliminarUsuario(id: String!): Boolean
+    login(email: String!, password: String!): Usuario
+}
+
+type Usuario {
+    id: String
+    nombre: String
+    apellido: String
+    dni: String
+    numero_telefono: String
+    edad: Int
+    sexo: String
+    distrito: String
+    codigo_postal: String
+    direccion: String
+    email: String
+    rol_id: String
+}
+
+input UsuarioInput {
+    nombre: String!
+    apellido: String!
+    dni: String!
+    numero_telefono: String
+    edad: Int
+    sexo: String
+    distrito: String
+    codigo_postal: String
+    direccion: String
+    email: String!
+    password: String!
+    rol_id: String!
+}
+
+type UsuarioPage {
+    content: [Usuario]
+    totalElements: Int
+    totalPages: Int
+    number: Int
+    size: Int
+}
+
+type Rol {
+    id: ID!
+    nombre: String!
+    descripcion: String
+}
+
+type RolPage {
+    content: [Rol!]!
+    totalPages: Int!
+    totalElements: Int!
+    number: Int!
+    size: Int!
+}
