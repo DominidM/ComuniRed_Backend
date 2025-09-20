@@ -3,6 +3,8 @@ package com.comunired.usuarios.domain.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Document(collection = "usuarios")
 public class Usuario {
     @Id
@@ -17,6 +19,7 @@ public class Usuario {
     private String codigo_postal;
     private String direccion;
     private String email;
+    @JsonIgnore
     private String password;
     private String rol_id;
     

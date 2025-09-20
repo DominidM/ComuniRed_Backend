@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.comunired.usuarios.domain.entity.Usuario;
 import com.comunired.usuarios.domain.repository.UsuariosRepository;
@@ -12,9 +13,11 @@ import com.comunired.usuarios.domain.repository.UsuariosRepository;
 @Service
 public class UsuariosService {
     private final UsuariosRepository usuariosRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public UsuariosService(UsuariosRepository usuariosRepository) {
         this.usuariosRepository = usuariosRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     // Paginado
@@ -26,7 +29,13 @@ public class UsuariosService {
         return usuariosRepository.findAll();
     }
 
+    // Guarda usuario hasheando la contraseña si es nueva
     public Usuario guardarUsuario(Usuario usuario) {
+        // Solo hashea si la contraseña no está hasheada aún (opcional, puedes mejorar la validación)
+        if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$")) {
+            String hashedPassword = passwordEncoder.encode(usuario.getPassword());
+            usuario.setPassword(hashedPassword);
+        }
         return usuariosRepository.save(usuario);
     }
 
@@ -47,10 +56,14 @@ public class UsuariosService {
         return usuariosRepository.countByRolId(rol_id);
     }
 
-    // Login (solo verifica email y password)
     public Usuario login(String email, String password) {
         Usuario usuario = usuariosRepository.findByEmail(email);
-        if (usuario != null && usuario.getPassword().equals(password)) { // En producción, usar BCrypt
+        System.out.println("Email: " + email);
+        System.out.println("Password recibido (plain): " + password);
+        System.out.println("Password hash en BD: " + (usuario != null ? usuario.getPassword() : "null"));
+        boolean match = usuario != null && passwordEncoder.matches(password, usuario.getPassword());
+        System.out.println("Password match: " + match);
+        if (match) {
             return usuario;
         }
         return null;
