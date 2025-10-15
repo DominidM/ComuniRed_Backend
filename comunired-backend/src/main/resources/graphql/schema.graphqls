@@ -1,34 +1,42 @@
 type Query {
     # Queries de usuarios
-    obtenerUsuarios(page: Int!, size: Int!): UsuarioPage
-    obtenerTodosLosUsuarios: [Usuario]
-    contarUsuariosPorRol(rol_id: String!): Int
-    obtenerUsuarioPorId(id: String!): Usuario
-    
+    obtenerUsuarios(page: Int!, size: Int!): UsuarioPage!
+    obtenerTodosLosUsuarios: [Usuario!]!
+    contarUsuariosPorRol(rol_id: ID!): Int!
+    obtenerUsuarioPorId(id: ID!): Usuario
+
     # Queries de roles
     obtenerRoles(page: Int!, size: Int!): RolPage!
+    obtenerTodosLosRoles: [Rol!]!
+    obtenerRolPorId(id: ID!): Rol
 }
 
 type Mutation {
-    crearUsuario(usuario: UsuarioInput!): Usuario
-    actualizarUsuario(id: String!, usuario: UsuarioInput!): Usuario
-    eliminarUsuario(id: String!): Boolean
+    # Mutaciones de usuario
+    crearUsuario(usuario: UsuarioInput!): Usuario!
+    actualizarUsuario(id: ID!, usuario: UsuarioInput!): Usuario!
+    eliminarUsuario(id: ID!): Boolean!
     login(email: String!, password: String!): Usuario
+
+    # Mutaciones de rol (CRUD)
+    crearRol(nombre: String!, descripcion: String): Rol!
+    editarRol(id: ID!, nombre: String!, descripcion: String): Rol!
+    eliminarRol(id: ID!): Boolean!
 }
 
 type Usuario {
-    id: String
-    nombre: String
-    apellido: String
-    dni: String
+    id: ID!
+    nombre: String!
+    apellido: String!
+    dni: String!
     numero_telefono: String
     edad: Int
     sexo: String
     distrito: String
     codigo_postal: String
     direccion: String
-    email: String
-    rol_id: String
+    email: String!
+    rol_id: ID!
 }
 
 input UsuarioInput {
@@ -43,15 +51,15 @@ input UsuarioInput {
     direccion: String
     email: String!
     password: String!
-    rol_id: String!
+    rol_id: ID!
 }
 
 type UsuarioPage {
-    content: [Usuario]
-    totalElements: Int
-    totalPages: Int
-    number: Int
-    size: Int
+    content: [Usuario!]!
+    totalElements: Int!
+    totalPages: Int!
+    number: Int!
+    size: Int!
 }
 
 type Rol {
