@@ -1,77 +1,105 @@
-type Query {
-    # Queries de usuarios
-    obtenerUsuarios(page: Int!, size: Int!): UsuarioPage!
-    obtenerTodosLosUsuarios: [Usuario!]!
-    contarUsuariosPorRol(rol_id: ID!): Int!
-    obtenerUsuarioPorId(id: ID!): Usuario
+# Schema GraphQL completo para ComuniRed
+# Copia y pega este archivo en src/main/resources/schema.graphqls (o donde lo tengas)
 
-    # Queries de roles
-    obtenerRoles(page: Int!, size: Int!): RolPage!
-    obtenerTodosLosRoles: [Rol!]!
-    obtenerRolPorId(id: ID!): Rol
-}
-
-type Mutation {
-    # Mutaciones de usuario
-    crearUsuario(usuario: UsuarioInput!): Usuario!
-    actualizarUsuario(id: ID!, usuario: UsuarioInput!): Usuario!
-    eliminarUsuario(id: ID!): Boolean!
-    login(email: String!, password: String!): Usuario
-
-    # Mutaciones de rol (CRUD)
-    crearRol(nombre: String!, descripcion: String): Rol!
-    editarRol(id: ID!, nombre: String!, descripcion: String): Rol!
-    eliminarRol(id: ID!): Boolean!
-}
+#########################
+# Tipos principales
+#########################
 
 type Usuario {
-    id: ID!
-    nombre: String!
-    apellido: String!
-    dni: String!
-    numero_telefono: String
-    edad: Int
-    sexo: String
-    distrito: String
-    codigo_postal: String
-    direccion: String
-    email: String!
-    rol_id: ID!
+  id: ID!
+  nombre: String!
+  apellido: String!
+  dni: String!
+  numero_telefono: String
+  edad: Int
+  sexo: String
+  distrito: String
+  codigo_postal: String
+  direccion: String
+  email: String!
+  rol_id: ID!
 }
 
 input UsuarioInput {
-    nombre: String!
-    apellido: String!
-    dni: String!
-    numero_telefono: String
-    edad: Int
-    sexo: String
-    distrito: String
-    codigo_postal: String
-    direccion: String
-    email: String!
-    password: String!
-    rol_id: ID!
+  nombre: String!
+  apellido: String!
+  dni: String!
+  numero_telefono: String
+  edad: Int
+  sexo: String
+  distrito: String
+  codigo_postal: String
+  direccion: String
+  email: String!
+  password: String!
+  rol_id: ID!
 }
 
 type UsuarioPage {
-    content: [Usuario!]!
-    totalElements: Int!
-    totalPages: Int!
-    number: Int!
-    size: Int!
+  content: [Usuario!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
 }
 
 type Rol {
-    id: ID!
-    nombre: String!
-    descripcion: String
+  id: ID!
+  nombre: String!
+  descripcion: String
 }
 
 type RolPage {
-    content: [Rol!]!
-    totalPages: Int!
-    totalElements: Int!
-    number: Int!
-    size: Int!
+  content: [Rol!]!
+  totalPages: Int!
+  totalElements: Int!
+  number: Int!
+  size: Int!
 }
+
+# Nuevo tipo: AuthPayload contiene token JWT y el usuario autenticado
+type AuthPayload {
+  token: String!
+  usuario: Usuario!
+}
+
+#########################
+# Queries
+#########################
+
+type Query {
+  # Queries de usuarios
+  obtenerUsuarios(page: Int!, size: Int!): UsuarioPage!
+  obtenerTodosLosUsuarios: [Usuario!]!
+  contarUsuariosPorRol(rol_id: ID!): Int!
+  obtenerUsuarioPorId(id: ID!): Usuario
+
+  # Queries de roles
+  obtenerRoles(page: Int!, size: Int!): RolPage!
+  obtenerTodosLosRoles: [Rol!]!
+  obtenerRolPorId(id: ID!): Rol
+}
+
+#########################
+# Mutations
+#########################
+
+type Mutation {
+  # Mutaciones de usuario (CRUD)
+  crearUsuario(usuario: UsuarioInput!): Usuario!
+  actualizarUsuario(id: ID!, usuario: UsuarioInput!): Usuario!
+  eliminarUsuario(id: ID!): Boolean!
+
+  # Login actualizado: devuelve token + usuario (AuthPayload)
+  login(email: String!, password: String!): AuthPayload
+
+  # Mutaciones de rol (CRUD)
+  crearRol(nombre: String!, descripcion: String): Rol!
+  editarRol(id: ID!, nombre: String!, descripcion: String): Rol!
+  eliminarRol(id: ID!): Boolean!
+}
+
+#########################
+# (Opcional) Subscriptions
+#########################
+# Si necesitas suscripciones añade aquí los tipos y resolvers correspondientes.

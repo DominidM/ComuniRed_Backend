@@ -10,20 +10,24 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import com.comunired.usuarios.application.dto.AuthPayload;
+import com.comunired.usuarios.application.dto.UsuariosDTO;
+import com.comunired.usuarios.application.service.AuthService;
 import com.comunired.usuarios.application.service.UsuariosService;
 import com.comunired.usuarios.domain.entity.Usuario;
-import com.comunired.usuarios.application.dto.UsuariosDTO;
 
 @Controller
 public class UsuariosResolver {
 
     private final UsuariosService usuariosService;
+    private final AuthService authService;
 
-    public UsuariosResolver(UsuariosService usuariosService) {
+    public UsuariosResolver(UsuariosService usuariosService, AuthService authService) {
         this.usuariosService = usuariosService;
+        this.authService = authService;
     }
 
-    // Mapeo de Usuario a UsuariosDTO
+    // Mapeo de Usuario a UsuariosDTO (mantén tu toDTO)
     private UsuariosDTO toDTO(Usuario usuario) {
         if (usuario == null) return null;
         UsuariosDTO dto = new UsuariosDTO();
@@ -89,8 +93,9 @@ public class UsuariosResolver {
         return true;
     }
 
+    // Nuevo: login que devuelve token + usuario
     @MutationMapping
-    public UsuariosDTO login(@Argument String email, @Argument String password) {
-        return toDTO(usuariosService.login(email, password));
+    public AuthPayload login(@Argument String email, @Argument String password) {
+        return authService.login(email, password);
     }
 }
