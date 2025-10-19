@@ -1,6 +1,3 @@
-# Schema GraphQL completo para ComuniRed
-# Copia y pega este archivo en src/main/resources/schema.graphqls (o donde lo tengas)
-
 #########################
 # Tipos principales
 #########################
@@ -57,10 +54,16 @@ type RolPage {
   size: Int!
 }
 
-# Nuevo tipo: AuthPayload contiene token JWT y el usuario autenticado
 type AuthPayload {
   token: String!
   usuario: Usuario!
+}
+
+type Categoria {
+  id: ID
+  nombre: String
+  descripcion: String
+  activo: Boolean
 }
 
 #########################
@@ -78,6 +81,10 @@ type Query {
   obtenerRoles(page: Int!, size: Int!): RolPage!
   obtenerTodosLosRoles: [Rol!]!
   obtenerRolPorId(id: ID!): Rol
+
+  # Queries de categoría
+  listarCategorias: [Categoria]
+  buscarCategoriaPorNombre(nombre: String!): Categoria
 }
 
 #########################
@@ -85,21 +92,25 @@ type Query {
 #########################
 
 type Mutation {
-  # Mutaciones de usuario (CRUD)
+  # Mutaciones de usuario
   crearUsuario(usuario: UsuarioInput!): Usuario!
   actualizarUsuario(id: ID!, usuario: UsuarioInput!): Usuario!
   eliminarUsuario(id: ID!): Boolean!
 
-  # Login actualizado: devuelve token + usuario (AuthPayload)
+  # Login
   login(email: String!, password: String!): AuthPayload
 
-  # Mutaciones de rol (CRUD)
+  # Mutaciones de rol
   crearRol(nombre: String!, descripcion: String): Rol!
   editarRol(id: ID!, nombre: String!, descripcion: String): Rol!
   eliminarRol(id: ID!): Boolean!
+
+  # Mutaciones de categoría
+  crearCategoria(nombre: String!, descripcion: String!, activo: Boolean!): Categoria
+  actualizarCategoria(nombre: String!, descripcion: String!, activo: Boolean!): Categoria
+  eliminarCategoria(nombre: String!): String
 }
 
 #########################
-# (Opcional) Subscriptions
+# Subscriptions (Opcional)
 #########################
-# Si necesitas suscripciones añade aquí los tipos y resolvers correspondientes.
