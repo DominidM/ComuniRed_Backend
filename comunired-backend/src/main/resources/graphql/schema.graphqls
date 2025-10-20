@@ -1,12 +1,8 @@
 #########################
-# Schema GraphQL completo para ComuniRed
-# Copia y pega este archivo en src/main/resources/schema.graphqls (o donde lo tengas)
+# Schema GraphQL para ComuniRed (limpio)
 #########################
 
-#########################
 # Tipos principales
-#########################
-
 type Usuario {
   id: ID!
   nombre: String!
@@ -33,7 +29,7 @@ input UsuarioInput {
   codigo_postal: String
   direccion: String
   email: String!
-  password: String!
+  password: String
   rol_id: ID!
 }
 
@@ -59,49 +55,50 @@ type RolPage {
   size: Int!
 }
 
-# Nuevo tipo: AuthPayload contiene token JWT y el usuario autenticado
 type AuthPayload {
-  token: String!
-  usuario: Usuario!
+  token: String
+  usuario: Usuario
+}
+
+type Categoria {
+  id: ID
+  nombre: String
+  descripcion: String
+  activo: Boolean
 }
 
 #########################
 # Queries
 #########################
-
 type Query {
-  # Queries de usuarios
-  obtenerUsuarios(page: Int!, size: Int!): UsuarioPage!
+  obtenerUsuarios(page: Int!, size: Int!): UsuarioPage
   obtenerTodosLosUsuarios: [Usuario!]!
-  contarUsuariosPorRol(rol_id: ID!): Int!
+  contarUsuariosPorRol(rol_id: ID!): Int
   obtenerUsuarioPorId(id: ID!): Usuario
 
-  # Queries de roles
-  obtenerRoles(page: Int!, size: Int!): RolPage!
+  obtenerRoles(page: Int!, size: Int!): RolPage
   obtenerTodosLosRoles: [Rol!]!
   obtenerRolPorId(id: ID!): Rol
+
+  listarCategorias: [Categoria]
+  buscarCategoriaPorNombre(nombre: String!): Categoria
 }
 
 #########################
 # Mutations
 #########################
-
 type Mutation {
-  # Mutaciones de usuario (CRUD)
-  crearUsuario(usuario: UsuarioInput!): Usuario!
-  actualizarUsuario(id: ID!, usuario: UsuarioInput!): Usuario!
-  eliminarUsuario(id: ID!): Boolean!
+  crearUsuario(usuario: UsuarioInput!): Usuario
+  actualizarUsuario(id: ID!, usuario: UsuarioInput!): Usuario
+  eliminarUsuario(id: ID!): Boolean
 
-  # Login actualizado: devuelve token + usuario (AuthPayload)
   login(email: String!, password: String!): AuthPayload
 
-  # Mutaciones de rol (CRUD)
-  crearRol(nombre: String!, descripcion: String): Rol!
-  editarRol(id: ID!, nombre: String!, descripcion: String): Rol!
-  eliminarRol(id: ID!): Boolean!
-}
+  crearRol(nombre: String!, descripcion: String): Rol
+  editarRol(id: ID!, nombre: String!, descripcion: String): Rol
+  eliminarRol(id: ID!): Boolean
 
-#########################
-# (Opcional) Subscriptions
-#########################
-# Si necesitas suscripciones añade aquí los tipos y resolvers correspondientes.
+  crearCategoria(nombre: String!, descripcion: String, activo: Boolean): Categoria
+  actualizarCategoria(id: ID!, nombre: String!, descripcion: String, activo: Boolean): Categoria
+  eliminarCategoria(id: ID!): Boolean
+}
