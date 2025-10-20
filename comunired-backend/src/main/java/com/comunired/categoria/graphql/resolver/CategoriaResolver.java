@@ -56,6 +56,12 @@ public class CategoriaResolver {
         return opt.map(this::toDTO).orElse(null);
     }
 
+    @QueryMapping(name = "buscarCategoriaPorNombre")
+public CategoriaDTO buscarCategoriaPorNombre(@Argument String nombre) {
+    Optional<Categoria> opt = categoriaService.buscarPorNombre(nombre);
+    return opt.map(this::toDTO).orElse(null); // Devuelve null si no encuentra
+}
+
     @MutationMapping
     public CategoriaDTO crearCategoria(@Argument String nombre, @Argument String descripcion, @Argument Boolean activo) {
         try {

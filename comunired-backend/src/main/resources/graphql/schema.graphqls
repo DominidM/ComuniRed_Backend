@@ -67,6 +67,14 @@ type Categoria {
   activo: Boolean
 }
 
+type Estados_queja {
+  id: ID
+  clave: String
+  nombre: String
+  descripcion: String
+  orden: Int
+}
+
 #########################
 # Queries
 #########################
@@ -82,6 +90,10 @@ type Query {
 
   listarCategorias: [Categoria]
   buscarCategoriaPorNombre(nombre: String!): Categoria
+
+  listarEstados: [Estados_queja]
+  buscarEstadoPorNombre(nombre: String!): Estados_queja
+  
 }
 
 #########################
@@ -101,4 +113,9 @@ type Mutation {
   crearCategoria(nombre: String!, descripcion: String, activo: Boolean): Categoria
   actualizarCategoria(id: ID!, nombre: String!, descripcion: String, activo: Boolean): Categoria
   eliminarCategoria(id: ID!): Boolean
+
+
+  crearEstado(clave: String!, nombre: String!, descripcion: String, orden: Int!): Estados_queja
+  actualizarEstado(id: ID!, clave: String!, nombre: String!, descripcion: String, orden: Int!): Estados_queja
+  eliminarEstado(id: ID!): String
 }
