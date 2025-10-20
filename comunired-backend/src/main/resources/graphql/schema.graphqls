@@ -1,5 +1,7 @@
+#########################
 # Schema GraphQL completo para ComuniRed
 # Copia y pega este archivo en src/main/resources/schema.graphqls (o donde lo tengas)
+#########################
 
 #########################
 # Tipos principales

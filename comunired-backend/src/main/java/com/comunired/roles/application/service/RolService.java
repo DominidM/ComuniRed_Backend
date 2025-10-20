@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.comunired.roles.domain.entity.Rol;
 import com.comunired.roles.domain.repository.RolRepository;
-import com.comunired.roles.infrastructure.repository.RolMongoRepository;
 
 @Service
 public class RolService {
@@ -36,25 +35,18 @@ public class RolService {
     }
 
     public Rol buscarPorId(String id) {
-        if (rolRepository instanceof RolMongoRepository) {
-            Optional<Rol> optional = ((RolMongoRepository) rolRepository).findById(id);
-            return optional.orElse(null);
-        }
-        throw new UnsupportedOperationException("Método buscarPorId no implementado para este repositorio");
+        Optional<Rol> optional = rolRepository.findById(id);
+        return optional.orElse(null);
     }
 
     // Eliminación robusta: solo elimina si existe, retorna true si elimina, false si no existe
     public boolean eliminarPorId(String id) {
-        if (rolRepository instanceof RolMongoRepository) {
-            RolMongoRepository mongoRepo = (RolMongoRepository) rolRepository;
-            if (!mongoRepo.existsById(id)) {
-                System.out.println("No existe el rol con id: " + id);
-                return false;
-            }
-            mongoRepo.deleteById(id);
-            System.out.println("Rol eliminado con id: " + id);
-            return true;
+        if (!rolRepository.existsById(id)) {
+            System.out.println("No existe el rol con id: " + id);
+            return false;
         }
-        throw new UnsupportedOperationException("Método eliminarPorId no implementado para este repositorio");
+        rolRepository.deleteById(id);
+        System.out.println("Rol eliminado con id: " + id);
+        return true;
     }
 }

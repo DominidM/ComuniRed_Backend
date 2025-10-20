@@ -1,10 +1,14 @@
 package com.comunired.usuarios.graphql.resolver;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -19,6 +23,8 @@ import com.comunired.usuarios.domain.entity.Usuario;
 @Controller
 public class UsuariosResolver {
 
+    private static final Logger logger = LoggerFactory.getLogger(UsuariosResolver.class);
+
     private final UsuariosService usuariosService;
     private final AuthService authService;
 
@@ -27,75 +33,168 @@ public class UsuariosResolver {
         this.authService = authService;
     }
 
-    // Mapeo de Usuario a UsuariosDTO (mantén tu toDTO)
+    /**
+     * Mapear Usuario -> UsuariosDTO asegurando que campos non-null no sean null.
+     * Si algún campo requerido en el DTO viene null en la entidad, lo reemplazamos
+     * por cadena vacía (o por un valor por defecto) y logueamos la incidencia para
+     * que puedas limpiar la BD después.
+     */
     private UsuariosDTO toDTO(Usuario usuario) {
         if (usuario == null) return null;
+
+        // Detectar y registrar campos faltantes para poder corregirlos en BD
+        boolean missing = false;
+        StringBuilder missingFields = new StringBuilder();
+
+        String id = usuario.getId();
+        String nombre = usuario.getNombre();
+        if (nombre == null) { missing = true; missingFields.append("nombre "); nombre = ""; }
+        String apellido = usuario.getApellido();
+        if (apellido == null) { missing = true; missingFields.append("apellido "); apellido = ""; }
+        String dni = usuario.getDni();
+        if (dni == null) { missing = true; missingFields.append("dni "); dni = ""; }
+        String numero_telefono = usuario.getNumero_telefono();
+        if (numero_telefono == null) numero_telefono = "";
+        Integer edad = usuario.getEdad();
+        if (edad == null) edad = 0;
+        String sexo = usuario.getSexo();
+        if (sexo == null) sexo = "";
+        String distrito = usuario.getDistrito();
+        if (distrito == null) distrito = "";
+        String codigo_postal = usuario.getCodigo_postal();
+        if (codigo_postal == null) codigo_postal = "";
+        String direccion = usuario.getDireccion();
+        if (direccion == null) direccion = "";
+        String email = usuario.getEmail();
+        if (email == null) { missing = true; missingFields.append("email "); email = ""; }
+        String rol_id = usuario.getRol_id();
+        if (rol_id == null) rol_id = "";
+
+        if (missing) {
+            logger.warn("Usuario id={} tiene campos nulos: {} — se han normalizado temporalmente para cumplir schema GraphQL",
+                id, missingFields.toString().trim());
+        }
+
         UsuariosDTO dto = new UsuariosDTO();
-        dto.setId(usuario.getId());
-        dto.setNombre(usuario.getNombre());
-        dto.setApellido(usuario.getApellido());
-        dto.setDni(usuario.getDni());
-        dto.setNumero_telefono(usuario.getNumero_telefono());
-        dto.setEdad(usuario.getEdad());
-        dto.setSexo(usuario.getSexo());
-        dto.setDistrito(usuario.getDistrito());
-        dto.setCodigo_postal(usuario.getCodigo_postal());
-        dto.setDireccion(usuario.getDireccion());
-        dto.setEmail(usuario.getEmail());
-        dto.setRol_id(usuario.getRol_id());
+        dto.setId(id != null ? id : "");
+        dto.setNombre(nombre);
+        dto.setApellido(apellido);
+        dto.setDni(dni);
+        dto.setNumero_telefono(numero_telefono);
+        dto.setEdad(edad);
+        dto.setSexo(sexo);
+        dto.setDistrito(distrito);
+        dto.setCodigo_postal(codigo_postal);
+        dto.setDireccion(direccion);
+        dto.setEmail(email);
+        dto.setRol_id(rol_id);
         return dto;
     }
 
+    /**
+     * Query paginada de usuarios. En caso de excepción devolvemos Page vacía (para
+     * evitar que GraphQL devuelva errors[] que anulan data).
+     */
     @QueryMapping
     public Page<UsuariosDTO> obtenerUsuarios(@Argument int page, @Argument int size) {
-        Page<Usuario> usuarios = usuariosService.obtenerUsuarios(page, size);
-        List<UsuariosDTO> dtos = usuarios.getContent().stream()
-            .map(this::toDTO)
-            .collect(Collectors.toList());
-        return new PageImpl<>(dtos, usuarios.getPageable(), usuarios.getTotalElements());
+        try {
+            Page<Usuario> usuarios = usuariosService.obtenerUsuarios(page, size);
+            if (usuarios == null) {
+                logger.warn("UsuariosService.obtenerUsuarios devolvió null (page={}, size={}), devolviendo Page vacía.", page, size);
+                return new PageImpl<>(Collections.emptyList(), PageRequest.of(page, size), 0);
+            }
+            List<UsuariosDTO> dtos = usuarios.getContent().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+            return new PageImpl<>(dtos, usuarios.getPageable(), usuarios.getTotalElements());
+        } catch (Exception e) {
+            logger.error("Error en obtenerUsuarios(page={}, size={}). Devolviendo Page vacía para evitar error GraphQL.", page, size, e);
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page, size), 0);
+        }
     }
 
     @QueryMapping
     public List<UsuariosDTO> obtenerTodosLosUsuarios() {
-        return usuariosService.obtenerTodosLosUsuarios().stream()
-            .map(this::toDTO)
-            .collect(Collectors.toList());
+        try {
+            List<Usuario> usuarios = usuariosService.obtenerTodosLosUsuarios();
+            if (usuarios == null) {
+                logger.warn("UsuariosService.obtenerTodosLosUsuarios devolvió null, devolviendo lista vacía.");
+                return Collections.emptyList();
+            }
+            return usuarios.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.error("Error en obtenerTodosLosUsuarios(), devolviendo lista vacía.", e);
+            return Collections.emptyList();
+        }
     }
 
     @QueryMapping
     public long contarUsuariosPorRol(@Argument String rol_id) {
-        return usuariosService.contarPorRol(rol_id);
+        try {
+            return usuariosService.contarPorRol(rol_id);
+        } catch (Exception e) {
+            logger.error("Error en contarUsuariosPorRol(rol_id={})", rol_id, e);
+            return 0L;
+        }
     }
 
     @QueryMapping
     public UsuariosDTO obtenerUsuarioPorId(@Argument String id) {
-        return toDTO(usuariosService.buscarPorId(id));
+        try {
+            Usuario u = usuariosService.buscarPorId(id);
+            if (u == null) return null;
+            return toDTO(u);
+        } catch (Exception e) {
+            logger.error("Error en obtenerUsuarioPorId(id={})", id, e);
+            return null;
+        }
     }
 
     @MutationMapping
     public UsuariosDTO crearUsuario(@Argument Usuario usuario) {
-        return toDTO(usuariosService.guardarUsuario(usuario));
+        try {
+            return toDTO(usuariosService.guardarUsuario(usuario));
+        } catch (Exception e) {
+            logger.error("Error creando usuario", e);
+            return null;
+        }
     }
 
     @MutationMapping
     public UsuariosDTO actualizarUsuario(@Argument String id, @Argument Usuario usuario) {
-        Usuario existente = usuariosService.buscarPorId(id);
-        if (existente != null) {
-            usuario.setId(id);
-            return toDTO(usuariosService.guardarUsuario(usuario));
+        try {
+            Usuario existente = usuariosService.buscarPorId(id);
+            if (existente != null) {
+                usuario.setId(id);
+                return toDTO(usuariosService.guardarUsuario(usuario));
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("Error actualizando usuario id={}", id, e);
+            return null;
         }
-        return null;
     }
 
     @MutationMapping
     public Boolean eliminarUsuario(@Argument String id) {
-        usuariosService.eliminarUsuario(id);
-        return true;
+        try {
+            usuariosService.eliminarUsuario(id);
+            return true;
+        } catch (Exception e) {
+            logger.error("Error eliminando usuario id={}", id, e);
+            return false;
+        }
     }
 
-    // Nuevo: login que devuelve token + usuario
     @MutationMapping
     public AuthPayload login(@Argument String email, @Argument String password) {
-        return authService.login(email, password);
+        try {
+            return authService.login(email, password);
+        } catch (Exception e) {
+            logger.error("Error en login", e);
+            return null;
+        }
     }
 }
