@@ -36,13 +36,14 @@ public class CategoriaResolver {
         return dto;
     }
 
-    @QueryMapping
-    public List<CategoriaDTO> obtenerCategorias() {
+    @QueryMapping(name = "listarCategorias")
+    public List<CategoriaDTO> listarCategorias() {
         List<Categoria> lista = categoriaService.listarCategorias();
         return lista.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+
 
     @QueryMapping
     public CategoriaDTO obtenerCategoriaPorId(@Argument String id) {
