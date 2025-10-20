@@ -1,9 +1,7 @@
 package com.comunired.categoria.domain.repository;
 
 import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.Optional;
 
 import com.comunired.categoria.domain.entity.Categoria;
 

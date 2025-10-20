@@ -1,24 +1,34 @@
 package com.comunired.categoria.domain.entity;
 
+import java.io.Serializable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
-@Entity
-@Table(name = "categoria")
-public class Categoria {
+@Document(collection = "categorias")
+public class Categoria implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String nombre;
-    private String descripcion;
-    private Boolean activo;
 
-    // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    private String descripcion;
+
+    private Boolean activo = true;
+
+    public Categoria() {}
+
+    public Categoria(String id, String nombre, String descripcion, Boolean activo) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.activo = activo;
+    }
+
+    // Getters y setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }

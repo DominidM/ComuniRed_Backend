@@ -1,51 +1,57 @@
 package com.comunired.categoria.application.service;
 
-import com.comunired.categoria.domain.entity.Categoria;
-import com.comunired.categoria.domain.repository.CategoriaRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.comunired.categoria.domain.entity.Categoria;
+import com.comunired.categoria.infrastructure.repository.CategoriaMongoRepository;
 
 @Service
 public class CategoriaService {
 
-    private final CategoriaRepository categoriaRepository;
+    private final CategoriaMongoRepository categoriaRepository;
 
-    public CategoriaService(CategoriaRepository categoriaRepository) {
+    public CategoriaService(CategoriaMongoRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
     }
 
+    // Lista todas las categorías (antes listar())
     public List<Categoria> listarCategorias() {
-        return categoriaRepository.listar();
+        return categoriaRepository.findAll();
     }
 
+    // Buscar por nombre (devuelve Optional)
     public Optional<Categoria> buscarPorNombre(String nombre) {
-        return categoriaRepository.buscarPorNombre(nombre);
+        return categoriaRepository.findByNombre(nombre);
     }
 
+    // Crear categoría
     public Categoria crearCategoria(String nombre, String descripcion, Boolean activo) {
         Categoria categoria = new Categoria();
         categoria.setNombre(nombre);
         categoria.setDescripcion(descripcion);
-        categoria.setActivo(activo);
-        return categoriaRepository.guardar(categoria);
+        categoria.setActivo(activo != null ? activo : Boolean.TRUE);
+        return categoriaRepository.save(categoria);
     }
 
+    // Actualizar categoría: busca por id y guarda
     public Categoria actualizarCategoria(String id, String nombre, String descripcion, Boolean activo) {
-        Optional<Categoria> categoriaOpt = categoriaRepository.buscarPorId(id);
+        Optional<Categoria> categoriaOpt = categoriaRepository.findById(id);
         if (categoriaOpt.isPresent()) {
             Categoria categoria = categoriaOpt.get();
             categoria.setNombre(nombre);
             categoria.setDescripcion(descripcion);
-            categoria.setActivo(activo);
-            return categoriaRepository.modificar(categoria);
+            categoria.setActivo(activo != null ? activo : categoria.getActivo());
+            return categoriaRepository.save(categoria);
         } else {
             throw new RuntimeException("Categoría no encontrada con id: " + id);
         }
     }
 
+    // Eliminar por id
     public void eliminarCategoria(String id) {
-        categoriaRepository.eliminar(id);
+        categoriaRepository.deleteById(id);
     }
 }
