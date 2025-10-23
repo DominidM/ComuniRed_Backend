@@ -75,6 +75,14 @@ type Estados_queja {
   orden: Int
 }
 
+type Tipos_reaccion {
+  id: ID!
+  key: String!
+  label: String!
+  activo: Boolean!
+  orden: Int!
+}
+
 #########################
 # Queries
 #########################
@@ -93,8 +101,13 @@ type Query {
 
   listarEstados: [Estados_queja]
   buscarEstadoPorNombre(nombre: String!): Estados_queja
-  
+
+
+  listarTiposReaccion: [Tipos_reaccion!]!
+  obtenerTipoReaccionPorId(id: ID!): Tipos_reaccion
+  buscarTipoReaccionPorLabel(label: String!): Tipos_reaccion
 }
+  
 
 #########################
 # Mutations
@@ -118,4 +131,11 @@ type Mutation {
   crearEstado(clave: String!, nombre: String!, descripcion: String, orden: Int!): Estados_queja
   actualizarEstado(id: ID!, clave: String!, nombre: String!, descripcion: String, orden: Int!): Estados_queja
   eliminarEstado(id: ID!): String
+
+
+  crearTipoReaccion(key: String!, label: String!, activo: Boolean!, orden: Int!): Tipos_reaccion
+
+  actualizarTipoReaccion(id: ID!, key: String!, label: String!, activo: Boolean!, orden: Int!): Tipos_reaccion
+
+  eliminarTipoReaccion(id: ID!): Boolean
 }

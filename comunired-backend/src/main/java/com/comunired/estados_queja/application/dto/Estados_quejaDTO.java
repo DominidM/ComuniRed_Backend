@@ -8,7 +8,6 @@ public class Estados_quejaDTO {
     private String descripcion;
     private int orden;
 
-    // ======== Getters y Setters ========
 
     public String getId() {
         return id;
