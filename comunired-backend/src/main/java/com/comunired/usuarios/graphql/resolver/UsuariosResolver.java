@@ -18,6 +18,7 @@ import com.comunired.usuarios.application.dto.AuthPayload;
 import com.comunired.usuarios.application.dto.UsuariosDTO;
 import com.comunired.usuarios.application.service.AuthService;
 import com.comunired.usuarios.application.service.UsuariosService;
+import com.comunired.usuarios.application.service.PasswordResetService;
 import com.comunired.usuarios.domain.entity.Usuario;
 
 @Controller
@@ -27,18 +28,14 @@ public class UsuariosResolver {
 
     private final UsuariosService usuariosService;
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
 
-    public UsuariosResolver(UsuariosService usuariosService, AuthService authService) {
+    public UsuariosResolver(UsuariosService usuariosService, AuthService authService, PasswordResetService passwordResetService) {
         this.usuariosService = usuariosService;
         this.authService = authService;
+        this.passwordResetService = passwordResetService;
     }
 
-    /**
-     * Mapear Usuario -> UsuariosDTO asegurando que campos non-null no sean null.
-     * Si algún campo requerido en el DTO viene null en la entidad, lo reemplazamos
-     * por cadena vacía (o por un valor por defecto) y logueamos la incidencia para
-     * que puedas limpiar la BD después.
-     */
     private UsuariosDTO toDTO(Usuario usuario) {
         if (usuario == null) return null;
 
@@ -215,20 +212,16 @@ public class UsuariosResolver {
             Usuario existente = usuariosService.buscarPorId(id);
             if (existente != null) {
 
-                // Mantener el ID original
                 usuario.setId(id);
 
-                // ✅ Si el password no se envía, conservar el actual
                 if (usuario.getPassword() == null || usuario.getPassword().isEmpty()) {
                     usuario.setPassword(existente.getPassword());
                 }
 
-                // ✅ Mantener también el rol si no se envía (opcional)
                 if (usuario.getRol_id() == null || usuario.getRol_id().isEmpty()) {
                     usuario.setRol_id(existente.getRol_id());
                 }
 
-                // Guardar el usuario actualizado
                 Usuario actualizado = usuariosService.guardarUsuario(usuario);
                 return toDTO(actualizado);
             }
@@ -257,6 +250,41 @@ public class UsuariosResolver {
         } catch (Exception e) {
             logger.error("Error en login", e);
             return null;
+        }
+    }
+
+
+
+    @MutationMapping
+    public Boolean solicitarCodigoRecuperacion(@Argument String email) {
+        try {
+            return passwordResetService.solicitarCodigoRecuperacion(email);
+        } catch (Exception e) {
+            logger.error("Error en solicitarCodigoRecuperacion para email: {}", email, e);
+            return false;
+        }
+    }
+
+    @MutationMapping
+    public Boolean verificarCodigoRecuperacion(@Argument String email, @Argument String codigo) {
+        try {
+            return passwordResetService.verificarCodigo(email, codigo);
+        } catch (Exception e) {
+            logger.error("Error en verificarCodigoRecuperacion para email: {}", email, e);
+            return false;
+        }
+    }
+
+    @MutationMapping
+    public Boolean cambiarPasswordConCodigo(
+            @Argument String email, 
+            @Argument String codigo, 
+            @Argument String nuevaPassword) {
+        try {
+            return passwordResetService.cambiarPasswordConCodigo(email, codigo, nuevaPassword);
+        } catch (Exception e) {
+            logger.error("Error en cambiarPasswordConCodigo para email: {}", email, e);
+            return false;
         }
     }
 }

@@ -76,6 +76,13 @@
       <artifactId>spring-graphql-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Dependencia para envío de emails -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>

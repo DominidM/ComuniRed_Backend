@@ -121,6 +121,11 @@ type Mutation {
 
   login(email: String!, password: String!): AuthPayload
 
+  solicitarCodigoRecuperacion(email: String!): Boolean!
+  verificarCodigoRecuperacion(email: String!, codigo: String!): Boolean!
+  cambiarPasswordConCodigo(email: String!, codigo: String!, nuevaPassword: String!): Boolean!
+
+
   crearRol(nombre: String!, descripcion: String): Rol
   editarRol(id: ID!, nombre: String!, descripcion: String): Rol
   eliminarRol(id: ID!): Boolean

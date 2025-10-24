@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 
 @Document(collection = "usuarios")
 public class Usuario {
@@ -20,10 +21,16 @@ public class Usuario {
     private String codigo_postal;
     private String direccion;
     private String email;
+    
     @JsonIgnore
     private String password;
     private String rol_id;
     
+    @JsonIgnore
+    private String resetPasswordToken;
+    @JsonIgnore
+    private LocalDateTime resetPasswordExpiry;
+
     public String getId() {
         return id;
     }
@@ -109,5 +116,19 @@ public class Usuario {
         this.rol_id = rol_id;
     }
 
-    // Getters y Setters...
+        public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+    
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
+    }
+    
+    public LocalDateTime getResetPasswordExpiry() {
+        return resetPasswordExpiry;
+    }
+    
+    public void setResetPasswordExpiry(LocalDateTime resetPasswordExpiry) {
+        this.resetPasswordExpiry = resetPasswordExpiry;
+    }
 }

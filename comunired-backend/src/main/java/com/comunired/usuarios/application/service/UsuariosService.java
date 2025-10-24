@@ -15,6 +15,7 @@ public class UsuariosService {
     private final UsuariosRepository usuariosRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+
     public UsuariosService(UsuariosRepository usuariosRepository) {
         this.usuariosRepository = usuariosRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
