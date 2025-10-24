@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Usuario {
     @Id
     private String id;
+    private String foto_perfil;
     private String nombre;
     private String apellido;
     private String dni;
@@ -28,6 +29,12 @@ public class Usuario {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    public String getFoto_perfil() {
+        return foto_perfil;
+    }
+    public void setFoto_perfil(String foto_perfil) {
+        this.foto_perfil = foto_perfil;
     }
     public String getNombre() {
         return nombre;

@@ -47,28 +47,74 @@ public class UsuariosResolver {
         StringBuilder missingFields = new StringBuilder();
 
         String id = usuario.getId();
+        
+        String foto_perfil = usuario.getFoto_perfil();
+        if (foto_perfil == null) {
+            foto_perfil = "";
+        }
+        
         String nombre = usuario.getNombre();
-        if (nombre == null) { missing = true; missingFields.append("nombre "); nombre = ""; }
+        if (nombre == null) { 
+            missing = true; 
+            missingFields.append("nombre "); 
+            nombre = ""; 
+        }
+        
         String apellido = usuario.getApellido();
-        if (apellido == null) { missing = true; missingFields.append("apellido "); apellido = ""; }
+        if (apellido == null) { 
+            missing = true; 
+            missingFields.append("apellido "); 
+            apellido = ""; 
+        }
+        
         String dni = usuario.getDni();
-        if (dni == null) { missing = true; missingFields.append("dni "); dni = ""; }
+        if (dni == null) { 
+            missing = true; 
+            missingFields.append("dni "); 
+            dni = ""; 
+        }
+        
         String numero_telefono = usuario.getNumero_telefono();
-        if (numero_telefono == null) numero_telefono = "";
+        if (numero_telefono == null) {
+            numero_telefono = "";
+        }
+        
         Integer edad = usuario.getEdad();
-        if (edad == null) edad = 0;
+        if (edad == null) {
+            edad = 0;
+        }
+        
         String sexo = usuario.getSexo();
-        if (sexo == null) sexo = "";
+        if (sexo == null) {
+            sexo = "";
+        }
+        
         String distrito = usuario.getDistrito();
-        if (distrito == null) distrito = "";
+        if (distrito == null) {
+            distrito = "";
+        }
+        
         String codigo_postal = usuario.getCodigo_postal();
-        if (codigo_postal == null) codigo_postal = "";
+        if (codigo_postal == null) {
+            codigo_postal = "";
+        }
+        
         String direccion = usuario.getDireccion();
-        if (direccion == null) direccion = "";
+        if (direccion == null) {
+            direccion = "";
+        }
+        
         String email = usuario.getEmail();
-        if (email == null) { missing = true; missingFields.append("email "); email = ""; }
+        if (email == null) { 
+            missing = true; 
+            missingFields.append("email "); 
+            email = ""; 
+        }
+        
         String rol_id = usuario.getRol_id();
-        if (rol_id == null) rol_id = "";
+        if (rol_id == null) {
+            rol_id = "";
+        }
 
         if (missing) {
             logger.warn("Usuario id={} tiene campos nulos: {} — se han normalizado temporalmente para cumplir schema GraphQL",
@@ -77,6 +123,7 @@ public class UsuariosResolver {
 
         UsuariosDTO dto = new UsuariosDTO();
         dto.setId(id != null ? id : "");
+        dto.setFoto_perfil(foto_perfil);
         dto.setNombre(nombre);
         dto.setApellido(apellido);
         dto.setDni(dni);
@@ -167,8 +214,23 @@ public class UsuariosResolver {
         try {
             Usuario existente = usuariosService.buscarPorId(id);
             if (existente != null) {
+
+                // Mantener el ID original
                 usuario.setId(id);
-                return toDTO(usuariosService.guardarUsuario(usuario));
+
+                // ✅ Si el password no se envía, conservar el actual
+                if (usuario.getPassword() == null || usuario.getPassword().isEmpty()) {
+                    usuario.setPassword(existente.getPassword());
+                }
+
+                // ✅ Mantener también el rol si no se envía (opcional)
+                if (usuario.getRol_id() == null || usuario.getRol_id().isEmpty()) {
+                    usuario.setRol_id(existente.getRol_id());
+                }
+
+                // Guardar el usuario actualizado
+                Usuario actualizado = usuariosService.guardarUsuario(usuario);
+                return toDTO(actualizado);
             }
             return null;
         } catch (Exception e) {

@@ -5,6 +5,7 @@
 # Tipos principales
 type Usuario {
   id: ID!
+  foto_perfil: String
   nombre: String!
   apellido: String!
   dni: String!
@@ -19,6 +20,7 @@ type Usuario {
 }
 
 input UsuarioInput {
+  foto_perfil: String
   nombre: String!
   apellido: String!
   dni: String!

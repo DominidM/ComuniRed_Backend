@@ -4,6 +4,7 @@ import com.comunired.roles.application.dto.RolDTO;
 
 public class UsuariosDTO {
     private String id;
+    private String foto_perfil;
     private String nombre;
     private String apellido;
     private String dni;
@@ -16,12 +17,13 @@ public class UsuariosDTO {
     private String email;
     private String rol_id;
 
-    // Nuevo campo: rol (opcional)
     private RolDTO rol;
 
-    // getters y setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public String getFoto_perfil() { return foto_perfil; }
+    public void setFoto_perfil(String foto_perfil) { this.foto_perfil = foto_perfil; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
