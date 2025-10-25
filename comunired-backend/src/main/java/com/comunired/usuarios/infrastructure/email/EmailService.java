@@ -1,4 +1,4 @@
-package com.comunired.usuarios.application.service;
+package com.comunired.usuarios.infrastructure.email;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

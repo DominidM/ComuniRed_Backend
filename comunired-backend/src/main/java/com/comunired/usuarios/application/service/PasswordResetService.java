@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.comunired.usuarios.domain.entity.Usuario;
 import com.comunired.usuarios.domain.repository.UsuariosRepository;
+import com.comunired.usuarios.infrastructure.email.EmailService;
 
 @Service
 public class PasswordResetService {
