@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 
 import com.comunired.categoria.application.dto.CategoriaDTO;
 import com.comunired.categoria.application.service.CategoriaService;
-import com.comunired.categoria.domain.entity.Categoria;
+import com.comunired.categoria.infrastructure.entity.Categoria;
 
 @Controller
 public class CategoriaResolver {

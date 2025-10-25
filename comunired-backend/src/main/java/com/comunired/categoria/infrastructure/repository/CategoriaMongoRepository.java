@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.comunired.categoria.domain.entity.Categoria;
+import com.comunired.categoria.infrastructure.entity.Categoria;
 
 @Repository
 public interface CategoriaMongoRepository extends MongoRepository<Categoria, String> {

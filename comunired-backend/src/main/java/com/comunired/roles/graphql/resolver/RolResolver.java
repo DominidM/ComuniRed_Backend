@@ -12,7 +12,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import com.comunired.roles.application.service.RolService;
-import com.comunired.roles.domain.entity.Rol;
+import com.comunired.roles.application.dto.RolDTO;
 
 @Controller
 public class RolResolver {
@@ -26,7 +26,7 @@ public class RolResolver {
     }
 
     @QueryMapping
-    public Page<Rol> obtenerRoles(@Argument int page, @Argument int size) {
+    public Page<RolDTO> obtenerRoles(@Argument int page, @Argument int size) {
         return rolService.obtenerRoles(page, size);
     }
 
@@ -36,9 +36,9 @@ public class RolResolver {
      * para evitar que GraphQL lance errores por tipos non-null.
      */
     @QueryMapping
-    public List<Rol> obtenerTodosLosRoles() {
+    public List<RolDTO> obtenerTodosLosRoles() {
         try {
-            List<Rol> roles = rolService.obtenerTodosLosRoles();
+            List<RolDTO> roles = rolService.obtenerTodosLosRoles();
             if (roles == null) {
                 logger.warn("RolService.obtenerTodosLosRoles() devolvió null — devolviendo lista vacía en su lugar.");
                 return Collections.emptyList();
@@ -54,7 +54,7 @@ public class RolResolver {
      * Query para obtener un rol por id (útil como fallback desde el frontend).
      */
     @QueryMapping
-    public Rol obtenerRolPorId(@Argument String id) {
+    public RolDTO obtenerRolPorId(@Argument String id) {
         try {
             if (id == null || id.trim().isEmpty()) return null;
             return rolService.buscarPorId(id);
@@ -65,16 +65,16 @@ public class RolResolver {
     }
 
     @MutationMapping
-    public Rol crearRol(@Argument String nombre, @Argument String descripcion) {
-        Rol rol = new Rol();
+    public RolDTO crearRol(@Argument String nombre, @Argument String descripcion) {
+        RolDTO rol = new RolDTO();
         rol.setNombre(nombre);
         rol.setDescripcion(descripcion);
         return rolService.guardarRol(rol);
     }
 
     @MutationMapping
-    public Rol editarRol(@Argument String id, @Argument String nombre, @Argument String descripcion) {
-        Rol rol = rolService.buscarPorId(id);
+    public RolDTO editarRol(@Argument String id, @Argument String nombre, @Argument String descripcion) {
+        RolDTO rol = rolService.buscarPorId(id);
         if (rol == null) throw new RuntimeException("Rol no existe");
         rol.setNombre(nombre);
         rol.setDescripcion(descripcion);

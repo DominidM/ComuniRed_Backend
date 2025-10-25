@@ -7,8 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.comunired.roles.domain.entity.Rol;
-import com.comunired.roles.domain.repository.RolRepository;
+import com.comunired.roles.application.dto.RolDTO;
+import com.comunired.roles.application.port.out.RolRepository;
 
 @Service
 public class RolService {
@@ -18,24 +18,24 @@ public class RolService {
         this.rolRepository = rolRepository;
     }
 
-    public Page<Rol> obtenerRoles(int page, int size) {
+    public Page<RolDTO> obtenerRoles(int page, int size) {
         return rolRepository.findAll(PageRequest.of(page, size));
     }
 
-    public List<Rol> obtenerTodosLosRoles() {
+    public List<RolDTO> obtenerTodosLosRoles() {
         return rolRepository.findAll();
     }
 
-    public Rol guardarRol(Rol rol) {
+    public RolDTO guardarRol(RolDTO rol) {
         return rolRepository.save(rol);
     }
 
-    public Rol buscarPorNombre(String nombre) {
+    public RolDTO  buscarPorNombre(String nombre) {
         return rolRepository.findByNombre(nombre);
     }
 
-    public Rol buscarPorId(String id) {
-        Optional<Rol> optional = rolRepository.findById(id);
+    public RolDTO buscarPorId(String id) {
+        Optional<RolDTO> optional = rolRepository.findById(id);
         return optional.orElse(null);
     }
 

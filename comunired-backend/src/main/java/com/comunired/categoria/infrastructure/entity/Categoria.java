@@ -1,4 +1,4 @@
-package com.comunired.categoria.domain.entity;
+package com.comunired.categoria.infrastructure.entity;
 
 import java.io.Serializable;
 

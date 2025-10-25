@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.comunired.categoria.domain.entity.Categoria;
+import com.comunired.categoria.infrastructure.entity.Categoria;
 import com.comunired.categoria.infrastructure.repository.CategoriaMongoRepository;
 
 @Service

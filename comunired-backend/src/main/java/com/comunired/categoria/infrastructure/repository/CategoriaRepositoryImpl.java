@@ -1,7 +1,8 @@
 package com.comunired.categoria.infrastructure.repository;
 
-import com.comunired.categoria.domain.entity.Categoria;
-import com.comunired.categoria.domain.repository.CategoriaRepository;
+import com.comunired.categoria.domain.ports.CategoriaRepository;
+import com.comunired.categoria.infrastructure.entity.Categoria;
+
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;

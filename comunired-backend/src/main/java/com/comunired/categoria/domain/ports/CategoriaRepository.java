@@ -1,9 +1,9 @@
-package com.comunired.categoria.domain.repository;
+package com.comunired.categoria.domain.ports;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.comunired.categoria.domain.entity.Categoria;
+import com.comunired.categoria.infrastructure.entity.Categoria;
 
 public interface CategoriaRepository {
 
