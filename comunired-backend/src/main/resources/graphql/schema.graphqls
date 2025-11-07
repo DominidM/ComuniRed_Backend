@@ -2,6 +2,9 @@
 # Schema GraphQL para ComuniRed (limpio)
 #########################
 
+scalar Date
+scalar DateTime
+
 # Tipos principales
 type Usuario {
   id: ID!
@@ -10,13 +13,14 @@ type Usuario {
   apellido: String!
   dni: String!
   numero_telefono: String
-  edad: Int
   sexo: String
   distrito: String
   codigo_postal: String
   direccion: String
   email: String!
   rol_id: ID!
+  fecha_nacimiento: Date
+  fecha_registro: DateTime
 }
 
 input UsuarioInput {
@@ -25,7 +29,6 @@ input UsuarioInput {
   apellido: String!
   dni: String!
   numero_telefono: String
-  edad: Int
   sexo: String
   distrito: String
   codigo_postal: String
@@ -33,6 +36,7 @@ input UsuarioInput {
   email: String!
   password: String
   rol_id: ID!
+  fecha_nacimiento: Date
 }
 
 type UsuarioPage {

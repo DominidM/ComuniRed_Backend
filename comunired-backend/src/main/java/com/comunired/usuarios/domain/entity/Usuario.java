@@ -5,6 +5,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Document(collection = "usuarios")
 public class Usuario {
@@ -15,13 +18,16 @@ public class Usuario {
     private String apellido;
     private String dni;
     private String numero_telefono;
-    private Integer edad;
+
     private String sexo;
     private String distrito;
     private String codigo_postal;
     private String direccion;
     private String email;
-    
+
+    private LocalDate fecha_nacimiento; 
+    private Instant  fecha_registro;
+
     @JsonIgnore
     private String password;
     private String rol_id;
@@ -67,12 +73,6 @@ public class Usuario {
     public void setNumero_telefono(String numero_telefono) {
         this.numero_telefono = numero_telefono;
     }
-    public Integer getEdad() {
-        return edad;
-    }
-    public void setEdad(Integer edad) {
-        this.edad = edad;
-    }
     public String getSexo() {
         return sexo;
     }
@@ -116,7 +116,7 @@ public class Usuario {
         this.rol_id = rol_id;
     }
 
-        public String getResetPasswordToken() {
+    public String getResetPasswordToken() {
         return resetPasswordToken;
     }
     
@@ -131,4 +131,16 @@ public class Usuario {
     public void setResetPasswordExpiry(LocalDateTime resetPasswordExpiry) {
         this.resetPasswordExpiry = resetPasswordExpiry;
     }
+
+    public LocalDate getFecha_nacimiento() { return fecha_nacimiento; }
+    public void setFecha_nacimiento(LocalDate fecha_nacimiento) { this.fecha_nacimiento = fecha_nacimiento; }
+
+    public Instant getFecha_registro() { 
+        return fecha_registro; 
+    }
+    
+    public void setFecha_registro(Instant fecha_registro) { 
+        this.fecha_registro = fecha_registro; 
+    }
+
 }

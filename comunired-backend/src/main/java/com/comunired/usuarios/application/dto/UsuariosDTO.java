@@ -1,6 +1,11 @@
 package com.comunired.usuarios.application.dto;
 
 import com.comunired.roles.application.dto.RolDTO;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+import java.time.OffsetDateTime;
+import java.time.Instant;
 
 public class UsuariosDTO {
     private String id;
@@ -9,16 +14,19 @@ public class UsuariosDTO {
     private String apellido;
     private String dni;
     private String numero_telefono;
-    private Integer edad;
     private String sexo;
     private String distrito;
     private String codigo_postal;
     private String direccion;
     private String email;
     private String rol_id;
+    
+    private LocalDate fecha_nacimiento;
+    private Instant fecha_registro;
 
     private RolDTO rol;
 
+    
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -36,9 +44,6 @@ public class UsuariosDTO {
 
     public String getNumero_telefono() { return numero_telefono; }
     public void setNumero_telefono(String numero_telefono) { this.numero_telefono = numero_telefono; }
-
-    public Integer getEdad() { return edad; }
-    public void setEdad(Integer edad) { this.edad = edad; }
 
     public String getSexo() { return sexo; }
     public void setSexo(String sexo) { this.sexo = sexo; }
@@ -60,4 +65,19 @@ public class UsuariosDTO {
 
     public RolDTO getRol() { return rol; }
     public void setRol(RolDTO rol) { this.rol = rol; }
+
+    public LocalDate getFecha_nacimiento() {
+        return fecha_nacimiento;
+    }
+    public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
+        this.fecha_nacimiento = fecha_nacimiento;
+    }
+
+    public Instant getFecha_registro() {
+        return fecha_registro;
+    }
+    public void setFecha_registro(Instant fecha_registro) {
+        this.fecha_registro = fecha_registro;
+    }
+    
 }
