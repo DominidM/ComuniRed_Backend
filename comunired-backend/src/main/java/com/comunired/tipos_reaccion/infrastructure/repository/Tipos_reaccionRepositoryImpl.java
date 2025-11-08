@@ -8,6 +8,10 @@ import org.springframework.stereotype.Repository;
 import com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion;
 import com.comunired.tipos_reaccion.domain.repository.Tipos_reaccionRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+
 @Repository
 public class Tipos_reaccionRepositoryImpl implements Tipos_reaccionRepository {
 
@@ -45,5 +49,10 @@ public class Tipos_reaccionRepositoryImpl implements Tipos_reaccionRepository {
     @Override
     public void eliminar(String id) {
         mongoRepository.deleteById(id);
+    }
+    
+    @Override
+    public Page<Tipos_reaccion> listarPaginado(Pageable pageable) {
+        return mongoRepository.findAll(pageable);
     }
 }

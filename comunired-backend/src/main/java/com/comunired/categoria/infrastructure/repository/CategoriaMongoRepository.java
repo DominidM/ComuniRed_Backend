@@ -8,8 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import com.comunired.categoria.infrastructure.entity.Categoria;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Repository
 public interface CategoriaMongoRepository extends MongoRepository<Categoria, String> {
     Optional<Categoria> findByNombre(String nombre);
     List<Categoria> findAllByActivoTrue();
+    Page<Categoria> findAll(Pageable pageable);
 }

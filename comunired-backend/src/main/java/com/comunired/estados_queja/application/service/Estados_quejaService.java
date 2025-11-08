@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import com.comunired.estados_queja.domain.entity.Estados_queja;
 import com.comunired.estados_queja.domain.repository.Estados_quejaRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 @Service
 public class Estados_quejaService {
 
@@ -15,17 +18,14 @@ public class Estados_quejaService {
         this.estadosQuejaRepository = estadosQuejaRepository;
     }
 
-    // Listar todos los estados
     public List<Estados_queja> listarEstados() {
         return estadosQuejaRepository.listar();
     }
 
-    // Buscar por nombre
     public Optional<Estados_queja> buscarPorNombre(String nombre) {
         return estadosQuejaRepository.buscarPorNombre(nombre);
     }
 
-    // Crear nuevo estado
     public Estados_queja crearEstado(String clave, String nombre, String descripcion, int orden) {
         Estados_queja estado = new Estados_queja();
         estado.setClave(clave);
@@ -35,7 +35,6 @@ public class Estados_quejaService {
         return estadosQuejaRepository.guardar(estado);
     }
 
-    // Actualizar estado existente
     public Estados_queja actualizarEstado(String id, String clave, String nombre, String descripcion, int orden) {
         Optional<Estados_queja> estadoOpt = estadosQuejaRepository.buscarPorId(id);
         if (estadoOpt.isPresent()) {
@@ -50,8 +49,13 @@ public class Estados_quejaService {
         }
     }
 
-    // Eliminar por id
     public void eliminarEstado(String id) {
         estadosQuejaRepository.eliminar(id);
     }
+
+    public Page<Estados_queja> listarEstadosQuejaPaginado(int page, int size) 
+    {
+        return estadosQuejaRepository.listarPaginado(PageRequest.of(page, size));
+    }
+
 }

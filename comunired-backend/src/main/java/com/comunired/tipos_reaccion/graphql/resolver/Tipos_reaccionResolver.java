@@ -15,6 +15,9 @@ import com.comunired.tipos_reaccion.application.dto.Tipos_reaccionDTO;
 import com.comunired.tipos_reaccion.application.service.Tipos_reaccionService;
 import com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 @Controller
 public class Tipos_reaccionResolver {
 
@@ -69,7 +72,6 @@ public class Tipos_reaccionResolver {
         }
     }
 
-    // 🔹 Actualizar
     @MutationMapping
     public Tipos_reaccionDTO actualizarTipoReaccion(@Argument String id, @Argument String key, @Argument String label, @Argument Boolean activo, @Argument Integer orden) {
         try {
@@ -81,7 +83,6 @@ public class Tipos_reaccionResolver {
         }
     }
 
-    // 🔹 Eliminar
     @MutationMapping
     public boolean eliminarTipoReaccion(@Argument String id) {
         try {
@@ -91,5 +92,14 @@ public class Tipos_reaccionResolver {
             logger.error("Error al eliminar tipo de reacción id={}", id, e);
             return false;
         }
+    }
+
+    @QueryMapping(name = "obtenerTipo_reaccion")
+    public Page<Tipos_reaccionDTO> obtenerTiposReaccion(@Argument int page, @Argument int size) {
+        Page<Tipos_reaccion> pageResult = tiposReaccionService.listarTiposReaccionPaginado(page, size);
+        List<Tipos_reaccionDTO> dtos = pageResult.getContent().stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
+        return new org.springframework.data.domain.PageImpl<>(dtos, pageResult.getPageable(), pageResult.getTotalElements());
     }
 }

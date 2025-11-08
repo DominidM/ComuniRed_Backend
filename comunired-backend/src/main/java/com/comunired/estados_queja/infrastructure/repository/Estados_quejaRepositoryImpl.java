@@ -5,6 +5,8 @@ import com.comunired.estados_queja.domain.repository.Estados_quejaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public class Estados_quejaRepositoryImpl implements Estados_quejaRepository {
@@ -43,5 +45,10 @@ public class Estados_quejaRepositoryImpl implements Estados_quejaRepository {
     @Override
     public void eliminar(String id) {
         mongoRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Estados_queja> listarPaginado(Pageable pageable) {
+        return mongoRepository.findAll(pageable);
     }
 }

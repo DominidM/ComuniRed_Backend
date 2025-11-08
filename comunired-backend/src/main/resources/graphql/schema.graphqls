@@ -73,6 +73,14 @@ type Categoria {
   activo: Boolean
 }
 
+type CategoriaPage {
+  content: [Categoria!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
 type Estados_queja {
   id: ID
   clave: String
@@ -81,12 +89,28 @@ type Estados_queja {
   orden: Int
 }
 
+type Estados_quejaPage {
+  content: [Estados_queja!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
 type Tipos_reaccion {
   id: ID!
   key: String!
   label: String!
   activo: Boolean!
   orden: Int!
+}
+
+type Tipos_reaccionPage{
+  content: [Tipos_reaccion!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
 }
 
 #########################
@@ -102,13 +126,16 @@ type Query {
   obtenerTodosLosRoles: [Rol!]!
   obtenerRolPorId(id: ID!): Rol
 
+  obtenerCategorias(page: Int!, size: Int!): CategoriaPage
   listarCategorias: [Categoria]
   buscarCategoriaPorNombre(nombre: String!): Categoria
 
+  obtenerEstados_queja(page: Int!, size: Int!): Estados_quejaPage
   listarEstados: [Estados_queja]
   buscarEstadoPorNombre(nombre: String!): Estados_queja
 
 
+  obtenerTipo_reaccion(page: Int!, size: Int!): Tipos_reaccionPage
   listarTiposReaccion: [Tipos_reaccion!]!
   obtenerTipoReaccionPorId(id: ID!): Tipos_reaccion
   buscarTipoReaccionPorLabel(label: String!): Tipos_reaccion

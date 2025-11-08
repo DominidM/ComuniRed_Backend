@@ -15,6 +15,10 @@ import com.comunired.categoria.application.dto.CategoriaDTO;
 import com.comunired.categoria.application.service.CategoriaService;
 import com.comunired.categoria.infrastructure.entity.Categoria;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
 @Controller
 public class CategoriaResolver {
 
@@ -94,4 +98,12 @@ public CategoriaDTO buscarCategoriaPorNombre(@Argument String nombre) {
             return false;
         }
     }
+
+    @QueryMapping(name = "obtenerCategorias")
+    public Page<CategoriaDTO> obtenerCategorias(@Argument int page, @Argument int size) {
+        Page<Categoria> pageResult = categoriaService.listarCategoriasPaginado(page, size);
+        List<CategoriaDTO> dtos = pageResult.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageResult.getPageable(), pageResult.getTotalElements());
+    }
+    
 }

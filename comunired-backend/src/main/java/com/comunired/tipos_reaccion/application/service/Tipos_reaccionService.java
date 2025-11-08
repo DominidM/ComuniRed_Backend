@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion;
 import com.comunired.tipos_reaccion.domain.repository.Tipos_reaccionRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+
 @Service
 public class Tipos_reaccionService {
 
@@ -49,6 +53,10 @@ public class Tipos_reaccionService {
 
     public void eliminarTipoReaccion(String id) {
         tiposReaccionRepository.eliminar(id);
+    }
+
+    public Page<Tipos_reaccion> listarTiposReaccionPaginado(int page, int size) {
+        return tiposReaccionRepository.listarPaginado(PageRequest.of(page, size));
     }
 
 }

@@ -3,6 +3,8 @@ package com.comunired.estados_queja.domain.repository;
 import java.util.List;
 import java.util.Optional;
 import com.comunired.estados_queja.domain.entity.Estados_queja;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface Estados_quejaRepository {
 
@@ -17,4 +19,7 @@ public interface Estados_quejaRepository {
     List<Estados_queja> listar();
 
     void eliminar(String id);
+
+    Page<Estados_queja> listarPaginado(Pageable pageable);
+
 }

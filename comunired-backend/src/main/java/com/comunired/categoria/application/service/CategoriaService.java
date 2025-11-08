@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import com.comunired.categoria.infrastructure.entity.Categoria;
 import com.comunired.categoria.infrastructure.repository.CategoriaMongoRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 @Service
 public class CategoriaService {
 
@@ -53,5 +56,9 @@ public class CategoriaService {
     // Eliminar por id
     public void eliminarCategoria(String id) {
         categoriaRepository.deleteById(id);
+    }
+
+    public Page<Categoria> listarCategoriasPaginado(int page, int size) {
+        return categoriaRepository.findAll(PageRequest.of(page, size));
     }
 }

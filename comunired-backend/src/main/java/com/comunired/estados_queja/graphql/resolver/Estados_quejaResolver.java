@@ -15,6 +15,8 @@ import com.comunired.estados_queja.application.dto.Estados_quejaDTO;
 import com.comunired.estados_queja.application.service.Estados_quejaService;
 import com.comunired.estados_queja.domain.entity.Estados_queja;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 @Controller
 public class Estados_quejaResolver {
 
@@ -96,4 +98,14 @@ public class Estados_quejaResolver {
             return false;
         }
     }
+
+    @QueryMapping(name = "obtenerEstados_queja")
+    public Page<Estados_quejaDTO> obtenerEstadosQueja(@Argument int page, @Argument int size) {
+        Page<Estados_queja> pageResult = estadosQuejaService.listarEstadosQuejaPaginado(page, size);
+        List<Estados_quejaDTO> dtos = pageResult.getContent().stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
+        return new org.springframework.data.domain.PageImpl<>(dtos, pageResult.getPageable(), pageResult.getTotalElements());
+    }
+
 }

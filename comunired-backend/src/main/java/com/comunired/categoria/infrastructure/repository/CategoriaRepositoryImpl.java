@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Repository
 public class CategoriaRepositoryImpl implements CategoriaRepository {
 
@@ -39,6 +42,11 @@ public class CategoriaRepositoryImpl implements CategoriaRepository {
     @Override
     public List<Categoria> listar() {
         return mongoRepository.findAll();
+    }
+
+    @Override
+    public Page<Categoria> listarPaginado(Pageable pageable) {
+        return mongoRepository.findAll(pageable);
     }
 
     @Override
