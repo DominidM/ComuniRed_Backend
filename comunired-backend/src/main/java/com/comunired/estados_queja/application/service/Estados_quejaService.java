@@ -58,4 +58,8 @@ public class Estados_quejaService {
         return estadosQuejaRepository.listarPaginado(PageRequest.of(page, size));
     }
 
+    public long contarTotalEstados() {
+        return estadosQuejaRepository.count();
+    }
+
 }

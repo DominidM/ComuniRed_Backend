@@ -108,4 +108,8 @@ public class Estados_quejaResolver {
         return new org.springframework.data.domain.PageImpl<>(dtos, pageResult.getPageable(), pageResult.getTotalElements());
     }
 
+    @QueryMapping(name = "contarEstadosQueja")
+    public int contarEstadosQueja() {
+        return (int) estadosQuejaService.contarTotalEstados();
+    }
 }

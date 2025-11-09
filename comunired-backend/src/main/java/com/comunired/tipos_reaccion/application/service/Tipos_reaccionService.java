@@ -58,5 +58,4 @@ public class Tipos_reaccionService {
     public Page<Tipos_reaccion> listarTiposReaccionPaginado(int page, int size) {
         return tiposReaccionRepository.listarPaginado(PageRequest.of(page, size));
     }
-
 }

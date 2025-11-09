@@ -47,6 +47,70 @@ type UsuarioPage {
   size: Int!
 }
 
+
+enum EstadoSeguimiento {
+  PENDIENTE
+  ACEPTADO
+  RECHAZADO
+}
+
+type Seguimiento {
+  id: ID!
+  seguidorId: ID!
+  seguidoId: ID!
+  estado: EstadoSeguimiento!
+  fechaSeguimiento: DateTime!
+  fechaRespuesta: DateTime
+  notificacionesActivas: Boolean!
+}
+
+type SeguimientoPage {
+  content: [Seguimiento!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+
+
+type Conversacion {
+  id: ID!
+  participante1_id: ID!
+  participante2_id: ID!
+  ultimo_mensaje: Mensaje
+  fecha_creacion: DateTime!
+  fecha_ultima_actividad: DateTime!
+}
+
+type Mensaje {
+  id: ID!
+  conversacion_id: ID!
+  emisor_id: ID!
+  contenido: String!
+  fecha_envio: DateTime!
+  leido: Boolean!
+  fecha_lectura: DateTime
+}
+
+type ConversacionPage {
+  content: [Conversacion!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+type MensajePage {
+  content: [Mensaje!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+
+
 type Rol {
   id: ID!
   nombre: String!
@@ -113,6 +177,11 @@ type Tipos_reaccionPage{
   size: Int!
 }
 
+type Subscription {
+  nuevoMensajeRecibido(usuario_id: ID!): Mensaje
+  mensajeLeido(conversacion_id: ID!): Mensaje
+}
+
 #########################
 # Queries
 #########################
@@ -133,12 +202,32 @@ type Query {
   obtenerEstados_queja(page: Int!, size: Int!): Estados_quejaPage
   listarEstados: [Estados_queja]
   buscarEstadoPorNombre(nombre: String!): Estados_queja
+  contarEstadosQueja: Int!
 
 
   obtenerTipo_reaccion(page: Int!, size: Int!): Tipos_reaccionPage
   listarTiposReaccion: [Tipos_reaccion!]!
   obtenerTipoReaccionPorId(id: ID!): Tipos_reaccion
   buscarTipoReaccionPorLabel(label: String!): Tipos_reaccion
+
+
+  seguidoresDe(usuarioId: ID!, page: Int!, size: Int!): SeguimientoPage
+  seguidosPor(usuarioId: ID!, page: Int!, size: Int!): SeguimientoPage
+
+  solicitudesPendientes(usuarioId: ID!, page: Int!, size: Int!): SeguimientoPage
+  solicitudesEnviadas(usuarioId: ID!, page: Int!, size: Int!): SeguimientoPage
+  estaSiguiendo(seguidorId: ID!, seguidoId: ID!): Boolean!
+  seSiguenMutuamente(usuarioId1: ID!, usuarioId2: ID!): Boolean!
+  
+  contarSeguidores(usuarioId: ID!): Int!
+  contarSeguidos(usuarioId: ID!): Int!
+
+
+  misConversaciones(page: Int!, size: Int!): ConversacionPage
+  obtenerConversacion(conversacion_id: ID!): Conversacion
+  buscarConversacionConUsuario(otro_usuario_id: ID!): Conversacion
+  mensajesDeConversacion(conversacion_id: ID!, page: Int!, size: Int!): MensajePage
+  contarMensajesNoLeidos(usuario_id: ID!): Int!
 }
   
 
@@ -172,8 +261,19 @@ type Mutation {
 
 
   crearTipoReaccion(key: String!, label: String!, activo: Boolean!, orden: Int!): Tipos_reaccion
-
   actualizarTipoReaccion(id: ID!, key: String!, label: String!, activo: Boolean!, orden: Int!): Tipos_reaccion
-
   eliminarTipoReaccion(id: ID!): Boolean
+
+
+  enviarSolicitudSeguimiento(seguidorId: ID!, seguidoId: ID!): Seguimiento
+  aceptarSolicitud(seguimientoId: ID!): Seguimiento
+  rechazarSolicitud(seguimientoId: ID!): Boolean!
+  cancelarSolicitud(seguimientoId: ID!): Boolean!
+  dejarDeSeguir(seguidorId: ID!, seguidoId: ID!): Boolean!
+
+
+  crearConversacion(usuarioId: ID!, otroUsuarioId: ID!): Conversacion
+  enviarMensaje(conversacion_id: ID!, contenido: String!): Mensaje
+  marcarMensajesComoLeidos(conversacion_id: ID!): Boolean!
+  eliminarConversacion(conversacion_id: ID!): Boolean!
 }

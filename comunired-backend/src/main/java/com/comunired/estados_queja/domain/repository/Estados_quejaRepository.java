@@ -22,4 +22,6 @@ public interface Estados_quejaRepository {
 
     Page<Estados_queja> listarPaginado(Pageable pageable);
 
+    long count();
+
 }

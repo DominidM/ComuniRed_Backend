@@ -51,4 +51,9 @@ public class Estados_quejaRepositoryImpl implements Estados_quejaRepository {
     public Page<Estados_queja> listarPaginado(Pageable pageable) {
         return mongoRepository.findAll(pageable);
     }
+
+    @Override
+    public long count() {
+        return mongoRepository.count();
+    }
 }
