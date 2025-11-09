@@ -1,26 +1,32 @@
 package com.comunired.mensajeria.domain.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class Conversacion {
     private String id;
     private String participante1Id;
     private String participante2Id;
     private String ultimoMensajeId;
-    private LocalDateTime fechaCreacion;
-    private LocalDateTime fechaUltimaActividad;
+    private Instant fechaCreacion;
+    private Instant fechaUltimaActividad;
 
     public Conversacion() {
-        this.fechaCreacion = LocalDateTime.now();
-        this.fechaUltimaActividad = LocalDateTime.now();
+        this.fechaCreacion = Instant.now();
+        this.fechaUltimaActividad = Instant.now();
     }
 
-    public Conversacion(String id, String participante1Id, String participante2Id) {
-        this.id = id;
-        this.participante1Id = participante1Id;
-        this.participante2Id = participante2Id;
-        this.fechaCreacion = LocalDateTime.now();
-        this.fechaUltimaActividad = LocalDateTime.now();
+    // ⭐ MÉTODOS AUXILIARES (AGRÉGALOS SI FALTAN)
+    public boolean esParticipante(String usuarioId) {
+        return participante1Id.equals(usuarioId) || participante2Id.equals(usuarioId);
+    }
+
+    public String getOtroParticipante(String usuarioId) {
+        if (participante1Id.equals(usuarioId)) {
+            return participante2Id;
+        } else if (participante2Id.equals(usuarioId)) {
+            return participante1Id;
+        }
+        return null;
     }
 
     // Getters y Setters
@@ -42,13 +48,13 @@ public class Conversacion {
         this.ultimoMensajeId = ultimoMensajeId; 
     }
     
-    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDateTime fechaCreacion) { 
+    public Instant getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(Instant fechaCreacion) { 
         this.fechaCreacion = fechaCreacion; 
     }
     
-    public LocalDateTime getFechaUltimaActividad() { return fechaUltimaActividad; }
-    public void setFechaUltimaActividad(LocalDateTime fechaUltimaActividad) { 
+    public Instant getFechaUltimaActividad() { return fechaUltimaActividad; }
+    public void setFechaUltimaActividad(Instant fechaUltimaActividad) { 
         this.fechaUltimaActividad = fechaUltimaActividad; 
     }
 }

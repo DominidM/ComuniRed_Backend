@@ -1,8 +1,12 @@
-package com.comunired.mensajeria.application.dto;
+package com.comunired.mensajeria.infrastructure.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 
-public class MensajeDTO {
+@Document(collection = "mensajes")
+public class MensajeModel {
+    @Id
     private String id;
     private String conversacionId;
     private String emisorId;
@@ -11,7 +15,7 @@ public class MensajeDTO {
     private Boolean leido;
     private Instant fechaLectura;
 
-    public MensajeDTO() {}
+    public MensajeModel() {}
 
     // Getters y Setters
     public String getId() { return id; }

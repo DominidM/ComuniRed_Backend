@@ -76,22 +76,24 @@ type SeguimientoPage {
 
 type Conversacion {
   id: ID!
-  participante1_id: ID!
-  participante2_id: ID!
-  ultimo_mensaje: Mensaje
-  fecha_creacion: DateTime!
-  fecha_ultima_actividad: DateTime!
+  participante1Id: ID!
+  participante2Id: ID!
+  ultimoMensaje: Mensaje
+  fechaCreacion: DateTime!
+  fechaUltimaActividad: DateTime!
 }
 
 type Mensaje {
   id: ID!
-  conversacion_id: ID!
-  emisor_id: ID!
+  conversacionId: ID!
+  emisorId: ID!
   contenido: String!
-  fecha_envio: DateTime!
+  fechaEnvio: DateTime!
   leido: Boolean!
-  fecha_lectura: DateTime
+  fechaLectura: DateTime
 }
+
+
 
 type ConversacionPage {
   content: [Conversacion!]!
@@ -223,11 +225,11 @@ type Query {
   contarSeguidos(usuarioId: ID!): Int!
 
 
-  misConversaciones(page: Int!, size: Int!): ConversacionPage
-  obtenerConversacion(conversacion_id: ID!): Conversacion
-  buscarConversacionConUsuario(otro_usuario_id: ID!): Conversacion
-  mensajesDeConversacion(conversacion_id: ID!, page: Int!, size: Int!): MensajePage
-  contarMensajesNoLeidos(usuario_id: ID!): Int!
+  misConversaciones(usuarioId: ID!, page: Int!, size: Int!): ConversacionPage
+  obtenerConversacion(conversacionId: ID!): Conversacion
+  buscarConversacionConUsuario(usuarioId: ID!, otroUsuarioId: ID!): Conversacion
+  mensajesDeConversacion(conversacionId: ID!, page: Int!, size: Int!): MensajePage
+  contarMensajesNoLeidos(conversacionId: ID!, usuarioId: ID!): Int!
 }
   
 
@@ -273,7 +275,8 @@ type Mutation {
 
 
   crearConversacion(usuarioId: ID!, otroUsuarioId: ID!): Conversacion
-  enviarMensaje(conversacion_id: ID!, contenido: String!): Mensaje
-  marcarMensajesComoLeidos(conversacion_id: ID!): Boolean!
-  eliminarConversacion(conversacion_id: ID!): Boolean!
+  enviarMensaje(conversacionId: ID!, emisorId: ID!, contenido: String!): Mensaje
+  marcarMensajesComoLeidos(conversacionId: ID!, usuarioId: ID!): Boolean!
+  eliminarConversacion(conversacionId: ID!, usuarioId: ID!): Boolean!
+
 }

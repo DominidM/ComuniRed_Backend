@@ -1,4 +1,4 @@
-package com.comunired.mensajeria.graphql.subscription;
+/*package com.comunired.mensajeria.graphql.subscription;
 
 import com.comunired.mensajeria.application.dto.MensajeDTO;
 import com.comunired.mensajeria.application.service.MensajeService;
@@ -23,4 +23,4 @@ public class MensajeSubscription {
     public Flux<MensajeDTO> mensajeLeido(@Argument("conversacion_id") String conversacionId) {
         return mensajeService.suscribirseALecturas(conversacionId);
     }
-}
+}*/

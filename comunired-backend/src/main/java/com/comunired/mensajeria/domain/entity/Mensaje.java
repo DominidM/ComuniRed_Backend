@@ -1,18 +1,18 @@
 package com.comunired.mensajeria.domain.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;  // ← IMPORTANTE: Instant
 
 public class Mensaje {
     private String id;
     private String conversacionId;
     private String emisorId;
     private String contenido;
-    private LocalDateTime fechaEnvio;
+    private Instant fechaEnvio;       // ← Instant
     private Boolean leido;
-    private LocalDateTime fechaLectura;
+    private Instant fechaLectura;     // ← Instant
 
     public Mensaje() {
-        this.fechaEnvio = LocalDateTime.now();
+        this.fechaEnvio = Instant.now();
         this.leido = false;
     }
 
@@ -20,11 +20,11 @@ public class Mensaje {
         this.conversacionId = conversacionId;
         this.emisorId = emisorId;
         this.contenido = contenido;
-        this.fechaEnvio = LocalDateTime.now();
+        this.fechaEnvio = Instant.now();
         this.leido = false;
     }
 
-    // Getters y Setters completos
+    // Getters y Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     
@@ -39,16 +39,16 @@ public class Mensaje {
     public String getContenido() { return contenido; }
     public void setContenido(String contenido) { this.contenido = contenido; }
     
-    public LocalDateTime getFechaEnvio() { return fechaEnvio; }
-    public void setFechaEnvio(LocalDateTime fechaEnvio) { 
+    public Instant getFechaEnvio() { return fechaEnvio; }
+    public void setFechaEnvio(Instant fechaEnvio) { 
         this.fechaEnvio = fechaEnvio; 
     }
     
     public Boolean getLeido() { return leido; }
     public void setLeido(Boolean leido) { this.leido = leido; }
     
-    public LocalDateTime getFechaLectura() { return fechaLectura; }
-    public void setFechaLectura(LocalDateTime fechaLectura) { 
+    public Instant getFechaLectura() { return fechaLectura; }
+    public void setFechaLectura(Instant fechaLectura) { 
         this.fechaLectura = fechaLectura; 
     }
 }

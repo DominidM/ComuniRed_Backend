@@ -1,16 +1,20 @@
-package com.comunired.mensajeria.application.dto;
+package com.comunired.mensajeria.infrastructure.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 
-public class ConversacionDTO {
+@Document(collection = "conversaciones")
+public class ConversacionModel {
+    @Id
     private String id;
     private String participante1Id;
     private String participante2Id;
-    private MensajeDTO ultimoMensaje;
+    private String ultimoMensajeId;
     private Instant fechaCreacion;
     private Instant fechaUltimaActividad;
 
-    public ConversacionDTO() {}
+    public ConversacionModel() {}
 
     // Getters y Setters
     public String getId() { return id; }
@@ -26,9 +30,9 @@ public class ConversacionDTO {
         this.participante2Id = participante2Id; 
     }
     
-    public MensajeDTO getUltimoMensaje() { return ultimoMensaje; }
-    public void setUltimoMensaje(MensajeDTO ultimoMensaje) { 
-        this.ultimoMensaje = ultimoMensaje; 
+    public String getUltimoMensajeId() { return ultimoMensajeId; }
+    public void setUltimoMensajeId(String ultimoMensajeId) { 
+        this.ultimoMensajeId = ultimoMensajeId; 
     }
     
     public Instant getFechaCreacion() { return fechaCreacion; }

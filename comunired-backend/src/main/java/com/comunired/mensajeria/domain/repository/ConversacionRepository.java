@@ -12,4 +12,5 @@ public interface ConversacionRepository {
     Optional<Conversacion> findByParticipantes(String userId1, String userId2);
     Page<Conversacion> findByUsuarioId(String usuarioId, Pageable pageable);
     void deleteById(String id);
+    boolean existsById(String id);
 }
