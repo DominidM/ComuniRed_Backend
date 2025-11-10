@@ -1,5 +1,7 @@
 package com.comunired.seguimientos.graphql.resolver;
 
+import com.comunired.seguimientos.application.dto.EstadoRelacionDTO;
+
 import com.comunired.seguimientos.application.dto.SeguimientoDTO;
 import com.comunired.seguimientos.application.service.SeguimientoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +103,13 @@ public class SeguimientoResolver {
     public Boolean dejarDeSeguir(@Argument String seguidorId,
                                   @Argument String seguidoId) {
         return seguimientoService.dejarDeSeguir(seguidorId, seguidoId);
+    }
+
+
+    @QueryMapping
+    public EstadoRelacionDTO estadoSeguimiento(@Argument String usuarioActualId,
+                                                @Argument String otroUsuarioId) {
+        return seguimientoService.obtenerEstadoRelacion(usuarioActualId, otroUsuarioId);
     }
 
     // ========== HELPER METHODS ==========

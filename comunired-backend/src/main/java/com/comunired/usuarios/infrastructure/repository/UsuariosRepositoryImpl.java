@@ -51,4 +51,19 @@ public class UsuariosRepositoryImpl implements UsuariosRepository {
     public long countByRolId(String rol_id) {
         return usuarioMongoRepository.countByRolId(rol_id); 
     }
+
+    @Override
+    public Page<Usuario> buscarPorTermino(String termino, Pageable pageable) {
+        return usuarioMongoRepository.buscarPorTermino(termino, pageable);
+    }
+
+    @Override
+    public Page<Usuario> buscarPorNombre(String nombre, Pageable pageable) {
+        return usuarioMongoRepository.buscarPorNombre(nombre, pageable);
+    }
+
+    @Override
+    public Page<Usuario> obtenerExcluyendoIds(List<String> excluirIds, Pageable pageable) {
+        return usuarioMongoRepository.findByIdNotIn(excluirIds, pageable);
+    }
 }

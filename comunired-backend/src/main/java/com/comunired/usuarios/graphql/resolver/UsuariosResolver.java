@@ -1,5 +1,6 @@
     package com.comunired.usuarios.graphql.resolver;
 
+
     import java.util.Collections;
     import java.util.List;
     import java.util.stream.Collectors;
@@ -21,9 +22,19 @@
     import com.comunired.usuarios.application.service.PasswordResetService;
     import com.comunired.usuarios.domain.entity.Usuario;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
     import java.time.LocalDateTime;
     import java.time.LocalDate;
     import java.time.Instant;
+
+    import java.util.Map;
+    import java.util.HashMap;
+    import java.util.Collections;
+
+    import org.springframework.web.multipart.MultipartFile;
+    import com.comunired.usuarios.infrastructure.cloudinary.CloudinaryService;
+    import org.springframework.beans.factory.annotation.Autowired;
 
 
     @Controller
@@ -34,6 +45,9 @@
         private final UsuariosService usuariosService;
         private final AuthService authService;
         private final PasswordResetService passwordResetService;
+
+        @Autowired
+        private CloudinaryService cloudinaryService;
 
         public UsuariosResolver(UsuariosService usuariosService, AuthService authService, PasswordResetService passwordResetService) {
             this.usuariosService = usuariosService;
@@ -323,6 +337,126 @@
                 return passwordResetService.cambiarPasswordConCodigo(email, codigo, nuevaPassword);
             } catch (Exception e) {
                 logger.error("Error en cambiarPasswordConCodigo para email: {}", email, e);
+                return false;
+            }
+        }
+
+
+        @QueryMapping
+        public Map<String, Object> buscarUsuarios(@Argument String termino,
+                                                @Argument int page,
+                                                @Argument int size) {
+            Page<UsuariosDTO> resultado = usuariosService.buscarUsuarios(termino, page, size);
+            return createPageResponse(resultado);
+        }
+
+        @QueryMapping
+        public Map<String, Object> buscarUsuariosPorNombre(@Argument String nombre,
+                                                            @Argument int page,
+                                                            @Argument int size) {
+            Page<UsuariosDTO> resultado = usuariosService.buscarPorNombre(nombre, page, size);
+            return createPageResponse(resultado);
+        }
+
+        @QueryMapping
+        public Map<String, Object> usuariosNoSeguidos(@Argument String usuarioId,
+                                                    @Argument int page,
+                                                    @Argument int size) {
+            Page<UsuariosDTO> resultado = usuariosService.obtenerUsuariosExcluyendo(
+                    Collections.singletonList(usuarioId), page, size);
+            return createPageResponse(resultado);
+        }
+
+        @QueryMapping
+        public Map<String, Object> usuariosSugeridos(@Argument String usuarioId,
+                                                    @Argument int page,
+                                                    @Argument int size) {
+            return usuariosNoSeguidos(usuarioId, page, size);
+        }
+
+        private Map<String, Object> createPageResponse(Page<UsuariosDTO> page) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", page.getContent());
+            response.put("totalElements", page.getTotalElements());
+            response.put("totalPages", page.getTotalPages());
+            response.put("number", page.getNumber());
+            response.put("size", page.getSize());
+            return response;
+        }
+
+
+
+        @MutationMapping
+        public String subirFotoPerfil(@Argument String usuarioId, 
+                                    @Argument MultipartFile archivo) {
+            try {
+                logger.info("📸 Subiendo foto de perfil para usuario: {}", usuarioId);
+                
+                // Buscar usuario
+                Usuario usuario = usuariosService.buscarPorId(usuarioId);
+                if (usuario == null) {
+                    logger.error("❌ Usuario no encontrado: {}", usuarioId);
+                    throw new IllegalArgumentException("Usuario no encontrado");
+                }
+                
+                // Eliminar foto anterior si existe
+                String fotoAnterior = usuario.getFoto_perfil();
+                if (fotoAnterior != null && fotoAnterior.contains("cloudinary.com")) {
+                    logger.info("🗑️ Eliminando foto anterior...");
+                    cloudinaryService.eliminarImagen(fotoAnterior);  // ← Llamada al service
+                }
+                
+                // Subir nueva imagen a Cloudinary
+                String nuevaUrl = cloudinaryService.subirImagen(archivo);  // ← Llamada al service
+                
+                // Actualizar usuario con nueva URL
+                usuario.setFoto_perfil(nuevaUrl);
+                usuariosService.guardarUsuario(usuario);
+                
+                logger.info("✅ Foto de perfil actualizada: {}", nuevaUrl);
+                return nuevaUrl;
+                
+            } catch (Exception e) {
+                logger.error("❌ Error subiendo foto de perfil: {}", e.getMessage(), e);
+                throw new RuntimeException("Error subiendo imagen: " + e.getMessage());
+            }
+        }
+
+        @MutationMapping
+        public Boolean eliminarFotoPerfil(@Argument String usuarioId) {
+            try {
+                logger.info("🗑️ Eliminando foto de perfil de usuario: {}", usuarioId);
+                
+                // Buscar usuario
+                Usuario usuario = usuariosService.buscarPorId(usuarioId);
+                if (usuario == null) {
+                    logger.error("❌ Usuario no encontrado: {}", usuarioId);
+                    return false;
+                }
+                
+                String fotoActual = usuario.getFoto_perfil();
+                if (fotoActual == null || fotoActual.isEmpty()) {
+                    logger.warn("⚠️ Usuario no tiene foto de perfil");
+                    return false;
+                }
+                
+                // Eliminar de Cloudinary si es URL de Cloudinary
+                if (fotoActual.contains("cloudinary.com")) {
+                    boolean eliminado = cloudinaryService.eliminarImagen(fotoActual);  // ← Llamada al service
+                    if (!eliminado) {
+                        logger.warn("⚠️ No se pudo eliminar de Cloudinary, continuando...");
+                    }
+                }
+                
+                // Limpiar campo en usuario
+                usuario.setFoto_perfil(null);
+                usuariosService.guardarUsuario(usuario);
+                
+                logger.info("✅ Foto de perfil eliminada");
+                return true;
+                
+            } catch (Exception e) {
+                logger.error("❌ Error eliminando foto de perfil: {}", e.getMessage(), e);
                 return false;
             }
         }

@@ -4,6 +4,7 @@
 
 scalar Date
 scalar DateTime
+scalar Upload
 
 # Tipos principales
 type Usuario {
@@ -179,6 +180,15 @@ type Tipos_reaccionPage{
   size: Int!
 }
 
+type EstadoRelacion {
+  estaSiguiendo: Boolean!
+  teSigue: Boolean!
+  seguimientoMutuo: Boolean!
+  solicitudPendiente: Boolean!
+  solicitudEnviada: Boolean!
+}
+
+
 type Subscription {
   nuevoMensajeRecibido(usuario_id: ID!): Mensaje
   mensajeLeido(conversacion_id: ID!): Mensaje
@@ -230,6 +240,18 @@ type Query {
   buscarConversacionConUsuario(usuarioId: ID!, otroUsuarioId: ID!): Conversacion
   mensajesDeConversacion(conversacionId: ID!, page: Int!, size: Int!): MensajePage
   contarMensajesNoLeidos(conversacionId: ID!, usuarioId: ID!): Int!
+
+
+
+
+  buscarUsuarios(termino: String!, page: Int!, size: Int!): UsuarioPage
+  buscarUsuariosPorNombre(nombre: String!, page: Int!, size: Int!): UsuarioPage
+  
+  usuariosSugeridos(usuarioId: ID!, page: Int!, size: Int!): UsuarioPage
+  usuariosNoSeguidos(usuarioId: ID!, page: Int!, size: Int!): UsuarioPage
+  
+  estadoSeguimiento(usuarioActualId: ID!, otroUsuarioId: ID!): EstadoRelacion
+
 }
   
 
@@ -279,4 +301,7 @@ type Mutation {
   marcarMensajesComoLeidos(conversacionId: ID!, usuarioId: ID!): Boolean!
   eliminarConversacion(conversacionId: ID!, usuarioId: ID!): Boolean!
 
+
+  subirFotoPerfil(usuarioId: ID!, archivo: Upload!): String!
+  eliminarFotoPerfil(usuarioId: ID!): Boolean
 }

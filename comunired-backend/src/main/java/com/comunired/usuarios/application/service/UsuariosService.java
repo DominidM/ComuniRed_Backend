@@ -1,5 +1,6 @@
 package com.comunired.usuarios.application.service;
 
+import com.comunired.usuarios.application.dto.UsuariosDTO;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,4 +101,39 @@ public class UsuariosService {
         logger.info("Login - Password match: {}", match);
         return match ? usuario : null;
     }
+
+    public Page<UsuariosDTO> buscarUsuarios(String termino, int page, int size) {
+        return usuariosRepository.buscarPorTermino(termino, PageRequest.of(page, size))
+                .map(this::toDTO);
+    }
+
+    public Page<UsuariosDTO> buscarPorNombre(String nombre, int page, int size) {
+        return usuariosRepository.buscarPorNombre(nombre, PageRequest.of(page, size))
+                .map(this::toDTO);
+    }
+
+    public Page<UsuariosDTO> obtenerUsuariosExcluyendo(List<String> excluirIds, int page, int size) {
+        return usuariosRepository.obtenerExcluyendoIds(excluirIds, PageRequest.of(page, size))
+                .map(this::toDTO);
+    }
+
+        private UsuariosDTO toDTO(Usuario usuario) {
+        UsuariosDTO dto = new UsuariosDTO();
+        dto.setId(usuario.getId());
+        dto.setFoto_perfil(usuario.getFoto_perfil());
+        dto.setNombre(usuario.getNombre());
+        dto.setApellido(usuario.getApellido());
+        dto.setDni(usuario.getDni());
+        dto.setNumero_telefono(usuario.getNumero_telefono());
+        dto.setSexo(usuario.getSexo());
+        dto.setDistrito(usuario.getDistrito());
+        dto.setCodigo_postal(usuario.getCodigo_postal());
+        dto.setDireccion(usuario.getDireccion());
+        dto.setEmail(usuario.getEmail());
+        dto.setRol_id(usuario.getRol_id());
+        dto.setFecha_nacimiento(usuario.getFecha_nacimiento());
+        dto.setFecha_registro(usuario.getFecha_registro());
+        return dto;
+    }
+
 }

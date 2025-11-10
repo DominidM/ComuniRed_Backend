@@ -15,4 +15,9 @@ public interface UsuariosRepository {
     Usuario findById(String id);
     void deleteById(String id);
     long countByRolId(String rol_id);
+
+    Page<Usuario> buscarPorTermino(String termino, Pageable pageable);
+    Page<Usuario> buscarPorNombre(String nombre, Pageable pageable);
+    Page<Usuario> obtenerExcluyendoIds(List<String> excluirIds, Pageable pageable);
+
 }

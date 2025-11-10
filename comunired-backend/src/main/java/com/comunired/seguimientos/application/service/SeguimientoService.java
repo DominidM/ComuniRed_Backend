@@ -1,4 +1,5 @@
 package com.comunired.seguimientos.application.service;
+import com.comunired.seguimientos.application.dto.EstadoRelacionDTO;
 
 import com.comunired.seguimientos.application.dto.SeguimientoDTO;
 import com.comunired.seguimientos.domain.entity.Seguimiento;
@@ -141,5 +142,34 @@ public class SeguimientoService {
         dto.setFechaRespuesta(entity.getFechaRespuesta());
         dto.setNotificacionesActivas(entity.getNotificacionesActivas());
         return dto;
+    }
+
+    public EstadoRelacionDTO obtenerEstadoRelacion(String usuarioActualId, String otroUsuarioId) {
+        EstadoRelacionDTO estado = new EstadoRelacionDTO();
+        
+        // ¿Tú lo sigues?
+        boolean estaSiguiendo = seguimientoRepository.existsBySeguidorIdAndSeguidoIdAndEstado(
+                usuarioActualId, otroUsuarioId, EstadoSeguimiento.ACEPTADO);
+        estado.setEstaSiguiendo(estaSiguiendo);
+        
+        // ¿Él te sigue?
+        boolean teSigue = seguimientoRepository.existsBySeguidorIdAndSeguidoIdAndEstado(
+                otroUsuarioId, usuarioActualId, EstadoSeguimiento.ACEPTADO);
+        estado.setTeSigue(teSigue);
+        
+        // ¿Seguimiento mutuo?
+        estado.setSeguimientoMutuo(estaSiguiendo && teSigue);
+        
+        // ¿Tienes solicitud pendiente de él?
+        boolean solicitudPendiente = seguimientoRepository.existsBySeguidorIdAndSeguidoIdAndEstado(
+                otroUsuarioId, usuarioActualId, EstadoSeguimiento.PENDIENTE);
+        estado.setSolicitudPendiente(solicitudPendiente);
+        
+        // ¿Le enviaste solicitud?
+        boolean solicitudEnviada = seguimientoRepository.existsBySeguidorIdAndSeguidoIdAndEstado(
+                usuarioActualId, otroUsuarioId, EstadoSeguimiento.PENDIENTE);
+        estado.setSolicitudEnviada(solicitudEnviada);
+        
+        return estado;
     }
 }
