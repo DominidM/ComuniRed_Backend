@@ -1,11 +1,13 @@
 package com.comunired.seguimientos.application.service;
-import com.comunired.seguimientos.application.dto.EstadoRelacionDTO;
 
+import com.comunired.seguimientos.application.dto.EstadoRelacionDTO;
 import com.comunired.seguimientos.application.dto.SeguimientoDTO;
 import com.comunired.seguimientos.domain.entity.Seguimiento;
 import com.comunired.seguimientos.domain.entity.Seguimiento.EstadoSeguimiento;
 import com.comunired.seguimientos.domain.repository.SeguimientoRepository;
+import com.comunired.mensajeria.application.service.ConversacionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy; // ← AGREGAR ESTE IMPORT
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,17 @@ import java.time.Instant;
 @Service
 public class SeguimientoService {
     
-    @Autowired
-    private SeguimientoRepository seguimientoRepository;
+    private final SeguimientoRepository seguimientoRepository;
+    private final ConversacionService conversacionService;
+
+    // Constructor con @Lazy
+    public SeguimientoService(
+        SeguimientoRepository seguimientoRepository,
+        @Lazy ConversacionService conversacionService // Ahora sí reconoce @Lazy
+    ) {
+        this.seguimientoRepository = seguimientoRepository;
+        this.conversacionService = conversacionService;
+    }
 
     @Transactional
     public SeguimientoDTO enviarSolicitud(String seguidorId, String seguidoId) {
@@ -51,6 +62,22 @@ public class SeguimientoService {
         seguimiento.setFechaRespuesta(Instant.now());
         
         Seguimiento saved = seguimientoRepository.save(seguimiento);
+
+        try {
+            String seguidorId = seguimiento.getSeguidorId();
+            String seguidoId = seguimiento.getSeguidoId();
+            
+            boolean esMutuo = seSiguenMutuamente(seguidorId, seguidoId);
+            
+            if (esMutuo) {
+                conversacionService.crearConversacion(seguidorId, seguidoId);
+                System.out.println("✅ Conversación creada automáticamente entre: " 
+                    + seguidorId + " y " + seguidoId);
+            }
+        } catch (Exception e) {
+            System.err.println("⚠️ Error al crear conversación automática: " + e.getMessage());
+        }
+
         return toDTO(saved);
     }
 
@@ -83,6 +110,18 @@ public class SeguimientoService {
     @Transactional
     public boolean dejarDeSeguir(String seguidorId, String seguidoId) {
         seguimientoRepository.deleteBySeguidorIdAndSeguidoId(seguidorId, seguidoId);
+        
+        try {
+            boolean sigueMutuo = seSiguenMutuamente(seguidorId, seguidoId);
+            
+            if (!sigueMutuo) {
+                System.out.println("⚠️ Seguimiento mutuo terminado entre: " 
+                    + seguidorId + " y " + seguidoId + " - Conversación bloqueada para nuevos mensajes");
+            }
+        } catch (Exception e) {
+            System.err.println("Error verificando seguimiento: " + e.getMessage());
+        }
+        
         return true;
     }
 
@@ -147,25 +186,20 @@ public class SeguimientoService {
     public EstadoRelacionDTO obtenerEstadoRelacion(String usuarioActualId, String otroUsuarioId) {
         EstadoRelacionDTO estado = new EstadoRelacionDTO();
         
-        // ¿Tú lo sigues?
         boolean estaSiguiendo = seguimientoRepository.existsBySeguidorIdAndSeguidoIdAndEstado(
                 usuarioActualId, otroUsuarioId, EstadoSeguimiento.ACEPTADO);
         estado.setEstaSiguiendo(estaSiguiendo);
         
-        // ¿Él te sigue?
         boolean teSigue = seguimientoRepository.existsBySeguidorIdAndSeguidoIdAndEstado(
                 otroUsuarioId, usuarioActualId, EstadoSeguimiento.ACEPTADO);
         estado.setTeSigue(teSigue);
         
-        // ¿Seguimiento mutuo?
         estado.setSeguimientoMutuo(estaSiguiendo && teSigue);
         
-        // ¿Tienes solicitud pendiente de él?
         boolean solicitudPendiente = seguimientoRepository.existsBySeguidorIdAndSeguidoIdAndEstado(
                 otroUsuarioId, usuarioActualId, EstadoSeguimiento.PENDIENTE);
         estado.setSolicitudPendiente(solicitudPendiente);
         
-        // ¿Le enviaste solicitud?
         boolean solicitudEnviada = seguimientoRepository.existsBySeguidorIdAndSeguidoIdAndEstado(
                 usuarioActualId, otroUsuarioId, EstadoSeguimiento.PENDIENTE);
         estado.setSolicitudEnviada(solicitudEnviada);
