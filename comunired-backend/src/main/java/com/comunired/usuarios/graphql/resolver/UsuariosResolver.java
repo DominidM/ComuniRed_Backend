@@ -23,7 +23,7 @@
     import com.comunired.usuarios.domain.entity.Usuario;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.beans.factory.annotation.Autowired;
     import java.time.LocalDateTime;
     import java.time.LocalDate;
     import java.time.Instant;
@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
     import com.comunired.usuarios.infrastructure.cloudinary.CloudinaryService;
     import org.springframework.beans.factory.annotation.Autowired;
 
+    import java.time.Duration;
 
     @Controller
     public class UsuariosResolver {
@@ -151,6 +152,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
             dto.setFecha_nacimiento(fecha_nacimiento);
             dto.setFecha_registro(fecha_registro);
+            dto.setUltimaActividad(usuario.getUltimaActividad());
 
             return dto;
         }
@@ -458,6 +460,30 @@ import org.springframework.beans.factory.annotation.Autowired;
             } catch (Exception e) {
                 logger.error("❌ Error eliminando foto de perfil: {}", e.getMessage(), e);
                 return false;
+            }
+        }
+
+        @MutationMapping
+        public String inicializarActividades() {
+            try {
+                // ✅ Usar el service en lugar del repository
+                List<Usuario> usuarios = usuariosService.obtenerTodosLosUsuarios();
+                int actualizados = 0;
+                Instant ahora = Instant.now();
+                
+                for (Usuario usuario : usuarios) {
+                    if (usuario.getUltimaActividad() == null) {
+                        usuario.setUltimaActividad(ahora);
+                        usuariosService.guardarUsuario(usuario); // ✅ Usar el service
+                        actualizados++;
+                    }
+                }
+                
+                return "✅ Actualizados " + actualizados + " usuarios con ultimaActividad";
+                
+            } catch (Exception e) {
+                logger.error("Error inicializando actividades", e);
+                return "❌ Error: " + e.getMessage();
             }
         }
     }

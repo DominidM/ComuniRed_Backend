@@ -22,6 +22,8 @@ type Usuario {
   rol_id: ID!
   fecha_nacimiento: Date
   fecha_registro: DateTime
+  ultimaActividad: DateTime
+  estaEnLinea: Boolean
 }
 
 input UsuarioInput {
@@ -242,8 +244,6 @@ type Query {
   contarMensajesNoLeidos(conversacionId: ID!, usuarioId: ID!): Int!
 
 
-
-
   buscarUsuarios(termino: String!, page: Int!, size: Int!): UsuarioPage
   buscarUsuariosPorNombre(nombre: String!, page: Int!, size: Int!): UsuarioPage
   
@@ -304,4 +304,6 @@ type Mutation {
 
   subirFotoPerfil(usuarioId: ID!, archivo: Upload!): String!
   eliminarFotoPerfil(usuarioId: ID!): Boolean
+
+  inicializarActividades: String!
 }

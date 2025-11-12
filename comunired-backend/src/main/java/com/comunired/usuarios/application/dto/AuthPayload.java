@@ -1,14 +1,10 @@
 package com.comunired.usuarios.application.dto;
 
-import com.comunired.usuarios.domain.entity.Usuario;
-
 public class AuthPayload {
     private String token;
-    private Usuario usuario;
+    private UsuariosDTO usuario;
 
-    public AuthPayload() {}
-
-    public AuthPayload(String token, Usuario usuario) {
+    public AuthPayload(String token, UsuariosDTO usuario) {
         this.token = token;
         this.usuario = usuario;
     }
@@ -21,11 +17,11 @@ public class AuthPayload {
         this.token = token;
     }
 
-    public Usuario getUsuario() {
+    public UsuariosDTO getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(UsuariosDTO usuario) {
         this.usuario = usuario;
     }
 }

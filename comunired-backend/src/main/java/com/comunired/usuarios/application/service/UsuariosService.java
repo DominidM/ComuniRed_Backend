@@ -28,8 +28,6 @@ public class UsuariosService {
         logger.info("[guardarUsuario] Intentando guardar usuario: email={}, nombre={}, fecha_nacimiento={}, fecha_registro={}",
             usuario.getEmail(), usuario.getNombre(), usuario.getFecha_nacimiento(), usuario.getFecha_registro());
 
-        // ❌ REMOVER: No calcular edad porque el campo no existe
-        // La edad se puede calcular en el frontend si es necesario
 
         if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$")) {
             String hashedPassword = passwordEncoder.encode(usuario.getPassword());
@@ -117,7 +115,17 @@ public class UsuariosService {
                 .map(this::toDTO);
     }
 
-        private UsuariosDTO toDTO(Usuario usuario) {
+    public void actualizarUltimaActividad(String usuarioId) {
+        Usuario usuario = usuariosRepository.findById(usuarioId);
+        if (usuario == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+        
+        usuario.setUltimaActividad(Instant.now());
+        usuariosRepository.save(usuario);
+    }
+
+        public UsuariosDTO toDTO(Usuario usuario) {
         UsuariosDTO dto = new UsuariosDTO();
         dto.setId(usuario.getId());
         dto.setFoto_perfil(usuario.getFoto_perfil());
@@ -133,6 +141,7 @@ public class UsuariosService {
         dto.setRol_id(usuario.getRol_id());
         dto.setFecha_nacimiento(usuario.getFecha_nacimiento());
         dto.setFecha_registro(usuario.getFecha_registro());
+        dto.setUltimaActividad(usuario.getUltimaActividad());
         return dto;
     }
 
