@@ -196,6 +196,74 @@ type Subscription {
   mensajeLeido(conversacion_id: ID!): Mensaje
 }
 
+
+
+
+type Queja {
+  id: ID!
+  titulo: String!
+  descripcion: String!
+  usuario: Usuario!
+  categoria: Categoria!
+  estado: Estados_queja
+  ubicacion: String
+  imagen_url: String
+  fecha_creacion: DateTime!
+  fecha_actualizacion: DateTime!
+  evidence: [Evidencia!]!
+  votes: VotesData!
+  reactions: ReactionsData!
+  comments: [Comentario!]!
+  commentsCount: Int!
+  canVote: Boolean!
+  userVote: String
+}
+
+type VotesData {
+  yes: Int!
+  no: Int!
+  total: Int!
+}
+
+type ReactionsData {
+  counts: ReactionCounts!
+  userReaction: String
+  total: Int!
+}
+
+type ReactionCounts {
+  like: Int
+  love: Int
+  wow: Int
+  helpful: Int
+  dislike: Int
+  report: Int
+}
+
+type Reaccion {
+  id: ID!
+  queja_id: ID!
+  usuario: Usuario!
+  tipoReaccion: Tipos_reaccion!
+  fecha_reaccion: DateTime!
+}
+
+type Comentario {
+  id: ID!
+  queja_id: ID!
+  author: Usuario!
+  texto: String!
+  fecha_creacion: DateTime!
+}
+
+type Evidencia {
+  id: ID!
+  queja_id: ID!
+  url: String!
+  tipo: String!
+  fecha_subida: DateTime!
+}
+
 #########################
 # Queries
 #########################
@@ -252,6 +320,20 @@ type Query {
   
   estadoSeguimiento(usuarioActualId: ID!, otroUsuarioId: ID!): EstadoRelacion
 
+
+
+  obtenerQuejas(usuarioActualId: ID!): [Queja!]!
+  obtenerQuejaPorId(id: ID!, usuarioActualId: ID!): Queja
+  quejasPorUsuario(usuarioId: ID!, usuarioActualId: ID!): [Queja!]!
+  
+  reaccionesPorQueja(quejaId: ID!): [Reaccion!]!
+  usuariosPorReaccion(quejaId: ID!, tipoReaccion: String!): [Usuario!]!
+  
+  comentariosPorQueja(quejaId: ID!): [Comentario!]!
+  comentariosPorUsuario(usuarioId: ID!): [Comentario!]!
+  contarComentarios(quejaId: ID!): Int!
+  
+  evidenciasPorQueja(quejaId: ID!): [Evidencia!]!
 }
   
 
@@ -306,4 +388,22 @@ type Mutation {
   eliminarFotoPerfil(usuarioId: ID!): Boolean
 
   inicializarActividades: String!
+
+
+
+  crearQueja(titulo: String!, descripcion: String!, categoriaId: ID!, ubicacion: String, imagen: Upload, usuarioId: ID!): Queja!
+  actualizarQueja(id: ID!, titulo: String, descripcion: String, categoriaId: ID, estadoId: ID, ubicacion: String, imagen_url: String): Queja!
+  eliminarQueja(id: ID!): Boolean!
+  
+  # Reacciones
+  toggleReaccion(quejaId: ID!, tipoReaccion: String!, usuarioId: ID!): ReactionsData!
+  
+  # Comentarios
+  agregarComentario(quejaId: ID!, usuarioId: ID!, texto: String!): Comentario!
+  eliminarComentario(id: ID!, usuarioId: ID!): Boolean!
+  
+  # Evidencias
+  subirEvidencia(quejaId: ID!, archivo: Upload!, tipo: String): Evidencia!
+  eliminarEvidencia(id: ID!): Boolean!
+
 }

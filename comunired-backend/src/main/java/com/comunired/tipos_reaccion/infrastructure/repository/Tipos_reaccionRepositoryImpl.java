@@ -11,7 +11,6 @@ import com.comunired.tipos_reaccion.domain.repository.Tipos_reaccionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-
 @Repository
 public class Tipos_reaccionRepositoryImpl implements Tipos_reaccionRepository {
 
@@ -54,5 +53,10 @@ public class Tipos_reaccionRepositoryImpl implements Tipos_reaccionRepository {
     @Override
     public Page<Tipos_reaccion> listarPaginado(Pageable pageable) {
         return mongoRepository.findAll(pageable);
+    }
+
+    @Override
+    public Optional<Tipos_reaccion> buscarPorKey(String key) {
+        return mongoRepository.findByKey(key);
     }
 }

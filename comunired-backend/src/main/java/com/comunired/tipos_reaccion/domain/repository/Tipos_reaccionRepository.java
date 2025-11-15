@@ -17,6 +17,8 @@ public interface Tipos_reaccionRepository {
 
     Optional<Tipos_reaccion> buscarPorLabel(String label);
 
+    Optional<Tipos_reaccion> buscarPorKey(String key);
+
     List<Tipos_reaccion> listar();
 
     void eliminar(String id);
