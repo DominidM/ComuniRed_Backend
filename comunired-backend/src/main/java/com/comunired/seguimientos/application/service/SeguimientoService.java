@@ -7,7 +7,7 @@ import com.comunired.seguimientos.domain.entity.Seguimiento.EstadoSeguimiento;
 import com.comunired.seguimientos.domain.repository.SeguimientoRepository;
 import com.comunired.mensajeria.application.service.ConversacionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy; // ← AGREGAR ESTE IMPORT
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,10 +21,10 @@ public class SeguimientoService {
     private final SeguimientoRepository seguimientoRepository;
     private final ConversacionService conversacionService;
 
-    // Constructor con @Lazy
+
     public SeguimientoService(
         SeguimientoRepository seguimientoRepository,
-        @Lazy ConversacionService conversacionService // Ahora sí reconoce @Lazy
+        @Lazy ConversacionService conversacionService
     ) {
         this.seguimientoRepository = seguimientoRepository;
         this.conversacionService = conversacionService;

@@ -5,6 +5,7 @@
 scalar Date
 scalar DateTime
 scalar Upload
+scalar Long
 
 # Tipos principales
 type Usuario {
@@ -213,7 +214,7 @@ type Queja {
   evidence: [Evidencia!]!
   votes: VotesData!
   reactions: ReactionsData!
-  comments: [Comentario!]!
+  comments: [Comentarios!]!
   commentsCount: Int!
   canVote: Boolean!
   userVote: String
@@ -248,13 +249,15 @@ type Reaccion {
   fecha_reaccion: DateTime!
 }
 
-type Comentario {
-  id: ID!
-  queja_id: ID!
-  author: Usuario!
-  texto: String!
-  fecha_creacion: DateTime!
+type Comentarios {
+    id: ID!
+    queja_id: ID!
+    texto: String!
+    fecha_creacion: String!
+    fecha_modificacion: String
+    author: Usuario
 }
+
 
 type Evidencia {
   id: ID!
@@ -329,9 +332,15 @@ type Query {
   reaccionesPorQueja(quejaId: ID!): [Reaccion!]!
   usuariosPorReaccion(quejaId: ID!, tipoReaccion: String!): [Usuario!]!
   
-  comentariosPorQueja(quejaId: ID!): [Comentario!]!
-  comentariosPorUsuario(usuarioId: ID!): [Comentario!]!
-  contarComentarios(quejaId: ID!): Int!
+
+    comentariosPorQueja(quejaId: ID!): [Comentarios!]!
+    comentariosPorUsuario(usuarioId: ID!): [Comentarios!]!
+    contarComentarios(quejaId: ID!): Long!
+    buscarComentario(id: ID!): Comentarios
+    buscarComentariosPorTexto(texto: String!, usuarioId: ID!): [Comentarios!]!
+
+    buscarComentariosPorUsuario(usuarioId: ID!): [Comentarios]
+
   
   evidenciasPorQueja(quejaId: ID!): [Evidencia!]!
 }
@@ -399,8 +408,9 @@ type Mutation {
   toggleReaccion(quejaId: ID!, tipoReaccion: String!, usuarioId: ID!): ReactionsData!
   
   # Comentarios
-  agregarComentario(quejaId: ID!, usuarioId: ID!, texto: String!): Comentario!
-  eliminarComentario(id: ID!, usuarioId: ID!): Boolean!
+    agregarComentario(quejaId: ID!, usuarioId: ID!, texto: String!): Comentarios!
+    editarComentario(id: ID!, usuarioId: ID!, texto: String!): Comentarios!
+    eliminarComentario(id: ID!, usuarioId: ID!): Boolean!
   
   # Evidencias
   subirEvidencia(quejaId: ID!, archivo: Upload!, tipo: String): Evidencia!

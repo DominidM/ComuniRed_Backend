@@ -12,6 +12,7 @@ public class ComentariosModel {
     private String usuario_id;
     private String texto;
     private Instant fecha_creacion;
+    private Instant fecha_modificacion;
 
     public ComentariosModel() {}
 
@@ -29,4 +30,7 @@ public class ComentariosModel {
 
     public Instant getFecha_creacion() { return fecha_creacion; }
     public void setFecha_creacion(Instant fecha_creacion) { this.fecha_creacion = fecha_creacion; }
+
+    public Instant getFecha_modificacion() { return fecha_modificacion; }
+    public void setFecha_modificacion(Instant fecha_modificacion) { this.fecha_modificacion = fecha_modificacion; }
 }

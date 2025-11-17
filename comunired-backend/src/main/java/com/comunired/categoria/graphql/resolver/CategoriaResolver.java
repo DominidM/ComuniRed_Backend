@@ -51,8 +51,7 @@ public class CategoriaResolver {
 
     @QueryMapping
     public CategoriaDTO obtenerCategoriaPorId(@Argument String id) {
-        // CategoriaService no expone un método "buscarPorId" públicamente según tu servicio,
-        // así que consultamos la lista y buscamos por id (si prefieres, añade buscarPorId en el service).
+
         Optional<Categoria> opt = categoriaService.listarCategorias()
                 .stream()
                 .filter(c -> c != null && id != null && id.equals(c.getId()))
@@ -63,7 +62,7 @@ public class CategoriaResolver {
     @QueryMapping(name = "buscarCategoriaPorNombre")
 public CategoriaDTO buscarCategoriaPorNombre(@Argument String nombre) {
     Optional<Categoria> opt = categoriaService.buscarPorNombre(nombre);
-    return opt.map(this::toDTO).orElse(null); // Devuelve null si no encuentra
+    return opt.map(this::toDTO).orElse(null);
 }
 
     @MutationMapping

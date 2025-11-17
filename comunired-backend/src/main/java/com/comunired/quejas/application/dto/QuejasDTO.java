@@ -8,7 +8,7 @@ import com.comunired.comentarios.application.dto.ComentariosDTO;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;  // ✅ AGREGAR ESTE IMPORT
+import java.util.Map;
 
 public class QuejasDTO {
     private String id;
@@ -30,8 +30,6 @@ public class QuejasDTO {
     private String userVote;
 
     public QuejasDTO() {}
-
-    // ========== GETTERS Y SETTERS ==========
     
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -84,11 +82,7 @@ public class QuejasDTO {
     public String getUserVote() { return userVote; }
     public void setUserVote(String userVote) { this.userVote = userVote; }
 
-    // ========== CLASES INTERNAS ==========
 
-    /**
-     * VotesDTO - Votos (accept/reject)
-     */
     public static class VotesDTO {
         private Long yes;
         private Long no;
@@ -106,9 +100,7 @@ public class QuejasDTO {
         public void setTotal(Long total) { this.total = total; }
     }
 
-    /**
-     * ✅ ReactionsDTO - Reacciones con Map
-     */
+
     public static class ReactionsDTO {
         private Map<String, Long> counts;
         private String userReaction;

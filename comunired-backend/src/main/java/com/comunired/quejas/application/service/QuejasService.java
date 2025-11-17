@@ -140,7 +140,6 @@ public class QuejasService {
         dto.setFecha_creacion(queja.getFecha_creacion());
         dto.setFecha_actualizacion(queja.getFecha_actualizacion());
 
-        // Usuario
         if (queja.getUsuario_id() != null) {
             Usuario usuario = usuariosRepository.findById(queja.getUsuario_id());
             if (usuario != null) {
@@ -153,7 +152,6 @@ public class QuejasService {
             }
         }
 
-        // Categoria
         if (queja.getCategoria_id() != null) {
             Optional<Categoria> categoriaOpt = categoriaRepository.buscarPorId(queja.getCategoria_id());
             if (categoriaOpt.isPresent()) {
@@ -166,7 +164,6 @@ public class QuejasService {
             }
         }
 
-        // Estado
         if (queja.getEstado_id() != null) {
             Optional<Estados_queja> estadoOpt = estadosRepository.buscarPorId(queja.getEstado_id());
             if (estadoOpt.isPresent()) {
@@ -179,7 +176,6 @@ public class QuejasService {
             }
         }
 
-        // Evidence
         List<EvidenciasDTO> evidencias = evidenciasRepository.findByQuejaId(queja.getId())
                 .stream()
                 .map(ev -> {
@@ -192,13 +188,12 @@ public class QuejasService {
                 .collect(Collectors.toList());
         dto.setEvidence(evidencias);
 
-        // Votes (reacciones tipo accept/reject)
+
         dto.setVotes(calculateVotes(queja.getId(), currentUserId));
 
-        // Reactions (like, love, wow, etc.)
+
         dto.setReactions(calculateReactions(queja.getId(), currentUserId));
 
-        // Comments
         List<ComentariosDTO> comentarios = comentariosRepository.findByQuejaId(queja.getId())
                 .stream()
                 .map(com -> {
@@ -207,7 +202,6 @@ public class QuejasService {
                     comDTO.setTexto(com.getTexto());
                     comDTO.setFecha_creacion(com.getFecha_creacion());
                     
-                    // Author en comentarios (líneas 215-228)
                     if (com.getUsuario_id() != null) {
                         Usuario author = usuariosRepository.findById(com.getUsuario_id());
                         if (author != null) {
@@ -227,7 +221,6 @@ public class QuejasService {
         dto.setComments(comentarios);
         dto.setCommentsCount(comentarios.size());
 
-        // CanVote
         dto.setCanVote(!hasUserVoted(queja.getId(), currentUserId));
 
         return dto;
@@ -236,7 +229,6 @@ public class QuejasService {
     private VotesDTO calculateVotes(String quejaId, String currentUserId) {
         VotesDTO votes = new VotesDTO();
         
-        // Buscar tipos de reaccion "accept" y "reject"
         Optional<String> acceptIdOpt = tiposReaccionRepository.buscarPorKey("accept")
                 .map(t -> t.getId());
         Optional<String> rejectIdOpt = tiposReaccionRepository.buscarPorKey("reject")
@@ -262,7 +254,7 @@ public class QuejasService {
     private ReactionsDTO calculateReactions(String quejaId, String currentUserId) {
         ReactionsDTO reactions = new ReactionsDTO();
         
-        // Excluir accept/reject del conteo de reacciones
+
         List<String> excludeKeys = Arrays.asList("accept", "reject");
         List<Reacciones> allReactions = reaccionesRepository.findByQuejaId(quejaId);
         

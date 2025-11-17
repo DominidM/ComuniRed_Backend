@@ -1,15 +1,15 @@
 package com.comunired.mensajeria.domain.entity;
 
-import java.time.Instant;  // ← IMPORTANTE: Instant
+import java.time.Instant;
 
 public class Mensaje {
     private String id;
     private String conversacionId;
     private String emisorId;
     private String contenido;
-    private Instant fechaEnvio;       // ← Instant
+    private Instant fechaEnvio;
     private Boolean leido;
-    private Instant fechaLectura;     // ← Instant
+    private Instant fechaLectura;
 
     public Mensaje() {
         this.fechaEnvio = Instant.now();

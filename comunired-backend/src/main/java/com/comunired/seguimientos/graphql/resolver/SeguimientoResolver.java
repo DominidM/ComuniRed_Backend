@@ -20,7 +20,6 @@ public class SeguimientoResolver {
     @Autowired
     private SeguimientoService seguimientoService;
 
-    // ========== QUERIES ==========
     
     @QueryMapping
     public Map<String, Object> seguidoresDe(@Argument String usuarioId,
@@ -76,7 +75,6 @@ public class SeguimientoResolver {
         return (int) seguimientoService.contarSeguidos(usuarioId);
     }
 
-    // ========== MUTATIONS ==========
     
     @MutationMapping
     public SeguimientoDTO enviarSolicitudSeguimiento(@Argument String seguidorId,
@@ -112,7 +110,6 @@ public class SeguimientoResolver {
         return seguimientoService.obtenerEstadoRelacion(usuarioActualId, otroUsuarioId);
     }
 
-    // ========== HELPER METHODS ==========
     
     private Map<String, Object> createPageResponse(Page<SeguimientoDTO> page) {
         Map<String, Object> response = new HashMap<>();

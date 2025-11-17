@@ -93,8 +93,6 @@ public class SeguimientoRepositoryImpl implements SeguimientoRepository {
     public long countBySeguidorIdAndEstado(String seguidorId, EstadoSeguimiento estado) {
         return mongoRepository.countBySeguidorIdAndEstado(seguidorId, estado.toString());
     }
-
-    // ========== Métodos de mapeo ==========
     
     private SeguimientoModel toModel(Seguimiento entity) {
         SeguimientoModel model = new SeguimientoModel();

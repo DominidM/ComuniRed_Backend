@@ -13,4 +13,6 @@ public interface ComentariosRepository {
     long countByQuejaId(String quejaId);
     void deleteById(String id);
     boolean existsById(String id);
+
+    
 }

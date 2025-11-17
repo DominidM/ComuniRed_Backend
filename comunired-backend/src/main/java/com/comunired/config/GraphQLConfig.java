@@ -60,13 +60,12 @@ public class GraphQLConfig {
 
         return wiringBuilder -> wiringBuilder
             .scalar(ExtendedScalars.Date)
+            .scalar(ExtendedScalars.GraphQLLong)
             .scalar(instantScalar)
-            .scalar(uploadScalar());  // ← Ya lo tienes, ahora agrega el método abajo
+            .scalar(uploadScalar());
     }
 
-    /**
-     * Scalar personalizado para Upload (MultipartFile)
-     */
+
     private GraphQLScalarType uploadScalar() {
         return GraphQLScalarType.newScalar()
                 .name("Upload")

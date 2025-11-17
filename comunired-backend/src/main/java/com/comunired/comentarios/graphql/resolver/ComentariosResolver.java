@@ -15,8 +15,6 @@ public class ComentariosResolver {
     @Autowired
     private ComentariosService comentariosService;
 
-    // ========== QUERIES ==========
-    
     @QueryMapping
     public List<ComentariosDTO> comentariosPorQueja(@Argument String quejaId) {
         return comentariosService.findByQuejaId(quejaId);
@@ -32,8 +30,16 @@ public class ComentariosResolver {
         return comentariosService.countByQuejaId(quejaId);
     }
 
-    // ========== MUTATIONS ==========
-    
+    @QueryMapping
+    public ComentariosDTO buscarComentario(@Argument String id) {
+        return comentariosService.findById(id);
+    }
+
+    @QueryMapping
+    public List<ComentariosDTO> buscarComentariosPorTexto(@Argument String texto, @Argument String usuarioId) {
+        return comentariosService.searchByText(texto, usuarioId);
+    }
+
     @MutationMapping
     public ComentariosDTO agregarComentario(@Argument String quejaId, 
                                            @Argument String usuarioId, 
@@ -42,7 +48,19 @@ public class ComentariosResolver {
     }
 
     @MutationMapping
+    public ComentariosDTO editarComentario(@Argument String id, 
+                                          @Argument String usuarioId, 
+                                          @Argument String texto) {
+        return comentariosService.update(id, usuarioId, texto);
+    }
+
+    @MutationMapping
     public Boolean eliminarComentario(@Argument String id, @Argument String usuarioId) {
         return comentariosService.delete(id, usuarioId);
+    }
+
+    @QueryMapping
+    public List<ComentariosDTO> buscarComentariosPorUsuario(@Argument String usuarioId) {
+        return comentariosService.buscarComentariosPorUsuarioId(usuarioId);
     }
 }

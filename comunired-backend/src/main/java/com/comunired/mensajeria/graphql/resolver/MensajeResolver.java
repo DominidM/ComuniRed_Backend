@@ -18,7 +18,6 @@ public class MensajeResolver {
     @Autowired
     private MensajeService mensajeService;
 
-    // ========== QUERIES ==========
     
     @QueryMapping
     public Map<String, Object> mensajesDeConversacion(@Argument String conversacionId,
@@ -34,7 +33,6 @@ public class MensajeResolver {
         return (int) mensajeService.contarNoLeidos(conversacionId, usuarioId);
     }
 
-    // ========== MUTATIONS ==========
     
     @MutationMapping
     public MensajeDTO enviarMensaje(@Argument String conversacionId,
@@ -49,7 +47,6 @@ public class MensajeResolver {
         return mensajeService.marcarComoLeidos(conversacionId, usuarioId);
     }
 
-    // ========== HELPER METHODS ==========
     
     private Map<String, Object> createPageResponse(Page<MensajeDTO> page) {
         Map<String, Object> response = new HashMap<>();

@@ -8,6 +8,7 @@ public class Comentarios {
     private String usuario_id;
     private String texto;
     private Instant fecha_creacion;
+    private Instant fecha_modificacion;
 
     public Comentarios() {
         this.fecha_creacion = Instant.now();
@@ -27,4 +28,7 @@ public class Comentarios {
 
     public Instant getFecha_creacion() { return fecha_creacion; }
     public void setFecha_creacion(Instant fecha_creacion) { this.fecha_creacion = fecha_creacion; }
+
+    public Instant getFecha_modificacion() { return fecha_modificacion; }
+    public void setFecha_modificacion(Instant fecha_modificacion) { this.fecha_modificacion = fecha_modificacion; }
 }

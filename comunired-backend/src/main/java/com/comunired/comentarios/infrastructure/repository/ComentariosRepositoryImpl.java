@@ -73,8 +73,11 @@ public class ComentariosRepositoryImpl implements ComentariosRepository {
         model.setUsuario_id(entity.getUsuario_id());
         model.setTexto(entity.getTexto());
         model.setFecha_creacion(entity.getFecha_creacion());
+        model.setFecha_modificacion(entity.getFecha_modificacion());
         return model;
     }
+
+    
 
     private Comentarios toEntity(ComentariosModel model) {
         Comentarios entity = new Comentarios();
@@ -83,6 +86,7 @@ public class ComentariosRepositoryImpl implements ComentariosRepository {
         entity.setUsuario_id(model.getUsuario_id());
         entity.setTexto(model.getTexto());
         entity.setFecha_creacion(model.getFecha_creacion());
+        entity.setFecha_modificacion(model.getFecha_modificacion());
         return entity;
     }
 }

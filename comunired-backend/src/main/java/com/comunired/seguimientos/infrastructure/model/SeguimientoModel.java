@@ -14,14 +14,13 @@ public class SeguimientoModel {
     private String id;
     private String seguidorId;
     private String seguidoId;
-    private String estado;  // PENDIENTE, ACEPTADO, RECHAZADO
+    private String estado;
     private Instant fechaSeguimiento;
     private Instant fechaRespuesta;
     private Boolean notificacionesActivas;
 
     public SeguimientoModel() {}
 
-    // Getters y Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     

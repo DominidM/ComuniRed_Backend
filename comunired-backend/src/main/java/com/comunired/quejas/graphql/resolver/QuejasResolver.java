@@ -17,7 +17,6 @@ public class QuejasResolver {
     @Autowired
     private QuejasService quejasService;
 
-    // ========== QUERIES ==========
 
     @QueryMapping
     public List<QuejasDTO> obtenerQuejas(@Argument String usuarioActualId) {
@@ -48,7 +47,6 @@ public class QuejasResolver {
         System.out.println("  - Título: " + titulo);
         System.out.println("  - Usuario: " + usuarioId);
         
-        // ✅ NO PASAR imagen al service
         return quejasService.create(titulo, descripcion, categoriaId, ubicacion, usuarioId);
     }
 

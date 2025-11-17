@@ -15,7 +15,6 @@ public class Conversacion {
         this.fechaUltimaActividad = Instant.now();
     }
 
-    // ⭐ MÉTODOS AUXILIARES (AGRÉGALOS SI FALTAN)
     public boolean esParticipante(String usuarioId) {
         return participante1Id.equals(usuarioId) || participante2Id.equals(usuarioId);
     }
