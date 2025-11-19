@@ -12,6 +12,9 @@ public interface ReaccionesRepository {
     Optional<Reacciones> findByQuejaIdAndUsuarioId(String quejaId, String usuarioId);
     Optional<Reacciones> findByQuejaIdAndUsuarioIdAndTipoReaccionId(String quejaId, String usuarioId, String tipoReaccionId);
     long countByQuejaIdAndTipoReaccionId(String quejaId, String tipoReaccionId);
+    
+    long countByUsuarioId(String usuarioId);
+    
     void deleteById(String id);
     void delete(Reacciones reaccion);
     boolean existsById(String id);

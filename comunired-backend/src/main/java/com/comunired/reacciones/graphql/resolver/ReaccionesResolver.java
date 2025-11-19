@@ -28,10 +28,17 @@ public class ReaccionesResolver {
         return reaccionesService.getUsersByReactionType(quejaId, tipoReaccion);
     }
 
+    @QueryMapping
+    public Long contarReaccionesPorUsuario(@Argument String usuarioId) {
+        return reaccionesService.contarReaccionesPorUsuario(usuarioId);
+    }
+
+
     @MutationMapping
     public ReactionsDTO toggleReaccion(@Argument String quejaId, 
                                        @Argument String tipoReaccion, 
                                        @Argument String usuarioId) {
         return reaccionesService.toggleReaction(quejaId, tipoReaccion, usuarioId);
     }
+
 }

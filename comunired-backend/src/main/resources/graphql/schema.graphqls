@@ -341,7 +341,8 @@ type Query {
 
     buscarComentariosPorUsuario(usuarioId: ID!): [Comentarios]
 
-  
+  contarReaccionesPorUsuario(usuarioId: ID!): Int!
+
   evidenciasPorQueja(quejaId: ID!): [Evidencia!]!
 }
   

@@ -29,7 +29,7 @@ public class ReaccionesRepositoryImpl implements ReaccionesRepository {
 
     @Override
     public List<Reacciones> findByQuejaId(String quejaId) {
-        return mongoRepository.findByQuejaId(quejaId)  // ✅ CORREGIDO
+        return mongoRepository.findByQuejaId(quejaId)
                 .stream()
                 .map(this::toEntity)
                 .collect(Collectors.toList());
@@ -37,7 +37,7 @@ public class ReaccionesRepositoryImpl implements ReaccionesRepository {
 
     @Override
     public List<Reacciones> findByUsuarioId(String usuarioId) {
-        return mongoRepository.findByUsuarioId(usuarioId)  // ✅ CORREGIDO
+        return mongoRepository.findByUsuarioId(usuarioId)
                 .stream()
                 .map(this::toEntity)
                 .collect(Collectors.toList());
@@ -45,19 +45,24 @@ public class ReaccionesRepositoryImpl implements ReaccionesRepository {
 
     @Override
     public Optional<Reacciones> findByQuejaIdAndUsuarioId(String quejaId, String usuarioId) {
-        return mongoRepository.findByQuejaIdAndUsuarioId(quejaId, usuarioId)  // ✅ CORREGIDO
+        return mongoRepository.findByQuejaIdAndUsuarioId(quejaId, usuarioId)
                 .map(this::toEntity);
     }
 
     @Override
     public Optional<Reacciones> findByQuejaIdAndUsuarioIdAndTipoReaccionId(String quejaId, String usuarioId, String tipoReaccionId) {
-        return mongoRepository.findByQuejaIdAndUsuarioIdAndTipoReaccionId(quejaId, usuarioId, tipoReaccionId)  // ✅ CORREGIDO
+        return mongoRepository.findByQuejaIdAndUsuarioIdAndTipoReaccionId(quejaId, usuarioId, tipoReaccionId)
                 .map(this::toEntity);
     }
 
     @Override
     public long countByQuejaIdAndTipoReaccionId(String quejaId, String tipoReaccionId) {
-        return mongoRepository.countByQuejaIdAndTipoReaccionId(quejaId, tipoReaccionId);  // ✅ CORREGIDO
+        return mongoRepository.countByQuejaIdAndTipoReaccionId(quejaId, tipoReaccionId);
+    }
+
+    @Override
+    public long countByUsuarioId(String usuarioId) {
+        return mongoRepository.countByUsuarioId(usuarioId);
     }
 
     @Override

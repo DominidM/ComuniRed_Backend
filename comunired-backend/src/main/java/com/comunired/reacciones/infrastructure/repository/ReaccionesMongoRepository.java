@@ -25,4 +25,6 @@ public interface ReaccionesMongoRepository extends MongoRepository<ReaccionesMod
     @Query(value = "{ 'queja_id': ?0, 'tipo_reaccion_id': ?1 }", count = true)
     long countByQuejaIdAndTipoReaccionId(String quejaId, String tipoReaccionId);
     
+    @Query(value = "{ 'usuario_id': ?0 }", count = true)
+    long countByUsuarioId(String usuarioId);
 }

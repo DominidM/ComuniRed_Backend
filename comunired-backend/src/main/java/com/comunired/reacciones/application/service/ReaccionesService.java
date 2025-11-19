@@ -28,9 +28,6 @@ public class ReaccionesService {
     @Autowired
     private Tipos_reaccionRepository tiposReaccionRepository;
 
-    /**
-     * ✅ TOGGLE REACCIÓN - Retorna ReactionsDTO con estructura correcta
-     */
     public ReactionsDTO toggleReaction(String quejaId, String tipoReaccionKey, String usuarioId) {
         // Buscar el tipo de reacción por key
         Optional<String> tipoReaccionIdOpt = tiposReaccionRepository.buscarPorKey(tipoReaccionKey)
@@ -152,7 +149,9 @@ public class ReaccionesService {
 
 
 
-
+    public long contarReaccionesPorUsuario(String usuarioId) {
+        return reaccionesRepository.countByUsuarioId(usuarioId);
+    }
 
     private ReaccionesDTO toDTO(Reacciones reaccion) {
         ReaccionesDTO dto = new ReaccionesDTO();
