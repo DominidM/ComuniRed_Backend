@@ -64,6 +64,14 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    env:
+      # Mapear secrets a env para usarlos en 'if'
+      AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_APP_NAME: comunired-backend   # <-- cambia si tu App Service tiene otro nombre
 
     steps:
       - name: Download artifact
@@ -72,35 +80,35 @@ jobs:
           name: backend-jar
           path: ./artifact
 
-      # ========== OPTION A: Publish Profile (recommended) ==========
+      # Opción A (recomendada): Publish Profile
       - name: Deploy to Azure Web App (Publish Profile)
-        if: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE != '' }}
+        if: ${{ env.AZURE_WEBAPP_PUBLISH_PROFILE != '' }}
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'comunired-backend'                 # <-- cambia si tu App Service tiene otro nombre
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: './artifact'                         # contiene target/*.jar
-
-      # ========== OPTION B: Service Principal auth ==========
-      - name: Azure Login (Service Principal)
-        if: ${{ secrets.AZURE_CLIENT_ID && secrets.AZURE_TENANT_ID && secrets.AZURE_SUBSCRIPTION_ID && secrets.AZURE_CLIENT_SECRET && secrets.AZURE_WEBAPP_PUBLISH_PROFILE == '' }}
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-
-      - name: Deploy to Azure Web App (Service Principal)
-        if: ${{ secrets.AZURE_CLIENT_ID && secrets.AZURE_TENANT_ID && secrets.AZURE_SUBSCRIPTION_ID && secrets.AZURE_CLIENT_SECRET && secrets.AZURE_WEBAPP_PUBLISH_PROFILE == '' }}
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'comunired-backend'                 # <-- ajusta nombre si es distinto
+          app-name: ${{ env.AZURE_APP_NAME }}
+          publish-profile: ${{ env.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: './artifact'
 
-      # Fallback: error claro si no hay credenciales configuradas
+      # Opción B: Service Principal
+      - name: Azure Login (Service Principal)
+        if: ${{ env.AZURE_WEBAPP_PUBLISH_PROFILE == '' && env.AZURE_CLIENT_ID != '' && env.AZURE_TENANT_ID != '' && env.AZURE_SUBSCRIPTION_ID != '' && env.AZURE_CLIENT_SECRET != '' }}
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ env.AZURE_CLIENT_SECRET }}
+
+      - name: Deploy to Azure Web App (Service Principal)
+        if: ${{ env.AZURE_WEBAPP_PUBLISH_PROFILE == '' && env.AZURE_CLIENT_ID != '' && env.AZURE_TENANT_ID != '' && env.AZURE_SUBSCRIPTION_ID != '' && env.AZURE_CLIENT_SECRET != '' }}
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_APP_NAME }}
+          package: './artifact'
+
+      # Falla con mensaje claro si no hay credenciales
       - name: Fail if no credentials configured
-        if: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE == '' && ( !(secrets.AZURE_CLIENT_ID && secrets.AZURE_TENANT_ID && secrets.AZURE_SUBSCRIPTION_ID && secrets.AZURE_CLIENT_SECRET) ) }}
+        if: ${{ env.AZURE_WEBAPP_PUBLISH_PROFILE == '' && ( env.AZURE_CLIENT_ID == '' || env.AZURE_TENANT_ID == '' || env.AZURE_SUBSCRIPTION_ID == '' || env.AZURE_CLIENT_SECRET == '' ) }}
         run: |
           echo "No credentials configured for deploy."
           echo "- Set AZURE_WEBAPP_PUBLISH_PROFILE (recommended), OR"
