@@ -1,63 +1,66 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy JAR app to Azure Web App - comunired-backend
+name: Build and deploy Comunired backend
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Java version
+      - name: Show repo tree (debug)
+        run: |
+          echo "Workspace: $GITHUB_WORKSPACE"
+          pwd
+          ls -la
+
+      - name: Set up JDK 17 (Temurin)
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'microsoft'
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: Cache Maven local repo
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
 
-      - name: Upload artifact for deployment job
+      - name: Build with Maven (skip tests — remove -DskipTests to run tests)
+        working-directory: .
+        run: mvn -B clean package -DskipTests
+
+      - name: Upload built JAR
         uses: actions/upload-artifact@v4
         with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          name: backend-jar
+          path: target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-  
+      contents: read
+
     steps:
-      - name: Download artifact from build job
+      - name: Download built JAR
         uses: actions/download-artifact@v4
         with:
-          name: java-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F3A3D3F3494340F1A02E6A5A814BBF5C }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F9A9CF77F21245E6BF56B91005469EBA }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5451A3918E244F14B9F87F08531A793A }}
+          name: backend-jar
+          path: ./artifact
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Deploy to Azure Web App (using Publish Profile)
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'comunired-backend'
-          slot-name: 'Production'
-          package: '*.jar'
-          
+          app-name: 'comunired-backend'                      # <- Cambia por el nombre real de tu App Service
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: './artifact'                              # contiene target/*.jar
