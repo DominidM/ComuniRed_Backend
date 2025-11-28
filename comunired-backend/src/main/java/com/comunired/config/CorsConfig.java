@@ -15,7 +15,13 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        
+        // ✅ AGREGADO: origen de Azure
+        config.setAllowedOrigins(Arrays.asList(
+            "http://localhost:4200",
+            "https://proud-beach-0e393570f.3.azurestaticapps.net"
+        ));
+        
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setMaxAge(3600L);

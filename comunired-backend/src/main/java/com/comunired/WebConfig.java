@@ -15,7 +15,10 @@ public class WebConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/graphql")
-                        .allowedOrigins("http://localhost:4200")
+                        .allowedOrigins(
+                            "http://localhost:4200",
+                            "https://proud-beach-0e393570f.3.azurestaticapps.net"  // ✅ AGREGADO
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
