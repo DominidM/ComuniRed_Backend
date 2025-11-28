@@ -16,7 +16,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         
-        // ✅ AGREGADO: origen de Azure
+        // ✅ Ambos orígenes permitidos
         config.setAllowedOrigins(Arrays.asList(
             "http://localhost:4200",
             "https://proud-beach-0e393570f.3.azurestaticapps.net"
