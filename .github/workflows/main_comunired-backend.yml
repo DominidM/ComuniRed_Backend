@@ -68,10 +68,12 @@ jobs:
     env:
       # NOMBRE EXACTO de tu App Service
       AZURE_APP_NAME: comunired-backend
-      # Secrets estándar (crea estos en GitHub → Settings → Secrets → Actions)
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Mapea aquí TUS secrets ya existentes (pon los nombres completos tal cual aparecen en GitHub)
+      # Reemplaza los PLACEHOLDERS por los nombres reales:
+      AZURE_CLIENT_ID: ${{ secrets.AZUREAPPSERVICE_CLIENTID_REEMPLAZA_POR_TU_NOMBRE_COMPLETO }}
+      AZURE_TENANT_ID: ${{ secrets.AZUREAPPSERVICE_TENANTID_REEMPLAZA_POR_TU_NOMBRE_COMPLETO }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_REEMPLAZA_POR_TU_NOMBRE_COMPLETO }}
 
     steps:
       - name: Download artifact
@@ -85,14 +87,14 @@ jobs:
           missing=0
           for v in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
             if [ -z "${!v}" ]; then
-              echo "::error::Falta el secret $v"
+              echo "::error::Falta el secret $v (revisa los nombres en env: del job deploy)"
               missing=1
             else
               echo "OK: $v presente"
             fi
           done
           if [ "$missing" -ne 0 ]; then
-            echo "Configura los secrets requeridos y vuelve a ejecutar."
+            echo "Configura/mapea los secrets requeridos y vuelve a ejecutar."
             exit 1
           fi
 
