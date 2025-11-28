@@ -1,4 +1,4 @@
-name: Build and deploy Comunired backend (auto-detect pom)
+name: Build and deploy Comunired backend (Java 21)
 
 on:
   push:
@@ -15,41 +15,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Debug - show workspace root and tree
+      - name: Debug - list repo
         run: |
-          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "Workspace: $GITHUB_WORKSPACE"
           pwd
-          echo "Top-level files:"
-          ls -la
-          echo "Full repo tree (depth 3):"
-          find . -maxdepth 3 -print || true
+          find . -maxdepth 3 -print
 
       - name: Detect pom.xml and set project root
         id: detect
         run: |
-          PACKAGE_POM=$(find . -maxdepth 6 -type f -name pom.xml -print -quit || true)
-          if [ -z "$PACKAGE_POM" ]; then
-            echo "ERROR: No se encontró pom.xml en el repo (buscado hasta depth 6)."
-            echo "Repo top-level (depth 2):"
-            find . -maxdepth 2 -print
+          POM=$(find . -maxdepth 6 -type f -name pom.xml -print -quit || true)
+          if [ -z "$POM" ]; then
+            echo "ERROR: No pom.xml found."
+            find . -maxdepth 3 -print
             exit 1
           fi
-          PROJECT_ROOT=$(dirname "$PACKAGE_POM")
-          # normalize path
-          PROJECT_ROOT="${PROJECT_ROOT#./}"
-          echo "Found pom.xml at: $PACKAGE_POM"
-          echo "project_root=$PROJECT_ROOT" >> "$GITHUB_OUTPUT"
+          ROOT=$(dirname "$POM")
+          ROOT="${ROOT#./}"
+          echo "Found pom.xml at: $POM"
+          echo "project_root=$ROOT" >> "$GITHUB_OUTPUT"
 
-      - name: Show detected project root contents
-        run: |
-          echo "Detected project root: '${{ steps.detect.outputs.project_root }}'"
-          ls -la "${{ steps.detect.outputs.project_root }}" || true
-
-      - name: Setup JDK 17
+      - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
+
+      - name: Show Java/Maven versions
+        working-directory: ${{ steps.detect.outputs.project_root }}
+        run: |
+          java -version
+          mvn -v
 
       - name: Cache Maven repo
         uses: actions/cache@v4
@@ -59,14 +55,32 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
 
-      - name: Build with Maven (in detected project root)
+      - name: Build with Maven (skip tests)
         working-directory: ${{ steps.detect.outputs.project_root }}
-        run: |
-          echo "Running mvn in $(pwd)"
-          mvn -B -V clean package -DskipTests
+        run: mvn -B clean package -DskipTests
 
-      - name: Upload built artifact
+      - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
           name: backend-jar
           path: ${{ steps.detect.outputs.project_root }}/target/*.jar
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jar
+          path: ./artifact
+
+      - name: Deploy to Azure Web App (Publish Profile)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'comunired-backend'   # <-- cambia al nombre exacto de tu App Service
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: './artifact'
