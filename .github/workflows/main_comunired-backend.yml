@@ -24,9 +24,11 @@ jobs:
           pwd
           echo "Files in current directory:"
           ls -la
+          echo "Files in comunired-backend:"
+          ls -la comunired-backend/
           echo "Checking for pom.xml:"
-          if [ -f pom.xml ]; then
-            echo "✓ pom.xml found"
+          if [ -f comunired-backend/pom.xml ]; then
+            echo "✓ pom.xml found in comunired-backend/"
           else
             echo "✗ pom.xml NOT found"
             exit 1
@@ -48,12 +50,13 @@ jobs:
 
       - name: Build with Maven (skip tests)
         run: mvn -B -V clean package -DskipTests
+        working-directory: ./comunired-backend
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
           name: backend-jar
-          path: target/*.jar
+          path: comunired-backend/target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
