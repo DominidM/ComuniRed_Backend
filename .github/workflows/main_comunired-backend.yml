@@ -76,6 +76,8 @@ jobs:
         run: |
           echo "Listing artifact contents:"
           ls -la ./artifact
+          echo "Finding JAR file:"
+          find ./artifact -name "*.jar" -type f
 
       - name: Login to Azure (OIDC)
         uses: azure/login@v2
@@ -89,4 +91,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'comunired-backend'
-          package: './artifact/*.jar'
+          package: './artifact/comunired-backend-0.0.1-SNAPSHOT.jar'
