@@ -17,7 +17,6 @@ public class QuejasResolver {
     @Autowired
     private QuejasService quejasService;
 
-
     @QueryMapping
     public List<QuejasDTO> obtenerQuejas(@Argument String usuarioActualId) {
         return quejasService.findAll(usuarioActualId);
@@ -33,6 +32,15 @@ public class QuejasResolver {
         return quejasService.findByUsuarioId(usuarioId, usuarioActualId);
     }
 
+    @QueryMapping
+    public List<QuejasDTO> quejasAprobadas(@Argument String usuarioActualId) {
+        return quejasService.findQuejasAprobadas(usuarioActualId);
+    }
+
+    @QueryMapping
+    public List<QuejasDTO> quejasParaRevisar(@Argument String usuarioActualId) {
+        return quejasService.findQuejasParaRevisar(usuarioActualId);
+    }
 
     @MutationMapping
     public QuejasDTO crearQueja(
@@ -50,7 +58,6 @@ public class QuejasResolver {
         return quejasService.create(titulo, descripcion, categoriaId, ubicacion, usuarioId);
     }
 
-
     @MutationMapping
     public QuejasDTO actualizarQueja(
         @Argument String id,
@@ -64,6 +71,25 @@ public class QuejasResolver {
         return quejasService.update(id, titulo, descripcion, categoriaId, estadoId, ubicacion, imagen_url);
     }
 
+    @MutationMapping
+    public QuejasDTO clasificarRiesgo(
+        @Argument String quejaId,
+        @Argument String soporteId,
+        @Argument String nivelRiesgo,
+        @Argument String observacion
+    ) {
+        return quejasService.clasificarRiesgo(quejaId, soporteId, nivelRiesgo, observacion);
+    }
+
+    @MutationMapping
+    public QuejasDTO cambiarEstadoQueja(
+        @Argument String quejaId,
+        @Argument String usuarioId,
+        @Argument String nuevoEstado,
+        @Argument String observacion 
+    ) {
+        return quejasService.cambiarEstadoQueja(quejaId, usuarioId, nuevoEstado, observacion);
+    }
 
     @MutationMapping
     public Boolean eliminarQueja(@Argument String id) {

@@ -12,4 +12,7 @@ public interface EvidenciasRepository {
     void deleteById(String id);
     void deleteByQuejaId(String quejaId);
     boolean existsById(String id);
+    
+    List<Evidencias> findByQuejaIdIniciales(String quejaId);
+    List<Evidencias> findByQuejaIdResolucion(String quejaId);
 }

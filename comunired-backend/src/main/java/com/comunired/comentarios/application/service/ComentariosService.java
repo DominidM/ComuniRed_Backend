@@ -61,7 +61,7 @@ public class ComentariosService {
     }
 
     public List<ComentariosDTO> findByQuejaId(String quejaId) {
-        return comentariosRepository.findByQuejaId(quejaId)
+        return comentariosRepository.findByQuejaIdActivos(quejaId)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -70,6 +70,7 @@ public class ComentariosService {
     public List<ComentariosDTO> findByUsuarioId(String usuarioId) {
         return comentariosRepository.findByUsuarioId(usuarioId)
                 .stream()
+                .filter(c -> !c.getEliminado())
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
@@ -77,29 +78,51 @@ public class ComentariosService {
     public List<ComentariosDTO> searchByText(String texto, String usuarioId) {
         return comentariosRepository.findByUsuarioId(usuarioId)
                 .stream()
+                .filter(c -> !c.getEliminado())
                 .filter(c -> c.getTexto().toLowerCase().contains(texto.toLowerCase()))
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     public long countByQuejaId(String quejaId) {
-        return comentariosRepository.countByQuejaId(quejaId);
+        return comentariosRepository.findByQuejaIdActivos(quejaId).size();
     }
 
-    public boolean delete(String id, String usuarioId) {
-        return comentariosRepository.findById(id)
+    public boolean delete(String comentarioId, String usuarioId, String razon) {
+        return comentariosRepository.findById(comentarioId)
                 .map(comentario -> {
-                    if (!comentario.getUsuario_id().equals(usuarioId)) {
-                        throw new RuntimeException("No tienes permiso para eliminar este comentario");
+
+                    if (razon != null && !razon.trim().isEmpty()) {
+                        comentario.setEliminado(true);
+                        comentario.setEliminado_por(usuarioId);
+                        comentario.setRazon_eliminacion(razon.trim());
+                        comentario.setFecha_eliminacion(Instant.now());
+                        comentariosRepository.save(comentario);
+                        return true;
+                    } else {
+                        if (!comentario.getUsuario_id().equals(usuarioId)) {
+                            throw new RuntimeException("No tienes permiso para eliminar este comentario");
+                        }
+                        comentario.setEliminado(true);
+                        comentario.setEliminado_por(usuarioId);
+                        comentario.setFecha_eliminacion(Instant.now());
+                        comentariosRepository.save(comentario);
+                        return true;
                     }
-                    comentariosRepository.deleteById(id);
-                    return true;
                 })
                 .orElse(false);
     }
 
     public List<ComentariosDTO> buscarComentariosPorUsuarioId(String usuarioId) {
         return comentariosRepository.findByUsuarioId(usuarioId)
+                .stream()
+                .filter(c -> !c.getEliminado())
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ComentariosDTO> findComentariosEliminados(String quejaId) {
+        return comentariosRepository.findByQuejaIdEliminados(quejaId)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -112,6 +135,11 @@ public class ComentariosService {
         dto.setTexto(comentario.getTexto());
         dto.setFecha_creacion(comentario.getFecha_creacion());
         dto.setFecha_modificacion(comentario.getFecha_modificacion());
+        
+        dto.setEliminado(comentario.getEliminado());
+        dto.setEliminado_por(comentario.getEliminado_por());
+        dto.setRazon_eliminacion(comentario.getRazon_eliminacion());
+        dto.setFecha_eliminacion(comentario.getFecha_eliminacion());
 
         if (comentario.getUsuario_id() != null) {
             Usuario author = usuariosRepository.findById(comentario.getUsuario_id());

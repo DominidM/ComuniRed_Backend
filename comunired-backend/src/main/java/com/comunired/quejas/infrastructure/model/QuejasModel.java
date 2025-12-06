@@ -17,6 +17,11 @@ public class QuejasModel {
     private String imagen_url;
     private Instant fecha_creacion;
     private Instant fecha_actualizacion;
+    
+    private String nivel_riesgo;
+    private Instant fecha_clasificacion;
+    private String clasificado_por_id;
+    private Instant fecha_aprobacion;
 
     public QuejasModel() {}
 
@@ -49,4 +54,16 @@ public class QuejasModel {
 
     public Instant getFecha_actualizacion() { return fecha_actualizacion; }
     public void setFecha_actualizacion(Instant fecha_actualizacion) { this.fecha_actualizacion = fecha_actualizacion; }
+
+    public String getNivel_riesgo() { return nivel_riesgo; }
+    public void setNivel_riesgo(String nivel_riesgo) { this.nivel_riesgo = nivel_riesgo; }
+
+    public Instant getFecha_clasificacion() { return fecha_clasificacion; }
+    public void setFecha_clasificacion(Instant fecha_clasificacion) { this.fecha_clasificacion = fecha_clasificacion; }
+
+    public String getClasificado_por_id() { return clasificado_por_id; }
+    public void setClasificado_por_id(String clasificado_por_id) { this.clasificado_por_id = clasificado_por_id; }
+
+    public Instant getFecha_aprobacion() { return fecha_aprobacion; }
+    public void setFecha_aprobacion(Instant fecha_aprobacion) { this.fecha_aprobacion = fecha_aprobacion; }
 }

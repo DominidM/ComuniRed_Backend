@@ -19,7 +19,8 @@ public class EvidenciasService {
     @Autowired
     private CloudinaryService cloudinaryService;
 
-    public EvidenciasDTO uploadEvidencia(String quejaId, MultipartFile archivo, String tipo) {
+    // ✅ MODIFICAR: Agregar parámetro usuarioId
+    public EvidenciasDTO uploadEvidencia(String quejaId, String usuarioId, MultipartFile archivo, String tipo) {
         try {
             String url = cloudinaryService.subirImagen(archivo);
 
@@ -27,6 +28,8 @@ public class EvidenciasService {
             evidencia.setQueja_id(quejaId);
             evidencia.setUrl(url);
             evidencia.setTipo(tipo != null ? tipo : detectarTipo(archivo));
+            evidencia.setSubida_por(usuarioId);
+            evidencia.setEs_resolucion(false); // Evidencia inicial del usuario
 
             Evidencias saved = evidenciasRepository.save(evidencia);
             return toDTO(saved);
@@ -35,8 +38,41 @@ public class EvidenciasService {
         }
     }
 
+    // ✅ AGREGAR: Subir evidencia de resolución (Soporte)
+    public EvidenciasDTO uploadEvidenciaSoporte(String quejaId, String soporteId, MultipartFile archivo, String descripcion) {
+        try {
+            String url = cloudinaryService.subirImagen(archivo);
+
+            Evidencias evidencia = new Evidencias();
+            evidencia.setQueja_id(quejaId);
+            evidencia.setUrl(url);
+            evidencia.setTipo(detectarTipo(archivo));
+            evidencia.setSubida_por(soporteId);
+            evidencia.setEs_resolucion(true);
+
+            Evidencias saved = evidenciasRepository.save(evidencia);
+            return toDTO(saved);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al subir evidencia de resolución: " + e.getMessage());
+        }
+    }
+
     public List<EvidenciasDTO> findByQuejaId(String quejaId) {
         return evidenciasRepository.findByQuejaId(quejaId)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EvidenciasDTO> findEvidenciasIniciales(String quejaId) {
+        return evidenciasRepository.findByQuejaIdIniciales(quejaId)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EvidenciasDTO> findEvidenciasResolucion(String quejaId) {
+        return evidenciasRepository.findByQuejaIdResolucion(quejaId)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -66,6 +102,11 @@ public class EvidenciasService {
         dto.setUrl(evidencia.getUrl());
         dto.setTipo(evidencia.getTipo());
         dto.setFecha_subida(evidencia.getFecha_subida());
+        
+        // ✅ AGREGAR MAPEO
+        dto.setSubida_por(evidencia.getSubida_por());
+        dto.setEs_resolucion(evidencia.getEs_resolucion());
+        
         return dto;
     }
 }

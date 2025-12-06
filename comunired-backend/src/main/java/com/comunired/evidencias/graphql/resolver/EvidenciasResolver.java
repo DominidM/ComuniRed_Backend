@@ -16,20 +16,35 @@ public class EvidenciasResolver {
     @Autowired
     private EvidenciasService evidenciasService;
 
-    // ========== QUERIES ==========
-    
     @QueryMapping
     public List<EvidenciasDTO> evidenciasPorQueja(@Argument String quejaId) {
         return evidenciasService.findByQuejaId(quejaId);
     }
 
-    // ========== MUTATIONS ==========
-    
+    @QueryMapping
+    public List<EvidenciasDTO> evidenciasIniciales(@Argument String quejaId) {
+        return evidenciasService.findEvidenciasIniciales(quejaId);
+    }
+
+    @QueryMapping
+    public List<EvidenciasDTO> evidenciasResolucion(@Argument String quejaId) {
+        return evidenciasService.findEvidenciasResolucion(quejaId);
+    }
+
     @MutationMapping
-    public EvidenciasDTO subirEvidencia(@Argument String quejaId, 
+    public EvidenciasDTO subirEvidencia(@Argument String quejaId,
+                                       @Argument String usuarioId, 
                                        @Argument MultipartFile archivo, 
                                        @Argument String tipo) {
-        return evidenciasService.uploadEvidencia(quejaId, archivo, tipo);
+        return evidenciasService.uploadEvidencia(quejaId, usuarioId, archivo, tipo);
+    }
+
+    @MutationMapping
+    public EvidenciasDTO subirEvidenciaSoporte(@Argument String quejaId,
+                                               @Argument String soporteId,
+                                               @Argument MultipartFile archivo,
+                                               @Argument String descripcion) {
+        return evidenciasService.uploadEvidenciaSoporte(quejaId, soporteId, archivo, descripcion);
     }
 
     @MutationMapping

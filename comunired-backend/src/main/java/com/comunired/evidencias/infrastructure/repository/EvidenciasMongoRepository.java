@@ -14,4 +14,10 @@ public interface EvidenciasMongoRepository extends MongoRepository<EvidenciasMod
     
     @Query(value = "{ 'queja_id': ?0 }", delete = true)
     void deleteByQuejaId(String quejaId);
+    
+    @Query("{ 'queja_id': ?0, 'es_resolucion': { $ne: true } }")
+    List<EvidenciasModel> findByQuejaIdIniciales(String quejaId);
+    
+    @Query("{ 'queja_id': ?0, 'es_resolucion': true }")
+    List<EvidenciasModel> findByQuejaIdResolucion(String quejaId);
 }

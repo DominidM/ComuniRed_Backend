@@ -12,6 +12,9 @@ public class EvidenciasModel {
     private String url;
     private String tipo;
     private Instant fecha_subida;
+    
+    private String subida_por;
+    private Boolean es_resolucion;
 
     public EvidenciasModel() {}
 
@@ -29,4 +32,10 @@ public class EvidenciasModel {
 
     public Instant getFecha_subida() { return fecha_subida; }
     public void setFecha_subida(Instant fecha_subida) { this.fecha_subida = fecha_subida; }
+
+    public String getSubida_por() { return subida_por; }
+    public void setSubida_por(String subida_por) { this.subida_por = subida_por; }
+
+    public Boolean getEs_resolucion() { return es_resolucion; }
+    public void setEs_resolucion(Boolean es_resolucion) { this.es_resolucion = es_resolucion; }
 }

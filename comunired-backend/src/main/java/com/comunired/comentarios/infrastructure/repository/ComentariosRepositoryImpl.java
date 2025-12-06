@@ -66,6 +66,22 @@ public class ComentariosRepositoryImpl implements ComentariosRepository {
         return mongoRepository.existsById(id);
     }
 
+    @Override
+    public List<Comentarios> findByQuejaIdActivos(String quejaId) {
+        return mongoRepository.findByQuejaIdActivosOrderByFechaCreacionAsc(quejaId)
+                .stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Comentarios> findByQuejaIdEliminados(String quejaId) {
+        return mongoRepository.findByQuejaIdEliminadosOrderByFechaEliminacionDesc(quejaId)
+                .stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
     private ComentariosModel toModel(Comentarios entity) {
         ComentariosModel model = new ComentariosModel();
         model.setId(entity.getId());
@@ -74,10 +90,15 @@ public class ComentariosRepositoryImpl implements ComentariosRepository {
         model.setTexto(entity.getTexto());
         model.setFecha_creacion(entity.getFecha_creacion());
         model.setFecha_modificacion(entity.getFecha_modificacion());
+        
+        // ✅ AGREGAR MAPEO
+        model.setEliminado(entity.getEliminado());
+        model.setEliminado_por(entity.getEliminado_por());
+        model.setRazon_eliminacion(entity.getRazon_eliminacion());
+        model.setFecha_eliminacion(entity.getFecha_eliminacion());
+        
         return model;
     }
-
-    
 
     private Comentarios toEntity(ComentariosModel model) {
         Comentarios entity = new Comentarios();
@@ -87,6 +108,12 @@ public class ComentariosRepositoryImpl implements ComentariosRepository {
         entity.setTexto(model.getTexto());
         entity.setFecha_creacion(model.getFecha_creacion());
         entity.setFecha_modificacion(model.getFecha_modificacion());
+        
+        entity.setEliminado(model.getEliminado() != null ? model.getEliminado() : false);
+        entity.setEliminado_por(model.getEliminado_por());
+        entity.setRazon_eliminacion(model.getRazon_eliminacion());
+        entity.setFecha_eliminacion(model.getFecha_eliminacion());
+        
         return entity;
     }
 }

@@ -17,4 +17,10 @@ public interface ComentariosMongoRepository extends MongoRepository<ComentariosM
     
     @Query(value = "{ 'queja_id': ?0 }", count = true)
     long countByQuejaId(String quejaId);
+    
+    @Query("{ 'queja_id': ?0, 'eliminado': { $ne: true } }")
+    List<ComentariosModel> findByQuejaIdActivosOrderByFechaCreacionAsc(String quejaId);
+    
+    @Query("{ 'queja_id': ?0, 'eliminado': true }")
+    List<ComentariosModel> findByQuejaIdEliminadosOrderByFechaEliminacionDesc(String quejaId);
 }

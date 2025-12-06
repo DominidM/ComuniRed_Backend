@@ -13,6 +13,12 @@ public class ComentariosModel {
     private String texto;
     private Instant fecha_creacion;
     private Instant fecha_modificacion;
+    
+
+    private Boolean eliminado;
+    private String eliminado_por;
+    private String razon_eliminacion;
+    private Instant fecha_eliminacion;
 
     public ComentariosModel() {}
 
@@ -33,4 +39,18 @@ public class ComentariosModel {
 
     public Instant getFecha_modificacion() { return fecha_modificacion; }
     public void setFecha_modificacion(Instant fecha_modificacion) { this.fecha_modificacion = fecha_modificacion; }
+
+
+
+    public Boolean getEliminado() { return eliminado; }
+    public void setEliminado(Boolean eliminado) { this.eliminado = eliminado; }
+
+    public String getEliminado_por() { return eliminado_por; }
+    public void setEliminado_por(String eliminado_por) { this.eliminado_por = eliminado_por; }
+
+    public String getRazon_eliminacion() { return razon_eliminacion; }
+    public void setRazon_eliminacion(String razon_eliminacion) { this.razon_eliminacion = razon_eliminacion; }
+
+    public Instant getFecha_eliminacion() { return fecha_eliminacion; }
+    public void setFecha_eliminacion(Instant fecha_eliminacion) { this.fecha_eliminacion = fecha_eliminacion; }
 }

@@ -20,4 +20,7 @@ public interface QuejasMongoRepository extends MongoRepository<QuejasModel, Stri
     
     @Query(value = "{}", sort = "{ 'fecha_creacion': -1 }")
     List<QuejasModel> findAllByOrderByFechaCreacionDesc();
+    
+    @Query("{ 'nivel_riesgo': ?0 }")
+    List<QuejasModel> findByNivelRiesgo(String nivelRiesgo);
 }

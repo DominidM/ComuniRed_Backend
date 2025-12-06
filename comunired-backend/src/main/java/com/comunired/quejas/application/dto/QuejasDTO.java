@@ -28,6 +28,11 @@ public class QuejasDTO {
     private Integer commentsCount;
     private Boolean canVote;
     private String userVote;
+    
+    private String nivel_riesgo;
+    private Instant fecha_clasificacion;
+    private String clasificado_por_id;
+    private Instant fecha_aprobacion;
 
     public QuejasDTO() {}
     
@@ -82,6 +87,17 @@ public class QuejasDTO {
     public String getUserVote() { return userVote; }
     public void setUserVote(String userVote) { this.userVote = userVote; }
 
+    public String getNivel_riesgo() { return nivel_riesgo; }
+    public void setNivel_riesgo(String nivel_riesgo) { this.nivel_riesgo = nivel_riesgo; }
+
+    public Instant getFecha_clasificacion() { return fecha_clasificacion; }
+    public void setFecha_clasificacion(Instant fecha_clasificacion) { this.fecha_clasificacion = fecha_clasificacion; }
+
+    public String getClasificado_por_id() { return clasificado_por_id; }
+    public void setClasificado_por_id(String clasificado_por_id) { this.clasificado_por_id = clasificado_por_id; }
+
+    public Instant getFecha_aprobacion() { return fecha_aprobacion; }
+    public void setFecha_aprobacion(Instant fecha_aprobacion) { this.fecha_aprobacion = fecha_aprobacion; }
 
     public static class VotesDTO {
         private Long yes;
@@ -99,7 +115,6 @@ public class QuejasDTO {
         public Long getTotal() { return total; }
         public void setTotal(Long total) { this.total = total; }
     }
-
 
     public static class ReactionsDTO {
         private Map<String, Long> counts;

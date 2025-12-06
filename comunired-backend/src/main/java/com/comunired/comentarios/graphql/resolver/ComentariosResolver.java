@@ -40,6 +40,12 @@ public class ComentariosResolver {
         return comentariosService.searchByText(texto, usuarioId);
     }
 
+    // ✅ AGREGAR: Para auditoría
+    @QueryMapping
+    public List<ComentariosDTO> comentariosEliminados(@Argument String quejaId) {
+        return comentariosService.findComentariosEliminados(quejaId);
+    }
+
     @MutationMapping
     public ComentariosDTO agregarComentario(@Argument String quejaId, 
                                            @Argument String usuarioId, 
@@ -55,8 +61,10 @@ public class ComentariosResolver {
     }
 
     @MutationMapping
-    public Boolean eliminarComentario(@Argument String id, @Argument String usuarioId) {
-        return comentariosService.delete(id, usuarioId);
+    public Boolean eliminarComentario(@Argument String comentarioId, 
+                                      @Argument String usuarioId,
+                                      @Argument String razon) {
+        return comentariosService.delete(comentarioId, usuarioId, razon);
     }
 
     @QueryMapping

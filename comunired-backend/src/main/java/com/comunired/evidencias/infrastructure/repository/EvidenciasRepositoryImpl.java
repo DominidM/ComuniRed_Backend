@@ -58,6 +58,22 @@ public class EvidenciasRepositoryImpl implements EvidenciasRepository {
         return mongoRepository.existsById(id);
     }
 
+    @Override
+    public List<Evidencias> findByQuejaIdIniciales(String quejaId) {
+        return mongoRepository.findByQuejaIdIniciales(quejaId)
+                .stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Evidencias> findByQuejaIdResolucion(String quejaId) {
+        return mongoRepository.findByQuejaIdResolucion(quejaId)
+                .stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
     private EvidenciasModel toModel(Evidencias entity) {
         EvidenciasModel model = new EvidenciasModel();
         model.setId(entity.getId());
@@ -65,6 +81,10 @@ public class EvidenciasRepositoryImpl implements EvidenciasRepository {
         model.setUrl(entity.getUrl());
         model.setTipo(entity.getTipo());
         model.setFecha_subida(entity.getFecha_subida());
+        
+        model.setSubida_por(entity.getSubida_por());
+        model.setEs_resolucion(entity.getEs_resolucion());
+        
         return model;
     }
 
@@ -75,6 +95,10 @@ public class EvidenciasRepositoryImpl implements EvidenciasRepository {
         entity.setUrl(model.getUrl());
         entity.setTipo(model.getTipo());
         entity.setFecha_subida(model.getFecha_subida());
+        
+        entity.setSubida_por(model.getSubida_por());
+        entity.setEs_resolucion(model.getEs_resolucion() != null ? model.getEs_resolucion() : false);
+        
         return entity;
     }
 }

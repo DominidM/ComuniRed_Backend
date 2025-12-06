@@ -14,4 +14,8 @@ public interface QuejasRepository {
     void deleteById(String id);
     boolean existsById(String id);
     long count();
+    
+    List<Quejas> findQuejasAprobadas();
+    List<Quejas> findQuejasParaRevisar();
+    List<Quejas> findByNivelRiesgo(String nivelRiesgo);
 }

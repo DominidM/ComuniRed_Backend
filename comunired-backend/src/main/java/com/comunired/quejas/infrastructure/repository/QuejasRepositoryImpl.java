@@ -3,6 +3,9 @@ package com.comunired.quejas.infrastructure.repository;
 import com.comunired.quejas.domain.entity.Quejas;
 import com.comunired.quejas.domain.repository.QuejasRepository;
 import com.comunired.quejas.infrastructure.model.QuejasModel;
+import com.comunired.reacciones.infrastructure.repository.ReaccionesMongoRepository;
+import com.comunired.tipos_reaccion.domain.repository.Tipos_reaccionRepository;
+import com.comunired.estados_queja.domain.repository.Estados_quejaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import java.time.Instant;
@@ -15,6 +18,15 @@ public class QuejasRepositoryImpl implements QuejasRepository {
 
     @Autowired
     private QuejasMongoRepository mongoRepository;
+
+    @Autowired
+    private ReaccionesMongoRepository reaccionesMongoRepository;
+
+    @Autowired
+    private Tipos_reaccionRepository tiposReaccionRepository;
+
+    @Autowired
+    private Estados_quejaRepository estadosRepository;
 
     @Override
     public Quejas save(Quejas quejas) {
@@ -76,6 +88,49 @@ public class QuejasRepositoryImpl implements QuejasRepository {
         return mongoRepository.count();
     }
 
+    @Override
+    public List<Quejas> findQuejasAprobadas() {
+        String acceptId = tiposReaccionRepository.buscarPorKey("accept")
+                .map(t -> t.getId())
+                .orElse(null);
+        
+        if (acceptId == null) return List.of();
+        
+        return mongoRepository.findAll()
+                .stream()
+                .filter(queja -> {
+                    long acceptCount = reaccionesMongoRepository
+                            .countByQuejaIdAndTipoReaccionId(queja.getId(), acceptId);
+                    return acceptCount >= 5;
+                })
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Quejas> findQuejasParaRevisar() {
+        String estadoAprobadaId = estadosRepository.listar().stream()
+                .filter(e -> "APROBADA".equalsIgnoreCase(e.getClave()))
+                .findFirst()
+                .map(e -> e.getId())
+                .orElse(null);
+        
+        if (estadoAprobadaId == null) return List.of();
+        
+        return mongoRepository.findByEstadoId(estadoAprobadaId)
+                .stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Quejas> findByNivelRiesgo(String nivelRiesgo) {
+        return mongoRepository.findByNivelRiesgo(nivelRiesgo)
+                .stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
     private QuejasModel toModel(Quejas entity) {
         QuejasModel model = new QuejasModel();
         model.setId(entity.getId());
@@ -88,6 +143,12 @@ public class QuejasRepositoryImpl implements QuejasRepository {
         model.setImagen_url(entity.getImagen_url());
         model.setFecha_creacion(entity.getFecha_creacion());
         model.setFecha_actualizacion(entity.getFecha_actualizacion());
+        
+        model.setNivel_riesgo(entity.getNivel_riesgo());
+        model.setFecha_clasificacion(entity.getFecha_clasificacion());
+        model.setClasificado_por_id(entity.getClasificado_por_id());
+        model.setFecha_aprobacion(entity.getFecha_aprobacion());
+        
         return model;
     }
 
@@ -103,6 +164,12 @@ public class QuejasRepositoryImpl implements QuejasRepository {
         entity.setImagen_url(model.getImagen_url());
         entity.setFecha_creacion(model.getFecha_creacion());
         entity.setFecha_actualizacion(model.getFecha_actualizacion());
+        
+        entity.setNivel_riesgo(model.getNivel_riesgo());
+        entity.setFecha_clasificacion(model.getFecha_clasificacion());
+        entity.setClasificado_por_id(model.getClasificado_por_id());
+        entity.setFecha_aprobacion(model.getFecha_aprobacion());
+        
         return entity;
     }
 }
