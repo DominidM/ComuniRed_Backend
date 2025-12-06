@@ -295,6 +295,20 @@ type Comentarios {
   razon_eliminacion: String
   fecha_eliminacion: DateTime
   author: Usuario
+  queja: QuejaSimple
+  aprobado_por: ID
+  fecha_aprobacion: DateTime
+  rechazado: Boolean
+  rechazado_por: ID
+  razon_rechazo: String
+  fecha_rechazo: DateTime
+}
+
+type QuejaSimple {
+  id: ID!
+  titulo: String!
+  descripcion: String!
+  imagen_url: String
 }
 
 type ComentarioEliminado {
@@ -364,6 +378,9 @@ type Query {
   usuariosPorReaccion(quejaId: ID!, tipoReaccion: String!): [Usuario!]!
   contarReaccionesPorUsuario(usuarioId: ID!): Int!
 
+
+  obtenerTodosLosComentarios: [Comentarios!]!
+
   comentariosPorQueja(quejaId: ID!): [Comentarios!]!
   comentariosPorUsuario(usuarioId: ID!): [Comentarios!]!
   contarComentarios(quejaId: ID!): Long!
@@ -371,6 +388,7 @@ type Query {
   buscarComentariosPorTexto(texto: String!, usuarioId: ID!): [Comentarios!]!
   buscarComentariosPorUsuario(usuarioId: ID!): [Comentarios!]!
   comentariosEliminados(quejaId: ID!): [Comentarios!]!
+
 
   # ✅ QUERIES DE EVIDENCIAS
   evidenciasPorQueja(quejaId: ID!): [Evidencia!]!
@@ -387,6 +405,7 @@ type Query {
   historialPorQueja(quejaId: ID!): [HistorialEvento!]!
   historialPorTipo(quejaId: ID!, tipoEvento: String!): [HistorialEvento!]!
   historialReciente(quejaId: ID!, limite: Int): [HistorialEvento!]!
+
 }
   
 #########################
@@ -440,6 +459,11 @@ type Mutation {
   eliminarQueja(id: ID!): Boolean!
   
   toggleReaccion(quejaId: ID!, tipoReaccion: String!, usuarioId: ID!): ReactionsData!
+
+
+    aprobarComentario(comentarioId: ID!, soporteId: ID!): Comentarios!
+  rechazarComentario(comentarioId: ID!, soporteId: ID!, razon: String!): Comentarios!
+
   
   agregarComentario(quejaId: ID!, usuarioId: ID!, texto: String!): Comentarios!
   editarComentario(id: ID!, usuarioId: ID!, texto: String!): Comentarios!

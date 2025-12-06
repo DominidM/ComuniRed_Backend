@@ -15,6 +15,13 @@ public class ComentariosResolver {
     @Autowired
     private ComentariosService comentariosService;
 
+    // ========== QUERIES ==========
+    
+    @QueryMapping
+    public List<ComentariosDTO> obtenerTodosLosComentarios() {
+        return comentariosService.obtenerTodosLosComentarios();
+    }
+
     @QueryMapping
     public List<ComentariosDTO> comentariosPorQueja(@Argument String quejaId) {
         return comentariosService.findByQuejaId(quejaId);
@@ -40,35 +47,40 @@ public class ComentariosResolver {
         return comentariosService.searchByText(texto, usuarioId);
     }
 
-    // ✅ AGREGAR: Para auditoría
+    @QueryMapping
+    public List<ComentariosDTO> buscarComentariosPorUsuario(@Argument String usuarioId) {
+        return comentariosService.buscarComentariosPorUsuarioId(usuarioId);
+    }
+
     @QueryMapping
     public List<ComentariosDTO> comentariosEliminados(@Argument String quejaId) {
         return comentariosService.findComentariosEliminados(quejaId);
     }
 
+    // ========== MUTATIONS ==========
+
     @MutationMapping
-    public ComentariosDTO agregarComentario(@Argument String quejaId, 
-                                           @Argument String usuarioId, 
-                                           @Argument String texto) {
+    public ComentariosDTO agregarComentario(@Argument String quejaId, @Argument String usuarioId, @Argument String texto) {
         return comentariosService.create(quejaId, usuarioId, texto);
     }
 
     @MutationMapping
-    public ComentariosDTO editarComentario(@Argument String id, 
-                                          @Argument String usuarioId, 
-                                          @Argument String texto) {
+    public ComentariosDTO editarComentario(@Argument String id, @Argument String usuarioId, @Argument String texto) {
         return comentariosService.update(id, usuarioId, texto);
     }
 
     @MutationMapping
-    public Boolean eliminarComentario(@Argument String comentarioId, 
-                                      @Argument String usuarioId,
-                                      @Argument String razon) {
+    public Boolean eliminarComentario(@Argument String comentarioId, @Argument String usuarioId, @Argument String razon) {
         return comentariosService.delete(comentarioId, usuarioId, razon);
     }
 
-    @QueryMapping
-    public List<ComentariosDTO> buscarComentariosPorUsuario(@Argument String usuarioId) {
-        return comentariosService.buscarComentariosPorUsuarioId(usuarioId);
+    @MutationMapping
+    public ComentariosDTO aprobarComentario(@Argument String comentarioId, @Argument String soporteId) {
+        return comentariosService.aprobarComentario(comentarioId, soporteId);
+    }
+
+    @MutationMapping
+    public ComentariosDTO rechazarComentario(@Argument String comentarioId, @Argument String soporteId, @Argument String razon) {
+        return comentariosService.rechazarComentario(comentarioId, soporteId, razon);
     }
 }

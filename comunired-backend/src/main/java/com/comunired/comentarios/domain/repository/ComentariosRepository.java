@@ -16,4 +16,6 @@ public interface ComentariosRepository {
     
     List<Comentarios> findByQuejaIdActivos(String quejaId);
     List<Comentarios> findByQuejaIdEliminados(String quejaId);
+
+    
 }

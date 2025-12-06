@@ -11,11 +11,14 @@ public class ComentariosDTO {
     private Instant fecha_creacion;
     private Instant fecha_modificacion;
     
-    // ✅ AGREGAR ESTOS CAMPOS (solo para auditoría/admin)
     private Boolean eliminado;
     private String eliminado_por;
     private String razon_eliminacion;
     private Instant fecha_eliminacion;
+
+    private String quejaTitulo;
+    private String quejaDescripcion;
+    private String quejaImagenUrl;
 
     public ComentariosDTO() {}
 
@@ -48,4 +51,23 @@ public class ComentariosDTO {
 
     public Instant getFecha_eliminacion() { return fecha_eliminacion; }
     public void setFecha_eliminacion(Instant fecha_eliminacion) { this.fecha_eliminacion = fecha_eliminacion; }
+
+        public String getQuejaTitulo() {
+        return quejaTitulo;
+    }
+
+    public void setQuejaTitulo(String quejaTitulo) {
+        this.quejaTitulo = quejaTitulo;
+    }
+
+    public String getQuejaDescripcion() {
+        return quejaDescripcion;
+    }
+
+    public void setQuejaDescripcion(String quejaDescripcion) {
+        this.quejaDescripcion = quejaDescripcion;
+    }
+
+    public String getQuejaImagenUrl() { return quejaImagenUrl; }
+    public void setQuejaImagenUrl(String quejaImagenUrl) { this.quejaImagenUrl = quejaImagenUrl; }
 }

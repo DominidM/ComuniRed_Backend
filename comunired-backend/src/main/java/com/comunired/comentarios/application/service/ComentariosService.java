@@ -3,6 +3,7 @@ package com.comunired.comentarios.application.service;
 import com.comunired.comentarios.domain.entity.Comentarios;
 import com.comunired.comentarios.domain.repository.ComentariosRepository;
 import com.comunired.comentarios.application.dto.ComentariosDTO;
+import com.comunired.quejas.domain.repository.QuejasRepository;
 import com.comunired.usuarios.domain.entity.Usuario;
 import com.comunired.usuarios.domain.repository.UsuariosRepository;
 import com.comunired.usuarios.application.dto.UsuariosDTO;
@@ -20,6 +21,9 @@ public class ComentariosService {
 
     @Autowired
     private UsuariosRepository usuariosRepository;
+
+    @Autowired
+    private QuejasRepository quejasRepository;
 
     public ComentariosDTO create(String quejaId, String usuarioId, String texto) {
         if (texto == null || texto.trim().isEmpty()) {
@@ -91,7 +95,6 @@ public class ComentariosService {
     public boolean delete(String comentarioId, String usuarioId, String razon) {
         return comentariosRepository.findById(comentarioId)
                 .map(comentario -> {
-
                     if (razon != null && !razon.trim().isEmpty()) {
                         comentario.setEliminado(true);
                         comentario.setEliminado_por(usuarioId);
@@ -128,6 +131,53 @@ public class ComentariosService {
                 .collect(Collectors.toList());
     }
 
+    public List<ComentariosDTO> obtenerTodosLosComentarios() {
+        return comentariosRepository.findAll()
+            .stream()
+            .filter(c -> !c.getEliminado())
+            .map(comentario -> {
+                ComentariosDTO dto = toDTO(comentario);
+                
+                // ✅ Agregar información completa de la queja
+                if (comentario.getQueja_id() != null) {
+                    quejasRepository.findById(comentario.getQueja_id())
+                        .ifPresent(queja -> {
+                            dto.setQuejaTitulo(queja.getTitulo());
+                            dto.setQuejaDescripcion(queja.getDescripcion());
+                            dto.setQuejaImagenUrl(queja.getImagen_url());  // ✅ AGREGAR IMAGEN
+                        });
+                }
+                
+                return dto;
+            })
+            .collect(Collectors.toList());
+    }
+
+    public ComentariosDTO aprobarComentario(String comentarioId, String soporteId) {
+        Comentarios comentario = comentariosRepository.findById(comentarioId)
+            .orElseThrow(() -> new RuntimeException("Comentario no encontrado"));
+        
+        // Limpiar el estado de inapropiado
+        comentario.setAprobado_por(soporteId);
+        comentario.setFecha_aprobacion(Instant.now());
+        
+        Comentarios updated = comentariosRepository.save(comentario);
+        return toDTO(updated);
+    }
+
+    public ComentariosDTO rechazarComentario(String comentarioId, String soporteId, String razon) {
+        Comentarios comentario = comentariosRepository.findById(comentarioId)
+            .orElseThrow(() -> new RuntimeException("Comentario no encontrado"));
+        
+        comentario.setRechazado(true);
+        comentario.setRechazado_por(soporteId);
+        comentario.setRazon_rechazo(razon);
+        comentario.setFecha_rechazo(Instant.now());
+        
+        Comentarios updated = comentariosRepository.save(comentario);
+        return toDTO(updated);
+    }
+
     private ComentariosDTO toDTO(Comentarios comentario) {
         ComentariosDTO dto = new ComentariosDTO();
         dto.setId(comentario.getId());
@@ -155,4 +205,5 @@ public class ComentariosService {
 
         return dto;
     }
+
 }
