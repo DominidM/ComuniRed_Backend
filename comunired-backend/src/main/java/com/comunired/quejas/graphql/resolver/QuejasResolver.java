@@ -8,6 +8,7 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
+import com.comunired.quejas.application.dto.QuejasPageDTO;
 
 import java.util.List;
 
@@ -42,6 +43,14 @@ public class QuejasResolver {
         return quejasService.findQuejasParaRevisar(usuarioActualId);
     }
 
+    @QueryMapping
+    public QuejasPageDTO obtenerQuejasPaginadas(
+        @Argument String usuarioActualId,
+        @Argument int page,
+        @Argument int size
+    ) {
+        return quejasService.findAllPaged(usuarioActualId, page, size);
+    }
     @MutationMapping
     public QuejasDTO crearQueja(
         @Argument String titulo,

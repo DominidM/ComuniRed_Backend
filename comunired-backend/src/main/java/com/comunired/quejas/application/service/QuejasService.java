@@ -4,6 +4,7 @@ import com.comunired.quejas.domain.entity.Quejas;
 import com.comunired.quejas.domain.repository.QuejasRepository;
 import com.comunired.quejas.application.dto.QuejasDTO;
 import com.comunired.quejas.application.dto.QuejasDTO.VotesDTO;
+import com.comunired.quejas.application.dto.QuejasPageDTO;
 import com.comunired.quejas.application.dto.QuejasDTO.ReactionsDTO;
 import com.comunired.usuarios.domain.entity.Usuario;
 import com.comunired.usuarios.domain.repository.UsuariosRepository;
@@ -78,52 +79,66 @@ public class QuejasService {
                 .collect(Collectors.toList());
     }
 
-    public QuejasDTO create(String titulo, String descripcion, String categoriaId, 
-                        String ubicacion, String usuarioId) {
-        
+    public QuejasDTO create(String titulo, String descripcion, String categoriaId,
+            String ubicacion, String usuarioId) {
+
         Quejas queja = new Quejas();
         queja.setTitulo(titulo);
         queja.setDescripcion(descripcion);
         queja.setCategoria_id(categoriaId);
         queja.setUsuario_id(usuarioId);
         queja.setUbicacion(ubicacion);
-        
+
+        // ✅ Estado inicial: VOTACION (el usuario publica y entra directamente a votación)
         List<Estados_queja> estados = estadosRepository.listar();
-        Estados_queja estadoPendiente = estados.stream()
-                .filter(e -> "PENDIENTE".equalsIgnoreCase(e.getClave()))
+        Estados_queja estadoVotacion = estados.stream()
+                .filter(e -> "VOTACION".equalsIgnoreCase(e.getClave()))
                 .findFirst()
                 .orElse(null);
-        
-        if (estadoPendiente != null) {
-            queja.setEstado_id(estadoPendiente.getId());
+
+        if (estadoVotacion != null) {
+            queja.setEstado_id(estadoVotacion.getId());
         }
 
         Quejas saved = quejasRepository.save(queja);
-        
+
+        // Historial: registra el estado real inicial
         historialEventoService.registrar(
-            saved.getId(),
-            usuarioId,
-            "creada",
-            null,
-            "PENDIENTE",
-            "Queja creada por el usuario"
+                saved.getId(),
+                usuarioId,
+                "creada",
+                null,
+                "VOTACION",
+                "Reporte publicado y en espera de votos de la comunidad"
         );
-        
+
         return toDTO(saved, usuarioId);
     }
 
-    public QuejasDTO update(String id, String titulo, String descripcion, String categoriaId, 
-                        String estadoId, String ubicacion, String imagen_url) {
+    public QuejasDTO update(String id, String titulo, String descripcion, String categoriaId,
+            String estadoId, String ubicacion, String imagen_url) {
         Quejas queja = quejasRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Queja no encontrada"));
-        
-        if (titulo != null) queja.setTitulo(titulo);
-        if (descripcion != null) queja.setDescripcion(descripcion);
-        if (categoriaId != null) queja.setCategoria_id(categoriaId);
-        if (estadoId != null) queja.setEstado_id(estadoId);
-        if (ubicacion != null) queja.setUbicacion(ubicacion);
-        if (imagen_url != null) queja.setImagen_url(imagen_url);
-        
+
+        if (titulo != null) {
+            queja.setTitulo(titulo);
+        }
+        if (descripcion != null) {
+            queja.setDescripcion(descripcion);
+        }
+        if (categoriaId != null) {
+            queja.setCategoria_id(categoriaId);
+        }
+        if (estadoId != null) {
+            queja.setEstado_id(estadoId);
+        }
+        if (ubicacion != null) {
+            queja.setUbicacion(ubicacion);
+        }
+        if (imagen_url != null) {
+            queja.setImagen_url(imagen_url);
+        }
+
         Quejas updated = quejasRepository.save(queja);
         return toDTO(updated, queja.getUsuario_id());
     }
@@ -131,37 +146,37 @@ public class QuejasService {
     public QuejasDTO clasificarRiesgo(String quejaId, String soporteId, String nivelRiesgo, String observacion) {
         Quejas queja = quejasRepository.findById(quejaId)
                 .orElseThrow(() -> new RuntimeException("Queja no encontrada"));
-        
+
         List<String> nivelesValidos = Arrays.asList("BAJO", "MEDIO", "ALTO", "CRITICO");
         if (!nivelesValidos.contains(nivelRiesgo.toUpperCase())) {
             throw new RuntimeException("Nivel de riesgo inválido. Debe ser: BAJO, MEDIO, ALTO o CRITICO");
         }
-        
+
         String estadoAnterior = obtenerClaveEstado(queja.getEstado_id());
-        
+
         queja.setNivel_riesgo(nivelRiesgo.toUpperCase());
         queja.setClasificado_por_id(soporteId);
         queja.setFecha_clasificacion(Instant.now());
-        
+
         Optional<Estados_queja> estadoClasificada = estadosRepository.listar().stream()
                 .filter(e -> "CLASIFICADA".equalsIgnoreCase(e.getClave()))
                 .findFirst();
-        
+
         if (estadoClasificada.isPresent()) {
             queja.setEstado_id(estadoClasificada.get().getId());
         }
-        
+
         Quejas updated = quejasRepository.save(queja);
-        
+
         historialEventoService.registrar(
-            quejaId,
-            soporteId,
-            "clasificada",
-            estadoAnterior,
-            "CLASIFICADA",
-            "Nivel de riesgo: " + nivelRiesgo + (observacion != null ? " - " + observacion : "")
+                quejaId,
+                soporteId,
+                "clasificada",
+                estadoAnterior,
+                "CLASIFICADA",
+                "Nivel de riesgo: " + nivelRiesgo + (observacion != null ? " - " + observacion : "")
         );
-        
+
         return toDTO(updated, soporteId);
     }
 
@@ -171,53 +186,53 @@ public class QuejasService {
         System.out.println("  - usuarioId: " + usuarioId);
         System.out.println("  - nuevoEstadoClave: " + nuevoEstadoClave);
         System.out.println("  - observacion: " + observacion);
-        
+
         try {
             // 1. Buscar queja
             System.out.println("🔹 Buscando queja...");
             Quejas queja = quejasRepository.findById(quejaId)
                     .orElseThrow(() -> new RuntimeException("Queja no encontrada"));
             System.out.println("✅ Queja encontrada: " + queja.getTitulo());
-            
+
             // 2. Obtener estado anterior
             System.out.println("🔹 Obteniendo estado anterior...");
             String estadoAnterior = obtenerClaveEstado(queja.getEstado_id());
             System.out.println("✅ Estado anterior: " + estadoAnterior);
-            
+
             // 3. Buscar nuevo estado
             System.out.println("🔹 Buscando nuevo estado...");
             List<Estados_queja> todosEstados = estadosRepository.listar();
             System.out.println("  - Total estados disponibles: " + todosEstados.size());
-            
+
             Optional<Estados_queja> nuevoEstadoOpt = todosEstados.stream()
                     .filter(e -> {
                         System.out.println("    Comparando: " + e.getClave() + " == " + nuevoEstadoClave);
                         return nuevoEstadoClave.equalsIgnoreCase(e.getClave());
                     })
                     .findFirst();
-            
+
             if (!nuevoEstadoOpt.isPresent()) {
                 System.out.println("❌ Estado no encontrado: " + nuevoEstadoClave);
                 throw new RuntimeException("Estado no válido: " + nuevoEstadoClave);
             }
-            
+
             Estados_queja nuevoEstado = nuevoEstadoOpt.get();
             System.out.println("✅ Nuevo estado encontrado: " + nuevoEstado.getNombre());
-            
+
             // 4. Actualizar estado
             System.out.println("🔹 Actualizando estado de la queja...");
             queja.setEstado_id(nuevoEstado.getId());
-            
+
             if ("APROBADA".equalsIgnoreCase(nuevoEstadoClave)) {
                 queja.setFecha_aprobacion(Instant.now());
                 System.out.println("  - Fecha de aprobación establecida");
             }
-            
+
             // 5. Guardar queja
             System.out.println("🔹 Guardando queja...");
             Quejas updated = quejasRepository.save(queja);
             System.out.println("✅ Queja guardada");
-            
+
             // 6. Registrar en historial
             System.out.println("🔹 Registrando en historial...");
             System.out.println("  - quejaId: " + quejaId);
@@ -225,24 +240,24 @@ public class QuejasService {
             System.out.println("  - tipoEvento: estado_cambiado");
             System.out.println("  - estadoAnterior: " + estadoAnterior);
             System.out.println("  - estadoNuevo: " + nuevoEstadoClave);
-            
+
             historialEventoService.registrar(
-                quejaId,
-                usuarioId,
-                "estado_cambiado",
-                estadoAnterior,
-                nuevoEstadoClave,
-                observacion != null ? observacion : "Estado cambiado a " + nuevoEstadoClave
+                    quejaId,
+                    usuarioId,
+                    "estado_cambiado",
+                    estadoAnterior,
+                    nuevoEstadoClave,
+                    observacion != null ? observacion : "Estado cambiado a " + nuevoEstadoClave
             );
             System.out.println("✅ Historial registrado");
-            
+
             // 7. Convertir a DTO
             System.out.println("🔹 Convirtiendo a DTO...");
             QuejasDTO dto = toDTO(updated, usuarioId);
             System.out.println("✅ DTO creado");
-            
+
             return dto;
-            
+
         } catch (Exception e) {
             System.out.println("❌ ERROR en cambiarEstadoQueja:");
             System.out.println("  - Mensaje: " + e.getMessage());
@@ -251,7 +266,6 @@ public class QuejasService {
             throw new RuntimeException("Error al cambiar estado: " + e.getMessage(), e);
         }
     }
-
 
     public List<QuejasDTO> findQuejasAprobadas(String currentUserId) {
         return quejasRepository.findQuejasAprobadas()
@@ -276,8 +290,10 @@ public class QuejasService {
     }
 
     private String obtenerClaveEstado(String estadoId) {
-        if (estadoId == null) return null;
-        
+        if (estadoId == null) {
+            return null;
+        }
+
         return estadosRepository.buscarPorId(estadoId)
                 .map(Estados_queja::getClave)
                 .orElse(null);
@@ -292,7 +308,7 @@ public class QuejasService {
         dto.setImagen_url(queja.getImagen_url());
         dto.setFecha_creacion(queja.getFecha_creacion());
         dto.setFecha_actualizacion(queja.getFecha_actualizacion());
-        
+
         dto.setNivel_riesgo(queja.getNivel_riesgo());
         dto.setFecha_clasificacion(queja.getFecha_clasificacion());
         dto.setClasificado_por_id(queja.getClasificado_por_id());
@@ -356,7 +372,7 @@ public class QuejasService {
                     comDTO.setId(com.getId());
                     comDTO.setTexto(com.getTexto());
                     comDTO.setFecha_creacion(com.getFecha_creacion());
-                    
+
                     if (com.getUsuario_id() != null) {
                         Usuario author = usuariosRepository.findById(com.getUsuario_id());
                         if (author != null) {
@@ -382,7 +398,7 @@ public class QuejasService {
 
     private VotesDTO calculateVotes(String quejaId, String currentUserId) {
         VotesDTO votes = new VotesDTO();
-        
+
         Optional<String> acceptIdOpt = tiposReaccionRepository.buscarPorKey("accept")
                 .map(t -> t.getId());
         Optional<String> rejectIdOpt = tiposReaccionRepository.buscarPorKey("reject")
@@ -407,22 +423,22 @@ public class QuejasService {
 
     private ReactionsDTO calculateReactions(String quejaId, String currentUserId) {
         ReactionsDTO reactions = new ReactionsDTO();
-        
+
         List<String> excludeKeys = Arrays.asList("accept", "reject");
         List<Reacciones> allReactions = reaccionesRepository.findByQuejaId(quejaId);
-        
+
         Map<String, Long> counts = new HashMap<>();
         long total = 0;
 
         for (Reacciones reaccion : allReactions) {
             Optional<com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion> tipoOpt = tiposReaccionRepository.buscarPorId(reaccion.getTipo_reaccion_id());
-            
+
             if (tipoOpt.isPresent()) {
                 com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion tipo = tipoOpt.get();
                 if (!excludeKeys.contains(tipo.getKey())) {
                     String key = tipo.getKey();
                     counts.put(key, counts.getOrDefault(key, 0L) + 1);
-                    
+
                     if (reaccion.getUsuario_id().equals(currentUserId)) {
                         reactions.setUserReaction(key);
                     }
@@ -431,16 +447,53 @@ public class QuejasService {
         }
 
         total = counts.values().stream().mapToLong(Long::longValue).sum();
-        
+
         reactions.setCounts(counts);
         reactions.setTotal((long) total);
 
         return reactions;
     }
 
+    public QuejasPageDTO findAllPaged(String currentUserId, int page, int size) {
+        List<Quejas> todas = quejasRepository.findAll();
+
+        // Ordenar por fecha_creacion descendente
+        todas.sort((a, b) -> {
+            if (a.getFecha_creacion() == null) {
+                return 1;
+            }
+            if (b.getFecha_creacion() == null) {
+                return -1;
+            }
+            return b.getFecha_creacion().compareTo(a.getFecha_creacion());
+        });
+
+        int total = todas.size();
+        int start = page * size;
+        int end = Math.min(start + size, total);
+
+        List<QuejasDTO> content = (start >= total)
+                ? new ArrayList<>()
+                : todas.subList(start, end)
+                        .stream()
+                        .map(q -> toDTO(q, currentUserId))
+                        .collect(Collectors.toList());
+
+        QuejasPageDTO pageDTO = new QuejasPageDTO();
+        pageDTO.setContent(content);
+        pageDTO.setTotalElements(total);
+        pageDTO.setTotalPages((int) Math.ceil((double) total / size));
+        pageDTO.setNumber(page);
+        pageDTO.setSize(size);
+        pageDTO.setLast(end >= total);
+        return pageDTO;
+    }
+
     private boolean hasUserVoted(String quejaId, String currentUserId) {
-        if (currentUserId == null) return false;
-        
+        if (currentUserId == null) {
+            return false;
+        }
+
         Optional<String> acceptIdOpt = tiposReaccionRepository.buscarPorKey("accept")
                 .map(t -> t.getId());
         Optional<String> rejectIdOpt = tiposReaccionRepository.buscarPorKey("reject")
@@ -449,13 +502,17 @@ public class QuejasService {
         if (acceptIdOpt.isPresent()) {
             Optional<Reacciones> acceptVote = reaccionesRepository
                     .findByQuejaIdAndUsuarioIdAndTipoReaccionId(quejaId, currentUserId, acceptIdOpt.get());
-            if (acceptVote.isPresent()) return true;
+            if (acceptVote.isPresent()) {
+                return true;
+            }
         }
 
         if (rejectIdOpt.isPresent()) {
             Optional<Reacciones> rejectVote = reaccionesRepository
                     .findByQuejaIdAndUsuarioIdAndTipoReaccionId(quejaId, currentUserId, rejectIdOpt.get());
-            if (rejectVote.isPresent()) return true;
+            if (rejectVote.isPresent()) {
+                return true;
+            }
         }
 
         return false;

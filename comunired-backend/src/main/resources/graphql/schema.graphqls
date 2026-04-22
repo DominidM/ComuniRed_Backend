@@ -304,6 +304,16 @@ type Comentarios {
   fecha_rechazo: DateTime
 }
 
+type QuejasPage {
+    content: [Queja]
+    totalElements: Int
+    totalPages: Int
+    number: Int
+    size: Int
+    last: Boolean    
+}
+
+
 type QuejaSimple {
   id: ID!
   titulo: String!
@@ -324,6 +334,7 @@ type ComentarioEliminado {
 # Queries
 #########################
 type Query {
+  obtenerQuejasPaginadas(usuarioActualId: ID!, page: Int!, size: Int!): QuejasPage
   obtenerUsuarios(page: Int!, size: Int!): UsuarioPage
   obtenerTodosLosUsuarios: [Usuario!]!
   contarUsuariosPorRol(rol_id: ID!): Int

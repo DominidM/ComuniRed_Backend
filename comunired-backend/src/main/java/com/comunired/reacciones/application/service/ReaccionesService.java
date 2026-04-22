@@ -10,7 +10,15 @@ import com.comunired.tipos_reaccion.domain.repository.Tipos_reaccionRepository;
 import com.comunired.tipos_reaccion.application.dto.Tipos_reaccionDTO;
 
 import com.comunired.quejas.application.dto.QuejasDTO.ReactionsDTO;
+import com.comunired.quejas.application.service.QuejasService;   // ← NUEVO
+import com.comunired.quejas.application.dto.QuejasDTO;           // ← NUEVO
+import com.comunired.quejas.domain.repository.QuejasRepository;  // ← NUEVO
+import com.comunired.quejas.domain.entity.Quejas;                // ← NUEVO
+import com.comunired.estados_queja.domain.repository.Estados_quejaRepository; // ← NUEVO
+import com.comunired.estados_queja.domain.entity.Estados_queja;               // ← NUEVO
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,6 +26,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class ReaccionesService {
+
+    // Mínimo de votos "accept" para pasar a PENDIENTE
+    private static final int VOTOS_MINIMOS = 5;
 
     @Autowired
     private ReaccionesRepository reaccionesRepository;
@@ -28,34 +39,40 @@ public class ReaccionesService {
     @Autowired
     private Tipos_reaccionRepository tiposReaccionRepository;
 
+    @Autowired
+    private QuejasRepository quejasRepository;              // ← NUEVO
+
+    @Autowired
+    private Estados_quejaRepository estadosRepository;      // ← NUEVO
+
+    @Autowired
+    @Lazy                                                    // ← evita dependencia circular
+    private QuejasService quejasService;                    // ← NUEVO
+
     public ReactionsDTO toggleReaction(String quejaId, String tipoReaccionKey, String usuarioId) {
-        // Buscar el tipo de reacción por key
+
         Optional<String> tipoReaccionIdOpt = tiposReaccionRepository.buscarPorKey(tipoReaccionKey)
                 .map(t -> t.getId());
-        
+
         if (!tipoReaccionIdOpt.isPresent()) {
             throw new RuntimeException("Tipo de reacción no encontrado: " + tipoReaccionKey);
         }
-        
+
         String tipoReaccionId = tipoReaccionIdOpt.get();
 
-        // Buscar si ya existe una reacción del usuario en esta queja
         Optional<Reacciones> existingReaction = reaccionesRepository
                 .findByQuejaIdAndUsuarioId(quejaId, usuarioId);
 
         if (existingReaction.isPresent()) {
             Reacciones reaccion = existingReaction.get();
-            
-            // Si es la misma reacción, la eliminamos (toggle off)
+
             if (reaccion.getTipo_reaccion_id().equals(tipoReaccionId)) {
                 reaccionesRepository.delete(reaccion);
             } else {
-                // Si es diferente, la actualizamos
                 reaccion.setTipo_reaccion_id(tipoReaccionId);
                 reaccionesRepository.save(reaccion);
             }
         } else {
-            // No existe, creamos nueva reacción
             Reacciones nuevaReaccion = new Reacciones();
             nuevaReaccion.setQueja_id(quejaId);
             nuevaReaccion.setUsuario_id(usuarioId);
@@ -63,8 +80,60 @@ public class ReaccionesService {
             reaccionesRepository.save(nuevaReaccion);
         }
 
-        // ✅ Retornar el estado actualizado de reacciones
+        // ── TRANSICIÓN AUTOMÁTICA: VOTACION → PENDIENTE ──────────────────
+        // Solo se evalúa cuando el voto es "accept"
+        if ("accept".equalsIgnoreCase(tipoReaccionKey)) {
+            verificarYPasarAPendiente(quejaId, usuarioId);
+        }
+        // ─────────────────────────────────────────────────────────────────
+
         return getReactionsForQueja(quejaId, usuarioId);
+    }
+
+    /**
+     * Si la queja está en VOTACION y los votos "accept" alcanzan el mínimo,
+     * la pasa automáticamente a PENDIENTE.
+     */
+    private void verificarYPasarAPendiente(String quejaId, String usuarioId) {
+        try {
+            // 1. Obtener la queja
+            Optional<Quejas> quejaOpt = quejasRepository.findById(quejaId);
+            if (!quejaOpt.isPresent()) return;
+            Quejas queja = quejaOpt.get();
+
+            // 2. Verificar que esté en estado VOTACION
+            String claveEstadoActual = estadosRepository.buscarPorId(queja.getEstado_id())
+                    .map(Estados_queja::getClave)
+                    .orElse("");
+
+            if (!"VOTACION".equalsIgnoreCase(claveEstadoActual)) return;
+
+            // 3. Contar votos "accept"
+            Optional<String> acceptIdOpt = tiposReaccionRepository.buscarPorKey("accept")
+                    .map(t -> t.getId());
+
+            if (!acceptIdOpt.isPresent()) return;
+
+            long votosAccept = reaccionesRepository
+                    .countByQuejaIdAndTipoReaccionId(quejaId, acceptIdOpt.get());
+
+            System.out.println("📊 Votos accept para queja " + quejaId + ": " + votosAccept + "/" + VOTOS_MINIMOS);
+
+            // 4. Si alcanza el mínimo → pasar a PENDIENTE
+            if (votosAccept >= VOTOS_MINIMOS) {
+                System.out.println("✅ Mínimo alcanzado → pasando a PENDIENTE");
+                quejasService.cambiarEstadoQueja(
+                    quejaId,
+                    "sistema",
+                    "PENDIENTE",
+                    "Mínimo de votos alcanzado (" + votosAccept + "/" + VOTOS_MINIMOS + ")"
+                );
+            }
+
+        } catch (Exception e) {
+            // No interrumpir el flujo de votación si algo falla aquí
+            System.out.println("⚠️ Error en verificarYPasarAPendiente: " + e.getMessage());
+        }
     }
 
     public List<ReaccionesDTO> findByQuejaId(String quejaId) {
@@ -81,16 +150,16 @@ public class ReaccionesService {
         if (!tipoReaccionIdOpt.isPresent()) {
             return new ArrayList<>();
         }
-        
+
         String tipoReaccionId = tipoReaccionIdOpt.get();
         List<Reacciones> reacciones = reaccionesRepository.findByQuejaId(quejaId);
-        
+
         return reacciones.stream()
                 .filter(r -> r.getTipo_reaccion_id().equals(tipoReaccionId))
                 .map(r -> {
                     Usuario usuario = usuariosRepository.findById(r.getUsuario_id());
                     if (usuario == null) return null;
-                    
+
                     UsuariosDTO dto = new UsuariosDTO();
                     dto.setId(usuario.getId());
                     dto.setNombre(usuario.getNombre());
@@ -105,22 +174,21 @@ public class ReaccionesService {
     private ReactionsDTO getReactionsForQueja(String quejaId, String usuarioId) {
         List<String> excludeKeys = Arrays.asList("accept", "reject");
         List<Reacciones> allReactions = reaccionesRepository.findByQuejaId(quejaId);
-        
+
         Map<String, Long> countsMap = new HashMap<>();
         String userReaction = null;
 
         for (Reacciones reaccion : allReactions) {
-            // ✅ LÍNEA CORREGIDA SIN TYPOS
-            Optional<com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion> tipoOpt = 
+            Optional<com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion> tipoOpt =
                 tiposReaccionRepository.buscarPorId(reaccion.getTipo_reaccion_id());
-            
+
             if (tipoOpt.isPresent()) {
                 com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion tipo = tipoOpt.get();
                 String key = tipo.getKey();
-                
+
                 if (!excludeKeys.contains(key)) {
                     countsMap.put(key, countsMap.getOrDefault(key, 0L) + 1);
-                    
+
                     if (reaccion.getUsuario_id().equals(usuarioId)) {
                         userReaction = key;
                     }
@@ -128,26 +196,22 @@ public class ReaccionesService {
             }
         }
 
-        // ✅ CREAR ReactionsDTO
         ReactionsDTO reactionsDTO = new ReactionsDTO();
-        
-        // ✅ ASEGURAR QUE TODOS LOS TIPOS ESTÉN EN EL MAP
+
         Map<String, Long> counts = new HashMap<>();
-        counts.put("like", countsMap.getOrDefault("like", 0L));
-        counts.put("love", countsMap.getOrDefault("love", 0L));
-        counts.put("wow", countsMap.getOrDefault("wow", 0L));
+        counts.put("like",    countsMap.getOrDefault("like",    0L));
+        counts.put("love",    countsMap.getOrDefault("love",    0L));
+        counts.put("wow",     countsMap.getOrDefault("wow",     0L));
         counts.put("helpful", countsMap.getOrDefault("helpful", 0L));
         counts.put("dislike", countsMap.getOrDefault("dislike", 0L));
-        counts.put("report", countsMap.getOrDefault("report", 0L));
-        
+        counts.put("report",  countsMap.getOrDefault("report",  0L));
+
         reactionsDTO.setCounts(counts);
         reactionsDTO.setUserReaction(userReaction);
         reactionsDTO.setTotal(countsMap.values().stream().mapToLong(Long::longValue).sum());
 
         return reactionsDTO;
     }
-
-
 
     public long contarReaccionesPorUsuario(String usuarioId) {
         return reaccionesRepository.countByUsuarioId(usuarioId);
@@ -159,7 +223,6 @@ public class ReaccionesService {
         dto.setQueja_id(reaccion.getQueja_id());
         dto.setFecha_reaccion(reaccion.getFecha_reaccion());
 
-        // Usuario
         if (reaccion.getUsuario_id() != null) {
             Usuario usuario = usuariosRepository.findById(reaccion.getUsuario_id());
             if (usuario != null) {
@@ -172,11 +235,10 @@ public class ReaccionesService {
             }
         }
 
-        // Tipo Reaccion
         if (reaccion.getTipo_reaccion_id() != null) {
-            Optional<com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion> tipoOpt = 
+            Optional<com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion> tipoOpt =
                 tiposReaccionRepository.buscarPorId(reaccion.getTipo_reaccion_id());
-            
+
             if (tipoOpt.isPresent()) {
                 com.comunired.tipos_reaccion.domain.entity.Tipos_reaccion tipo = tipoOpt.get();
                 Tipos_reaccionDTO tipoDTO = new Tipos_reaccionDTO();
