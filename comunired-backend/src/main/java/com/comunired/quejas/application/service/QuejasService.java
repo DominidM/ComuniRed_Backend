@@ -457,6 +457,14 @@ public class QuejasService {
     public QuejasPageDTO findAllPaged(String currentUserId, int page, int size) {
         List<Quejas> todas = quejasRepository.findAll();
 
+        //  Solo mostrar reportes en VOTACION en el feed público
+        todas = todas.stream()
+                .filter(q -> {
+                    String clave = obtenerClaveEstado(q.getEstado_id());
+                    return "VOTACION".equalsIgnoreCase(clave);
+                })
+                .collect(Collectors.toList());
+
         // Ordenar por fecha_creacion descendente
         todas.sort((a, b) -> {
             if (a.getFecha_creacion() == null) {
