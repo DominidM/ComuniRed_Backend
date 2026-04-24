@@ -217,7 +217,7 @@ public class QuejasService {
             }
 
             Estados_queja nuevoEstado = nuevoEstadoOpt.get();
-            System.out.println("✅ Nuevo estado encontrado: " + nuevoEstado.getNombre());
+            System.out.println(" Nuevo estado encontrado: " + nuevoEstado.getNombre());
 
             // 4. Actualizar estado
             System.out.println("🔹 Actualizando estado de la queja...");
