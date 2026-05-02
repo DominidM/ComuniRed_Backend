@@ -66,8 +66,8 @@ class ListarQuejasPaginadasService implements ListarQuejasPaginadasUseCase {
     private final QuejaApplicationMapper mapper;
 
     ListarQuejasPaginadasService(QuejaRepositoryPort repository,
-                                  EstadoQuejaPort estadoPort,
-                                  QuejaApplicationMapper mapper) {
+            EstadoQuejaPort estadoPort,
+            QuejaApplicationMapper mapper) {
         this.repository = repository;
         this.estadoPort = estadoPort;
         this.mapper = mapper;
@@ -75,97 +75,106 @@ class ListarQuejasPaginadasService implements ListarQuejasPaginadasUseCase {
 
     @Override
     public QuejaPageResponse ejecutar(String usuarioActualId, int page, int size) {
-        List<Queja> enVotacion = repository.buscarTodas().stream()
+        List<Queja> enFeed = repository.buscarTodas().stream()
                 .filter(q -> {
-                    if (q.getEstadoId() == null) return false;
+                    if (q.getEstadoId() == null) {
+                        return false;
+                    }
                     return estadoPort.buscarPorId(q.getEstadoId())
-                            .map(e -> "VOTACION".equalsIgnoreCase(e.clave()))
+                            .map(e -> {
+                                String clave = e.clave().toLowerCase();
+                                return clave.equals("votacion") || clave.equals("pendiente");
+                            })
                             .orElse(false);
                 })
                 .sorted((a, b) -> {
-                    if (a.getFechaCreacion() == null) return 1;
-                    if (b.getFechaCreacion() == null) return -1;
+                    if (a.getFechaCreacion() == null) {
+                        return 1;
+                    }
+                    if (b.getFechaCreacion() == null) {
+                        return -1;
+                    }
                     return b.getFechaCreacion().compareTo(a.getFechaCreacion());
                 })
                 .collect(Collectors.toList());
 
-        int total = enVotacion.size();
+        int total = enFeed.size();
         int start = page * size;
         int end = Math.min(start + size, total);
 
         List<QuejaResponse> content = (start >= total)
                 ? new ArrayList<>()
-                : enVotacion.subList(start, end).stream()
+                : enFeed.subList(start, end).stream()
                         .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
                         .collect(Collectors.toList());
 
         return new QuejaPageResponse(content, total,
                 (int) Math.ceil((double) total / size), page, size, end >= total);
     }
-}
 
 // =============================================================================
 // LISTAR POR USUARIO
 // =============================================================================
-@Service
-class ListarQuejasPorUsuarioService implements ListarQuejasPorUsuarioUseCase {
+    @Service
+    class ListarQuejasPorUsuarioService implements ListarQuejasPorUsuarioUseCase {
 
-    private final QuejaRepositoryPort repository;
-    private final QuejaApplicationMapper mapper;
+        private final QuejaRepositoryPort repository;
+        private final QuejaApplicationMapper mapper;
 
-    ListarQuejasPorUsuarioService(QuejaRepositoryPort repository, QuejaApplicationMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
+        ListarQuejasPorUsuarioService(QuejaRepositoryPort repository, QuejaApplicationMapper mapper) {
+            this.repository = repository;
+            this.mapper = mapper;
+        }
+
+        @Override
+        public List<QuejaResponse> ejecutar(String usuarioId, String usuarioActualId) {
+            return repository.buscarPorUsuarioId(usuarioId).stream()
+                    .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
+                    .collect(Collectors.toList());
+        }
     }
-
-    @Override
-    public List<QuejaResponse> ejecutar(String usuarioId, String usuarioActualId) {
-        return repository.buscarPorUsuarioId(usuarioId).stream()
-                .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
-                .collect(Collectors.toList());
-    }
-}
 
 // =============================================================================
 // LISTAR APROBADAS
 // =============================================================================
-@Service
-class ListarQuejasAprobadasService implements ListarQuejasAprobadasUseCase {
+    @Service
+    class ListarQuejasAprobadasService implements ListarQuejasAprobadasUseCase {
 
-    private final QuejaRepositoryPort repository;
-    private final QuejaApplicationMapper mapper;
+        private final QuejaRepositoryPort repository;
+        private final QuejaApplicationMapper mapper;
 
-    ListarQuejasAprobadasService(QuejaRepositoryPort repository, QuejaApplicationMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
+        ListarQuejasAprobadasService(QuejaRepositoryPort repository, QuejaApplicationMapper mapper) {
+            this.repository = repository;
+            this.mapper = mapper;
+        }
+
+        @Override
+        public List<QuejaResponse> ejecutar(String usuarioActualId) {
+            return repository.buscarAprobadas().stream()
+                    .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
+                    .collect(Collectors.toList());
+        }
     }
-
-    @Override
-    public List<QuejaResponse> ejecutar(String usuarioActualId) {
-        return repository.buscarAprobadas().stream()
-                .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
-                .collect(Collectors.toList());
-    }
-}
 
 // =============================================================================
 // LISTAR PARA REVISAR
 // =============================================================================
-@Service
-class ListarQuejasParaRevisarService implements ListarQuejasParaRevisarUseCase {
+    @Service
+    class ListarQuejasParaRevisarService implements ListarQuejasParaRevisarUseCase {
 
-    private final QuejaRepositoryPort repository;
-    private final QuejaApplicationMapper mapper;
+        private final QuejaRepositoryPort repository;
+        private final QuejaApplicationMapper mapper;
 
-    ListarQuejasParaRevisarService(QuejaRepositoryPort repository, QuejaApplicationMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
+        ListarQuejasParaRevisarService(QuejaRepositoryPort repository, QuejaApplicationMapper mapper) {
+            this.repository = repository;
+            this.mapper = mapper;
+        }
 
-    @Override
-    public List<QuejaResponse> ejecutar(String usuarioActualId) {
-        return repository.buscarParaRevisar().stream()
-                .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
-                .collect(Collectors.toList());
+        @Override
+        public List<QuejaResponse> ejecutar(String usuarioActualId) {
+            return repository.buscarParaRevisar().stream()
+                    .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
+                    .collect(Collectors.toList());
+        }
     }
 }

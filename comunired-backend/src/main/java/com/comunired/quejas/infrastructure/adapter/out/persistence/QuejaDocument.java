@@ -2,6 +2,7 @@ package com.comunired.quejas.infrastructure.adapter.out.persistence;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
 
@@ -12,16 +13,37 @@ public class QuejaDocument {
     private String id;
     private String titulo;
     private String descripcion;
+
+    @Field("usuario_id")
     private String usuarioId;
+
+    @Field("categoria_id")
     private String categoriaId;
+
+    @Field("estado_id")
     private String estadoId;
+
     private String ubicacion;
+
+    @Field("imagen_url")
     private String imagenUrl;
+
+    @Field("fecha_creacion")
     private Instant fechaCreacion;
+
+    @Field("fecha_actualizacion")
     private Instant fechaActualizacion;
+
+    @Field("nivel_riesgo")
     private String nivelRiesgo;
+
+    @Field("fecha_clasificacion")
     private Instant fechaClasificacion;
+
+    @Field("clasificado_por_id")
     private String clasificadoPorId;
+
+    @Field("fecha_aprobacion")
     private Instant fechaAprobacion;
 
     // Getters

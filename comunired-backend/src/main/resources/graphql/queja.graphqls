@@ -106,7 +106,7 @@ type Queja {
   imagen_url: String
   fecha_creacion: DateTime!
   fecha_actualizacion: DateTime!
-  evidence: [Evidencia!]!
+  evidence: [Evidencia!]
   votes: VotesData!
   reactions: ReactionsData!
   comments: [Comentarios!]!

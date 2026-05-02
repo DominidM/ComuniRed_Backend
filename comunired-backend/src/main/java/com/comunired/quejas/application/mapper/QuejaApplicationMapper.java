@@ -8,12 +8,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Mapper de aplicación: Queja (dominio) → QuejaResponse (salida).
- *
- * toResponse()            — sin datos sociales (para commands que no necesitan el contexto)
- * toResponseConContexto() — con votos, reacciones y comentarios (para queries del feed)
- */
 @Component
 public class QuejaApplicationMapper {
 
@@ -38,23 +32,14 @@ public class QuejaApplicationMapper {
         this.comentarioPort = comentarioPort;
     }
 
-    // -------------------------------------------------------------------------
-    // Sin datos sociales — respuesta rápida tras un command
-    // -------------------------------------------------------------------------
     public QuejaResponse toResponse(Queja queja) {
         return buildResponse(queja, null, false);
     }
 
-    // -------------------------------------------------------------------------
-    // Con datos sociales — feed, detalle
-    // -------------------------------------------------------------------------
     public QuejaResponse toResponseConContexto(Queja queja, String usuarioActualId) {
         return buildResponse(queja, usuarioActualId, true);
     }
 
-    // -------------------------------------------------------------------------
-    // Builder interno
-    // -------------------------------------------------------------------------
     private QuejaResponse buildResponse(Queja queja, String usuarioActualId, boolean cargarSocial) {
 
         UsuarioResumen usuario = usuarioPort.buscarPorId(queja.getUsuarioId())
@@ -69,25 +54,25 @@ public class QuejaApplicationMapper {
                 .map(e -> new EstadoResumen(e.id(), e.clave(), e.nombre()))
                 .orElse(null);
 
-        VotosResumen votos = null;
-        ReaccionesResumen reacciones = null;
-        List<ComentarioResumen> comentarios = List.of();
+        VotosResumen votes = new VotosResumen(0, 0, 0);
+        ReaccionesResumen reactions = new ReaccionesResumen(java.util.Map.of(), null, 0);
+        List<ComentarioResumen> comments = List.of();
         boolean canVote = false;
         String userVote = null;
 
         if (cargarSocial) {
             long yes = votoPort.contarVotosSi(queja.getId());
             long no = votoPort.contarVotosNo(queja.getId());
-            votos = new VotosResumen(yes, no, yes + no);
+            votes = new VotosResumen(yes, no, yes + no);
 
             var counts = reaccionPort.contarReacciones(queja.getId());
             long totalReacciones = counts.values().stream().mapToLong(Long::longValue).sum();
             String userReaccion = (usuarioActualId != null)
                     ? reaccionPort.obtenerReaccionUsuario(queja.getId(), usuarioActualId).orElse(null)
                     : null;
-            reacciones = new ReaccionesResumen(counts, userReaccion, totalReacciones);
+            reactions = new ReaccionesResumen(counts, userReaccion, totalReacciones);
 
-            comentarios = comentarioPort.buscarPorQueja(queja.getId()).stream()
+            comments = comentarioPort.buscarPorQueja(queja.getId()).stream()
                     .map(c -> new ComentarioResumen(
                             c.id(),
                             c.texto(),
@@ -117,10 +102,10 @@ public class QuejaApplicationMapper {
                 queja.getFechaClasificacion(),
                 queja.getClasificadoPorId(),
                 queja.getFechaAprobacion(),
-                votos,
-                reacciones,
-                comentarios,
-                comentarios.size(),
+                votes,
+                reactions,
+                comments,
+                comments.size(),
                 canVote,
                 userVote
         );

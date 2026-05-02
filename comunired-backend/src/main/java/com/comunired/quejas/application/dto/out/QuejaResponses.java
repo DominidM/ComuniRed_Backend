@@ -4,17 +4,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Responses de salida del módulo quejas.
- * Records inmutables — el mapper los construye, nadie los modifica.
- */
 public final class QuejaResponses {
 
     private QuejaResponses() {}
 
-    // -------------------------------------------------------------------------
-    // Respuesta principal de una queja (feed + detalle)
-    // -------------------------------------------------------------------------
     public record QuejaResponse(
             String id,
             String titulo,
@@ -23,28 +16,21 @@ public final class QuejaResponses {
             CategoriaResumen categoria,
             EstadoResumen estado,
             String ubicacion,
-            String imagenUrl,
-            Instant fechaCreacion,
-            Instant fechaActualizacion,
-
-            // Clasificación
-            String nivelRiesgo,
-            Instant fechaClasificacion,
-            String clasificadoPorId,
-            Instant fechaAprobacion,
-
-            // Social
-            VotosResumen votos,
-            ReaccionesResumen reacciones,
-            List<ComentarioResumen> comentarios,
-            int comentariosCount,
+            String imagen_url,
+            Instant fecha_creacion,
+            Instant fecha_actualizacion,
+            String nivel_riesgo,
+            Instant fecha_clasificacion,
+            String clasificado_por_id,
+            Instant fecha_aprobacion,
+            VotosResumen votes,
+            ReaccionesResumen reactions,
+            List<ComentarioResumen> comments,
+            int commentsCount,
             boolean canVote,
             String userVote
     ) {}
 
-    // -------------------------------------------------------------------------
-    // Respuesta paginada
-    // -------------------------------------------------------------------------
     public record QuejaPageResponse(
             List<QuejaResponse> content,
             long totalElements,
@@ -54,14 +40,11 @@ public final class QuejaResponses {
             boolean last
     ) {}
 
-    // -------------------------------------------------------------------------
-    // Resúmenes anidados (evitan depender de DTOs de otros dominios)
-    // -------------------------------------------------------------------------
     public record UsuarioResumen(
             String id,
             String nombre,
             String apellido,
-            String fotoPerfil
+            String foto_perfil
     ) {}
 
     public record CategoriaResumen(
@@ -92,6 +75,6 @@ public final class QuejaResponses {
             String id,
             String texto,
             UsuarioResumen autor,
-            Instant fechaCreacion
+            Instant fecha_creacion
     ) {}
 }
