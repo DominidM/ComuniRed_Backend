@@ -1,0 +1,169 @@
+type Usuario {
+  id: ID!
+  foto_perfil: String
+  nombre: String!
+  apellido: String!
+  dni: String!
+  numero_telefono: String
+  sexo: String
+  distrito: String
+  codigo_postal: String
+  direccion: String
+  email: String!
+  rol_id: ID!
+  fecha_nacimiento: Date
+  fecha_registro: DateTime
+  ultimaActividad: DateTime
+  estaEnLinea: Boolean
+}
+
+input UsuarioInput {
+  foto_perfil: String
+  nombre: String!
+  apellido: String!
+  dni: String!
+  numero_telefono: String
+  sexo: String
+  distrito: String
+  codigo_postal: String
+  direccion: String
+  email: String!
+  password: String
+  rol_id: ID!
+  fecha_nacimiento: Date
+}
+
+type UsuarioPage {
+  content: [Usuario!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+type AuthPayload {
+  token: String
+  usuario: Usuario
+}
+
+type Rol {
+  id: ID!
+  nombre: String!
+  descripcion: String
+}
+
+type RolPage {
+  content: [Rol!]!
+  totalPages: Int!
+  totalElements: Int!
+  number: Int!
+  size: Int!
+}
+
+type Categoria {
+  id: ID
+  nombre: String
+  descripcion: String
+  activo: Boolean
+}
+
+type CategoriaPage {
+  content: [Categoria!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+type Estados_queja {
+  id: ID
+  clave: String
+  nombre: String
+  descripcion: String
+  orden: Int
+}
+
+type Estados_quejaPage {
+  content: [Estados_queja!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+type Tipos_reaccion {
+  id: ID!
+  key: String!
+  label: String!
+  activo: Boolean!
+  orden: Int!
+}
+
+type Tipos_reaccionPage {
+  content: [Tipos_reaccion!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+extend type Query {
+  obtenerUsuarios(page: Int!, size: Int!): UsuarioPage
+  obtenerTodosLosUsuarios: [Usuario!]!
+  contarUsuariosPorRol(rol_id: ID!): Int
+  obtenerUsuarioPorId(id: ID!): Usuario
+  buscarUsuarios(termino: String!, page: Int!, size: Int!): UsuarioPage
+  buscarUsuariosPorNombre(nombre: String!, page: Int!, size: Int!): UsuarioPage
+  usuariosSugeridos(usuarioId: ID!, page: Int!, size: Int!): UsuarioPage
+  usuariosNoSeguidos(usuarioId: ID!, page: Int!, size: Int!): UsuarioPage
+
+  obtenerRoles(page: Int!, size: Int!): RolPage
+  obtenerTodosLosRoles: [Rol!]!
+  obtenerRolPorId(id: ID!): Rol
+
+  obtenerCategorias(page: Int!, size: Int!): CategoriaPage
+  listarCategorias: [Categoria]
+  buscarCategoriaPorNombre(nombre: String!): Categoria
+  obtenerCategoriaPorId(id: ID!): Categoria
+
+  obtenerEstados_queja(page: Int!, size: Int!): Estados_quejaPage
+  listarEstados: [Estados_queja]
+  buscarEstadoPorNombre(nombre: String!): Estados_queja
+  contarEstadosQueja: Int!
+  obtenerEstadoPorId(id: ID!): Estados_queja
+
+  obtenerTipo_reaccion(page: Int!, size: Int!): Tipos_reaccionPage
+  listarTiposReaccion: [Tipos_reaccion!]!
+  obtenerTipoReaccionPorId(id: ID!): Tipos_reaccion
+  buscarTipoReaccionPorLabel(label: String!): Tipos_reaccion
+}
+
+extend type Mutation {
+  login(email: String!, password: String!): AuthPayload
+  solicitarCodigoRecuperacion(email: String!): Boolean!
+  verificarCodigoRecuperacion(email: String!, codigo: String!): Boolean!
+  cambiarPasswordConCodigo(email: String!, codigo: String!, nuevaPassword: String!): Boolean!
+
+  crearUsuario(usuario: UsuarioInput!): Usuario
+  actualizarUsuario(id: ID!, usuario: UsuarioInput!): Usuario
+  eliminarUsuario(id: ID!): Boolean
+  subirFotoPerfil(usuarioId: ID!, archivo: Upload!): String!
+  eliminarFotoPerfil(usuarioId: ID!): Boolean
+  inicializarActividades: String!
+
+  crearRol(nombre: String!, descripcion: String): Rol
+  editarRol(id: ID!, nombre: String!, descripcion: String): Rol
+  eliminarRol(id: ID!): Boolean
+
+  crearCategoria(nombre: String!, descripcion: String, activo: Boolean): Categoria
+  actualizarCategoria(id: ID!, nombre: String!, descripcion: String, activo: Boolean): Categoria
+  eliminarCategoria(id: ID!): Boolean
+
+  crearEstado(clave: String!, nombre: String!, descripcion: String, orden: Int!): Estados_queja
+  actualizarEstado(id: ID!, clave: String!, nombre: String!, descripcion: String, orden: Int!): Estados_queja
+  eliminarEstado(id: ID!): String
+
+  crearTipoReaccion(key: String!, label: String!, activo: Boolean!, orden: Int!): Tipos_reaccion
+  actualizarTipoReaccion(id: ID!, key: String!, label: String!, activo: Boolean!, orden: Int!): Tipos_reaccion
+  eliminarTipoReaccion(id: ID!): Boolean
+}

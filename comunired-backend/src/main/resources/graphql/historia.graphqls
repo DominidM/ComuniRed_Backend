@@ -1,0 +1,11 @@
+type Historia {
+    id: ID!
+    usuarioId: String!
+    texto: String
+    imagenUrl: String
+    colorFondo: String
+    duracion: Int!
+    activa: Boolean!
+    fechaCreacion: String!
+    fechaExpiracion: String!
+}

@@ -1,0 +1,51 @@
+enum EstadoSeguimiento {
+  PENDIENTE
+  ACEPTADO
+  RECHAZADO
+}
+
+type Seguimiento {
+  id: ID!
+  seguidorId: ID!
+  seguidoId: ID!
+  estado: EstadoSeguimiento!
+  fechaSeguimiento: DateTime!
+  fechaRespuesta: DateTime
+  notificacionesActivas: Boolean!
+}
+
+type SeguimientoPage {
+  content: [Seguimiento!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+type EstadoRelacion {
+  estaSiguiendo: Boolean!
+  teSigue: Boolean!
+  seguimientoMutuo: Boolean!
+  solicitudPendiente: Boolean!
+  solicitudEnviada: Boolean!
+}
+
+extend type Query {
+  seguidoresDe(usuarioId: ID!, page: Int!, size: Int!): SeguimientoPage
+  seguidosPor(usuarioId: ID!, page: Int!, size: Int!): SeguimientoPage
+  solicitudesPendientes(usuarioId: ID!, page: Int!, size: Int!): SeguimientoPage
+  solicitudesEnviadas(usuarioId: ID!, page: Int!, size: Int!): SeguimientoPage
+  estaSiguiendo(seguidorId: ID!, seguidoId: ID!): Boolean!
+  seSiguenMutuamente(usuarioId1: ID!, usuarioId2: ID!): Boolean!
+  contarSeguidores(usuarioId: ID!): Int!
+  contarSeguidos(usuarioId: ID!): Int!
+  estadoSeguimiento(usuarioActualId: ID!, otroUsuarioId: ID!): EstadoRelacion
+}
+
+extend type Mutation {
+  enviarSolicitudSeguimiento(seguidorId: ID!, seguidoId: ID!): Seguimiento
+  aceptarSolicitud(seguimientoId: ID!): Seguimiento
+  rechazarSolicitud(seguimientoId: ID!): Boolean!
+  cancelarSolicitud(seguimientoId: ID!): Boolean!
+  dejarDeSeguir(seguidorId: ID!, seguidoId: ID!): Boolean!
+}

@@ -1,10 +1,9 @@
 package com.comunired.reacciones.graphql.resolver;
 
-import com.comunired.reacciones.application.service.ReaccionesService;
 import com.comunired.reacciones.application.dto.ReaccionesDTO;
+import com.comunired.reacciones.application.service.ReaccionesService;
+import com.comunired.reacciones.application.service.ReaccionesService.ReactionsDTO;
 import com.comunired.usuarios.application.dto.UsuariosDTO;
-import com.comunired.quejas.application.dto.QuejasDTO.ReactionsDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -15,8 +14,11 @@ import java.util.List;
 @Controller
 public class ReaccionesResolver {
 
-    @Autowired
-    private ReaccionesService reaccionesService;
+    private final ReaccionesService reaccionesService;
+
+    public ReaccionesResolver(ReaccionesService reaccionesService) {
+        this.reaccionesService = reaccionesService;
+    }
 
     @QueryMapping
     public List<ReaccionesDTO> reaccionesPorQueja(@Argument String quejaId) {
@@ -24,7 +26,8 @@ public class ReaccionesResolver {
     }
 
     @QueryMapping
-    public List<UsuariosDTO> usuariosPorReaccion(@Argument String quejaId, @Argument String tipoReaccion) {
+    public List<UsuariosDTO> usuariosPorReaccion(@Argument String quejaId,
+                                                  @Argument String tipoReaccion) {
         return reaccionesService.getUsersByReactionType(quejaId, tipoReaccion);
     }
 
@@ -33,12 +36,10 @@ public class ReaccionesResolver {
         return reaccionesService.contarReaccionesPorUsuario(usuarioId);
     }
 
-
     @MutationMapping
-    public ReactionsDTO toggleReaccion(@Argument String quejaId, 
-                                       @Argument String tipoReaccion, 
+    public ReactionsDTO toggleReaccion(@Argument String quejaId,
+                                       @Argument String tipoReaccion,
                                        @Argument String usuarioId) {
         return reaccionesService.toggleReaction(quejaId, tipoReaccion, usuarioId);
     }
-
 }

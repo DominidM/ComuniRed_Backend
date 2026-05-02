@@ -1,0 +1,54 @@
+type Conversacion {
+  id: ID!
+  participante1Id: ID!
+  participante2Id: ID!
+  ultimoMensaje: Mensaje
+  fechaCreacion: DateTime!
+  fechaUltimaActividad: DateTime!
+}
+
+type Mensaje {
+  id: ID!
+  conversacionId: ID!
+  emisorId: ID!
+  contenido: String!
+  fechaEnvio: DateTime!
+  leido: Boolean!
+  fechaLectura: DateTime
+}
+
+type ConversacionPage {
+  content: [Conversacion!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+type MensajePage {
+  content: [Mensaje!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+extend type Query {
+  misConversaciones(usuarioId: ID!, page: Int!, size: Int!): ConversacionPage
+  obtenerConversacion(conversacionId: ID!): Conversacion
+  buscarConversacionConUsuario(usuarioId: ID!, otroUsuarioId: ID!): Conversacion
+  mensajesDeConversacion(conversacionId: ID!, page: Int!, size: Int!): MensajePage
+  contarMensajesNoLeidos(conversacionId: ID!, usuarioId: ID!): Int!
+}
+
+extend type Mutation {
+  crearConversacion(usuarioId: ID!, otroUsuarioId: ID!): Conversacion
+  enviarMensaje(conversacionId: ID!, emisorId: ID!, contenido: String!): Mensaje
+  marcarMensajesComoLeidos(conversacionId: ID!, usuarioId: ID!): Boolean!
+  eliminarConversacion(conversacionId: ID!, usuarioId: ID!): Boolean!
+}
+
+extend type Subscription {
+  nuevoMensajeRecibido(usuario_id: ID!): Mensaje
+  mensajeLeido(conversacion_id: ID!): Mensaje
+}

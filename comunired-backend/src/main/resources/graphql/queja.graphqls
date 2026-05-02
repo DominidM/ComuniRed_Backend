@@ -1,0 +1,188 @@
+enum NivelRiesgo {
+  INFORMATIVO
+  BAJO
+  MEDIO
+  ALTO
+  CRITICO
+}
+
+type Asignacion {
+  id: ID!
+  queja_id: ID!
+  soporte_id: ID!
+  asignado_por_id: ID!
+  estado: String!
+  fecha_asignacion: DateTime!
+  fecha_actualizacion: DateTime
+  observacion: String
+}
+
+type HistorialEvento {
+  id: ID!
+  queja_id: ID!
+  usuario_id: ID!
+  tipo_evento: String!
+  estado_anterior: String
+  estado_nuevo: String
+  descripcion: String
+  fecha_evento: DateTime!
+}
+
+type Evidencia {
+  id: ID!
+  queja_id: ID!
+  url: String!
+  tipo: String!
+  fecha_subida: DateTime!
+  subida_por: ID
+  es_resolucion: Boolean
+}
+
+type VotesData {
+  yes: Int!
+  no: Int!
+  total: Int!
+}
+
+type ReactionCounts {
+  like: Int
+  love: Int
+  wow: Int
+  helpful: Int
+  dislike: Int
+  report: Int
+}
+
+type ReactionsData {
+  counts: ReactionCounts!
+  userReaction: String
+  total: Int!
+}
+
+type Reaccion {
+  id: ID!
+  queja_id: ID!
+  usuario: Usuario!
+  tipoReaccion: Tipos_reaccion!
+  fecha_reaccion: DateTime!
+}
+
+type QuejaSimple {
+  id: ID!
+  titulo: String!
+  descripcion: String!
+  imagen_url: String
+}
+
+type Comentarios {
+  id: ID!
+  queja_id: ID!
+  usuario_id: ID!
+  texto: String!
+  fecha_creacion: DateTime!
+  fecha_actualizacion: DateTime
+  eliminado: Boolean
+  eliminado_por_id: ID
+  razon_eliminacion: String
+  fecha_eliminacion: DateTime
+  author: Usuario
+  queja: QuejaSimple
+  aprobado_por: ID
+  fecha_aprobacion: DateTime
+  rechazado: Boolean
+  rechazado_por: ID
+  razon_rechazo: String
+  fecha_rechazo: DateTime
+}
+
+type Queja {
+  id: ID!
+  titulo: String!
+  descripcion: String!
+  usuario: Usuario!
+  categoria: Categoria!
+  estado: Estados_queja
+  ubicacion: String
+  imagen_url: String
+  fecha_creacion: DateTime!
+  fecha_actualizacion: DateTime!
+  evidence: [Evidencia!]!
+  votes: VotesData!
+  reactions: ReactionsData!
+  comments: [Comentarios!]!
+  commentsCount: Int!
+  canVote: Boolean!
+  userVote: String
+  nivel_riesgo: NivelRiesgo
+  fecha_clasificacion: DateTime
+  clasificado_por_id: ID
+  asignacion_actual: Asignacion
+  fecha_aprobacion: DateTime
+}
+
+type QuejasPage {
+  content: [Queja]
+  totalElements: Int
+  totalPages: Int
+  number: Int
+  size: Int
+  last: Boolean
+}
+
+extend type Query {
+  obtenerQuejasPaginadas(usuarioActualId: ID!, page: Int!, size: Int!): QuejasPage
+  obtenerQuejas(usuarioActualId: ID!): [Queja!]!
+  obtenerQuejaPorId(id: ID!, usuarioActualId: ID!): Queja
+  quejasPorUsuario(usuarioId: ID!, usuarioActualId: ID!): [Queja!]!
+  quejasAprobadas(usuarioActualId: ID!): [Queja!]!
+  quejasParaRevisar(usuarioActualId: ID!): [Queja!]!
+
+  reaccionesPorQueja(quejaId: ID!): [Reaccion!]!
+  usuariosPorReaccion(quejaId: ID!, tipoReaccion: String!): [Usuario!]!
+  contarReaccionesPorUsuario(usuarioId: ID!): Int!
+
+  obtenerTodosLosComentarios: [Comentarios!]!
+  comentariosPorQueja(quejaId: ID!): [Comentarios!]!
+  comentariosPorUsuario(usuarioId: ID!): [Comentarios!]!
+  contarComentarios(quejaId: ID!): Long!
+  buscarComentario(id: ID!): Comentarios
+  buscarComentariosPorTexto(texto: String!, usuarioId: ID!): [Comentarios!]!
+  buscarComentariosPorUsuario(usuarioId: ID!): [Comentarios!]!
+  comentariosEliminados(quejaId: ID!): [Comentarios!]!
+
+  evidenciasPorQueja(quejaId: ID!): [Evidencia!]!
+  evidenciasIniciales(quejaId: ID!): [Evidencia!]!
+  evidenciasResolucion(quejaId: ID!): [Evidencia!]!
+
+  asignacionPorId(id: ID!): Asignacion
+  asignacionesPorQueja(quejaId: ID!): [Asignacion!]!
+  asignacionesPorSoporte(soporteId: ID!): [Asignacion!]!
+  asignacionesActivas: [Asignacion!]!
+
+  historialPorQueja(quejaId: ID!): [HistorialEvento!]!
+  historialPorTipo(quejaId: ID!, tipoEvento: String!): [HistorialEvento!]!
+  historialReciente(quejaId: ID!, limite: Int): [HistorialEvento!]!
+}
+
+extend type Mutation {
+  crearQueja(titulo: String!, descripcion: String!, categoriaId: ID!, ubicacion: String, imagen: Upload, usuarioId: ID!): Queja!
+  actualizarQueja(id: ID!, titulo: String, descripcion: String, categoriaId: ID, estadoId: ID, ubicacion: String, imagen_url: String): Queja!
+  eliminarQueja(id: ID!): Boolean!
+  toggleReaccion(quejaId: ID!, tipoReaccion: String!, usuarioId: ID!): ReactionsData!
+  clasificarRiesgo(quejaId: ID!, soporteId: ID!, nivelRiesgo: String!, observacion: String): Queja!
+  cambiarEstadoQueja(quejaId: ID!, usuarioId: ID!, nuevoEstado: String!, observacion: String): Queja!
+
+  agregarComentario(quejaId: ID!, usuarioId: ID!, texto: String!): Comentarios!
+  editarComentario(id: ID!, usuarioId: ID!, texto: String!): Comentarios!
+  eliminarComentario(comentarioId: ID!, usuarioId: ID!, razon: String!): Boolean!
+  aprobarComentario(comentarioId: ID!, soporteId: ID!): Comentarios!
+  rechazarComentario(comentarioId: ID!, soporteId: ID!, razon: String!): Comentarios!
+
+  subirEvidencia(quejaId: ID!, usuarioId: ID!, archivo: Upload!, tipo: String): Evidencia!
+  subirEvidenciaSoporte(quejaId: ID!, soporteId: ID!, archivo: Upload!, descripcion: String): Evidencia!
+  eliminarEvidencia(id: ID!): Boolean!
+
+  asignarQueja(quejaId: ID!, soporteId: ID!, adminId: ID!, observacion: String): Asignacion!
+  cambiarEstadoAsignacion(asignacionId: ID!, nuevoEstado: String!, soporteId: ID!): Asignacion!
+  reasignarQueja(asignacionId: ID!, nuevoSoporteId: ID!, adminId: ID!, motivo: String): Asignacion!
+}
