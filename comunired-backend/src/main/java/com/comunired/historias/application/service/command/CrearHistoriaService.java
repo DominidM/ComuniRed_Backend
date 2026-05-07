@@ -29,22 +29,26 @@ public class CrearHistoriaService implements CrearHistoriaUseCase {
         }
 
         Historia historia = Historia.crear(
-            command.usuarioId(),
-            command.texto(),
-            imagenUrl,
-            command.colorFondo(),
-            command.duracion()
+                command.usuarioId(),
+                command.texto(),
+                imagenUrl,
+                command.colorFondo(),
+                command.duracion()
         );
 
         Historia guardada = repositoryPort.guardar(historia);
 
         eventPublisher.publishEvent(new HistoriaPublicada(
-            guardada.getId(),
-            guardada.getUsuarioId(),
-            null, // distrito se puede enriquecer después
-            guardada.getFechaCreacion()
+                guardada.getId(),
+                guardada.getUsuarioId(),
+                null, // distrito se puede enriquecer después
+                guardada.getFechaCreacion()
         ));
 
-        return mapper.toResponse(guardada, false);
+        var usuario = usuarioRepositoryPort.buscarPorId(guardada.getUsuarioId()); // ← inyectar también aquí
+        String nombre = usuario.map(u -> u.getNombre()).orElse("Usuario");
+        String avatar = usuario.map(u -> u.getAvatarUrl()).orElse("");
+
+        return mapper.toResponse(guardada, false, nombre, avatar);
     }
 }

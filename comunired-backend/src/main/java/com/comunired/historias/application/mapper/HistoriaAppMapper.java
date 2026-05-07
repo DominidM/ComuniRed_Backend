@@ -7,10 +7,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class HistoriaAppMapper {
 
-    public HistoriaResponse toResponse(Historia historia, boolean vistaPorMi) {
+    public HistoriaResponse toResponse(Historia historia, boolean vistaPorMi,
+                                        String userName, String userAvatar) {
         return new HistoriaResponse(
             historia.getId(),
             historia.getUsuarioId(),
+            userName,                     
+            userAvatar,                         
             historia.getTexto(),
             historia.getImagenUrl(),
             historia.getColorFondo(),

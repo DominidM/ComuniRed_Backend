@@ -6,6 +6,8 @@ import java.util.List;
 public record HistoriaResponse(
     String id,
     String usuarioId,
+    String userName,     
+    String userAvatar,  
     String texto,
     String imagenUrl,
     String colorFondo,
