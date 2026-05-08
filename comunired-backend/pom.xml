@@ -170,6 +170,7 @@
                 <version>3.11.0</version>
                 <configuration>
                     <release>${java.version}</release>
+                    <useIncrementalCompilation>false</useIncrementalCompilation> 
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
