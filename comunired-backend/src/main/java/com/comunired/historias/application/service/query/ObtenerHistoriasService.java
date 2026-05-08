@@ -5,28 +5,36 @@ import com.comunired.historias.application.mapper.HistoriaAppMapper;
 import com.comunired.historias.application.port.in.ObtenerHistoriasUseCase;
 import com.comunired.historias.application.port.out.HistoriaRepositoryPort;
 import com.comunired.historias.domain.entity.Historia;
-import com.comunired.usuarios.domain.repository.UsuarioRepository; // ← ajusta si el nombre difiere
-import lombok.RequiredArgsConstructor;
+import com.comunired.usuarios.domain.entity.Usuario;
+import com.comunired.usuarios.domain.repository.UsuariosRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 public class ObtenerHistoriasService implements ObtenerHistoriasUseCase {
 
     private final HistoriaRepositoryPort repositoryPort;
     private final HistoriaAppMapper mapper;
-    private final UsuarioRepository usuarioRepository;
+    private final UsuariosRepository usuarioRepository;
+
+    public ObtenerHistoriasService(
+            HistoriaRepositoryPort repositoryPort,
+            HistoriaAppMapper mapper,
+            UsuariosRepository usuarioRepository) {
+        this.repositoryPort = repositoryPort;
+        this.mapper = mapper;
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public List<HistoriaResponse> obtenerActivas(String usuarioSolicitanteId) {
         return repositoryPort.buscarActivas()
             .stream()
             .map(h -> {
-                var usuario = usuarioRepository.findById(h.getUsuarioId());
-                String nombre = usuario.map(u -> u.getNombre()).orElse("Usuario");
-                String avatar = usuario.map(u -> u.getAvatarUrl()).orElse("");
+                Usuario usuario = usuarioRepository.findById(h.getUsuarioId());
+                String nombre = (usuario != null) ? usuario.getNombre() : "Usuario";
+                String avatar = (usuario != null) ? usuario.getFoto_perfil() : "";
                 return mapper.toResponse(h, h.fueVistaPor(usuarioSolicitanteId), nombre, avatar);
             })
             .toList();
@@ -40,9 +48,9 @@ public class ObtenerHistoriasService implements ObtenerHistoriasUseCase {
         historia.marcarVista(usuarioId);
         repositoryPort.guardarActualizada(historia);
 
-        var usuario = usuarioRepository.findById(historia.getUsuarioId());
-        String nombre = usuario.map(u -> u.getNombre()).orElse("Usuario");
-        String avatar = usuario.map(u -> u.getAvatarUrl()).orElse("");
+        Usuario usuario = usuarioRepository.findById(historia.getUsuarioId());
+        String nombre = (usuario != null) ? usuario.getNombre() : "Usuario";
+        String avatar = (usuario != null) ? usuario.getFoto_perfil() : "";
 
         return mapper.toResponse(historia, true, nombre, avatar);
     }
