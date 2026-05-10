@@ -15,15 +15,15 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        
+
         // ✅ Ambos orígenes permitidos
         config.setAllowedOrigins(Arrays.asList(
-            "http://localhost:4200",
-            "https://proud-beach-0e393570f.3.azurestaticapps.net"
+                "http://localhost:4200",
+                "https://proud-beach-0e393570f.3.azurestaticapps.net"
         ));
-        
+
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

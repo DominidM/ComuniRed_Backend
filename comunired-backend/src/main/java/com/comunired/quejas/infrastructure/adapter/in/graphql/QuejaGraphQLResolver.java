@@ -11,8 +11,8 @@ import java.util.List;
 /**
  * Resolver GraphQL del módulo quejas.
  *
- * Solo queries — lecturas con joins entre dominios.
- * Las mutations (crear, actualizar, eliminar) van por REST.
+ * Solo queries — lecturas con joins entre dominios. Las mutations (crear,
+ * actualizar, eliminar) van por REST.
  */
 @Controller
 public class QuejaGraphQLResolver {
@@ -23,24 +23,26 @@ public class QuejaGraphQLResolver {
     private final ListarQuejasPorUsuarioUseCase listarPorUsuario;
     private final ListarQuejasAprobadasUseCase listarAprobadas;
     private final ListarQuejasParaRevisarUseCase listarParaRevisar;
+    private final ListarQuejasAdminPaginadasUseCase listarAdminPaginadas;
 
     public QuejaGraphQLResolver(ObtenerQuejaUseCase obtenerQueja,
-                                 ListarQuejasUseCase listarQuejas,
-                                 ListarQuejasPaginadasUseCase listarPaginadas,
-                                 ListarQuejasPorUsuarioUseCase listarPorUsuario,
-                                 ListarQuejasAprobadasUseCase listarAprobadas,
-                                 ListarQuejasParaRevisarUseCase listarParaRevisar) {
+            ListarQuejasUseCase listarQuejas,
+            ListarQuejasPaginadasUseCase listarPaginadas,
+            ListarQuejasPorUsuarioUseCase listarPorUsuario,
+            ListarQuejasAprobadasUseCase listarAprobadas,
+            ListarQuejasParaRevisarUseCase listarParaRevisar,
+            ListarQuejasAdminPaginadasUseCase listarAdminPaginadas) {
         this.obtenerQueja = obtenerQueja;
         this.listarQuejas = listarQuejas;
         this.listarPaginadas = listarPaginadas;
         this.listarPorUsuario = listarPorUsuario;
         this.listarAprobadas = listarAprobadas;
         this.listarParaRevisar = listarParaRevisar;
+        this.listarAdminPaginadas = listarAdminPaginadas;
     }
-
     @QueryMapping
     public QuejaResponse obtenerQuejaPorId(@Argument String id,
-                                            @Argument String usuarioActualId) {
+            @Argument String usuarioActualId) {
         return obtenerQueja.ejecutar(id, usuarioActualId);
     }
 
@@ -51,14 +53,21 @@ public class QuejaGraphQLResolver {
 
     @QueryMapping
     public QuejaPageResponse obtenerQuejasPaginadas(@Argument String usuarioActualId,
-                                                     @Argument int page,
-                                                     @Argument int size) {
+            @Argument int page,
+            @Argument int size) {
         return listarPaginadas.ejecutar(usuarioActualId, page, size);
     }
 
     @QueryMapping
+    public QuejaPageResponse obtenerQuejasAdminPaginadas(@Argument String usuarioActualId,
+            @Argument int page,
+            @Argument int size) {
+        return listarAdminPaginadas.ejecutar(usuarioActualId, page, size);
+    }
+
+    @QueryMapping
     public List<QuejaResponse> quejasPorUsuario(@Argument String usuarioId,
-                                                 @Argument String usuarioActualId) {
+            @Argument String usuarioActualId) {
         return listarPorUsuario.ejecutar(usuarioId, usuarioActualId);
     }
 

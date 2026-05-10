@@ -99,8 +99,8 @@ type Queja {
   id: ID!
   titulo: String!
   descripcion: String!
-  usuario: Usuario!
-  categoria: Categoria!
+  usuario: Usuario
+  categoria: Categoria   
   estado: Estados_queja
   ubicacion: String
   imagen_url: String
@@ -129,7 +129,9 @@ type QuejasPage {
   last: Boolean
 }
 
+
 extend type Query {
+  obtenerQuejasAdminPaginadas(usuarioActualId: ID!, page: Int!, size: Int!): QuejasPage
   obtenerQuejasPaginadas(usuarioActualId: ID!, page: Int!, size: Int!): QuejasPage
   obtenerQuejas(usuarioActualId: ID!): [Queja!]!
   obtenerQuejaPorId(id: ID!, usuarioActualId: ID!): Queja

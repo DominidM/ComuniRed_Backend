@@ -52,7 +52,7 @@ public class QuejaRestController {
             @RequestParam String descripcion,
             @RequestParam String categoriaId,
             @RequestParam String ubicacion,
-            @RequestParam String usuarioId,           // TODO: reemplazar por @AuthenticationPrincipal
+            @RequestParam String usuarioId,          
             @RequestParam(required = false) MultipartFile imagen
     ) {
         String imagenUrl = (imagen != null && !imagen.isEmpty())

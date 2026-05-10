@@ -19,17 +19,57 @@ public class QuejaApplicationMapper {
     private final ComentarioQuejaPort comentarioPort;
 
     public QuejaApplicationMapper(UsuarioQuejaPort usuarioPort,
-                                   CategoriaQuejaPort categoriaPort,
-                                   EstadoQuejaPort estadoPort,
-                                   VotoQuejaPort votoPort,
-                                   ReaccionQuejaPort reaccionPort,
-                                   ComentarioQuejaPort comentarioPort) {
+            CategoriaQuejaPort categoriaPort,
+            EstadoQuejaPort estadoPort,
+            VotoQuejaPort votoPort,
+            ReaccionQuejaPort reaccionPort,
+            ComentarioQuejaPort comentarioPort) {
         this.usuarioPort = usuarioPort;
         this.categoriaPort = categoriaPort;
         this.estadoPort = estadoPort;
         this.votoPort = votoPort;
         this.reaccionPort = reaccionPort;
         this.comentarioPort = comentarioPort;
+    }
+
+    /**
+     * Versión ligera para listados de admin. Solo carga usuario y estado — sin
+     * votos, reacciones ni comentarios.
+     */
+    public QuejaResponse toResponseAdmin(Queja queja) {
+        UsuarioResumen usuario = usuarioPort.buscarPorId(queja.getUsuarioId())
+                .map(u -> new UsuarioResumen(u.id(), u.nombre(), u.apellido(), u.fotoPerfil()))
+                .orElse(null);
+
+        EstadoResumen estado = estadoPort.buscarPorId(queja.getEstadoId())
+                .map(e -> new EstadoResumen(e.id(), e.clave(), e.nombre()))
+                .orElse(null);
+
+        VotosResumen votes = new VotosResumen(0, 0, 0);
+        ReaccionesResumen reactions = new ReaccionesResumen(java.util.Map.of(), null, 0);
+
+        return new QuejaResponse(
+                queja.getId(),
+                queja.getTitulo(),
+                queja.getDescripcion(),
+                usuario,
+                null,
+                estado,
+                queja.getUbicacion(),
+                queja.getImagenUrl(),
+                queja.getFechaCreacion(),
+                queja.getFechaActualizacion(),
+                queja.getNivelRiesgo(),
+                queja.getFechaClasificacion(),
+                queja.getClasificadoPorId(),
+                queja.getFechaAprobacion(),
+                votes,
+                reactions,
+                List.of(),
+                0,
+                false,
+                null
+        );
     }
 
     public QuejaResponse toResponse(Queja queja) {
@@ -74,11 +114,11 @@ public class QuejaApplicationMapper {
 
             comments = comentarioPort.buscarPorQueja(queja.getId()).stream()
                     .map(c -> new ComentarioResumen(
-                            c.id(),
-                            c.texto(),
-                            new UsuarioResumen(c.usuarioId(), c.usuarioNombre(), c.usuarioApellido(), c.usuarioFoto()),
-                            c.fechaCreacion()
-                    ))
+                    c.id(),
+                    c.texto(),
+                    new UsuarioResumen(c.usuarioId(), c.usuarioNombre(), c.usuarioApellido(), c.usuarioFoto()),
+                    c.fechaCreacion()
+            ))
                     .collect(Collectors.toList());
 
             canVote = (usuarioActualId != null) && !votoPort.yaVoto(queja.getId(), usuarioActualId);
