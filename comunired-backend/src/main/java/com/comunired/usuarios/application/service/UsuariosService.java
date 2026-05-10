@@ -4,6 +4,7 @@ import com.comunired.usuarios.application.dto.UsuariosDTO;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -16,18 +17,29 @@ import java.time.Instant;
 @Service
 public class UsuariosService {
     private static final Logger logger = LoggerFactory.getLogger(UsuariosService.class);
+
     private final UsuariosRepository usuariosRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UsuariosService(UsuariosRepository usuariosRepository) {
+    private final String defaultAvatar;
+
+    public UsuariosService(
+            UsuariosRepository usuariosRepository,
+            @Value("${cloudinary.default-avatar}") String defaultAvatar
+    ) {
         this.usuariosRepository = usuariosRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
+        this.defaultAvatar = defaultAvatar;
     }
 
     public Usuario guardarUsuario(Usuario usuario) {
         logger.info("[guardarUsuario] Intentando guardar usuario: email={}, nombre={}, fecha_nacimiento={}, fecha_registro={}",
             usuario.getEmail(), usuario.getNombre(), usuario.getFecha_nacimiento(), usuario.getFecha_registro());
 
+        if (usuario.getFoto_perfil() == null || usuario.getFoto_perfil().isBlank()) {
+            usuario.setFoto_perfil(defaultAvatar);
+            logger.info("[guardarUsuario] foto_perfil null/vacío, usando defaultAvatar={}", defaultAvatar);
+        }
 
         if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$")) {
             String hashedPassword = passwordEncoder.encode(usuario.getPassword());
@@ -43,21 +55,21 @@ public class UsuariosService {
         try {
             logger.info("[guardarUsuario] 🔹 Llamando a repository.save()...");
             Usuario guardado = usuariosRepository.save(usuario);
-            
+
             if (guardado == null) {
                 logger.error("[guardarUsuario] ❌ Repository.save() retornó NULL");
                 throw new RuntimeException("Repository retornó null");
             }
-            
-            logger.info("[guardarUsuario] ✅ Usuario guardado exitosamente: id={}, email={}", 
+
+            logger.info("[guardarUsuario] ✅ Usuario guardado exitosamente: id={}, email={}",
                 guardado.getId(), guardado.getEmail());
             return guardado;
-            
+
         } catch (Exception e) {
             logger.error("[guardarUsuario] ❌ ERROR COMPLETO:", e);
             logger.error("[guardarUsuario] ❌ Mensaje: {}", e.getMessage());
             logger.error("[guardarUsuario] ❌ Clase: {}", e.getClass().getName());
-            
+
             throw new RuntimeException("Error guardando usuario: " + e.getMessage(), e);
         }
     }
@@ -120,12 +132,12 @@ public class UsuariosService {
         if (usuario == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
-        
+
         usuario.setUltimaActividad(Instant.now());
         usuariosRepository.save(usuario);
     }
 
-        public UsuariosDTO toDTO(Usuario usuario) {
+    public UsuariosDTO toDTO(Usuario usuario) {
         UsuariosDTO dto = new UsuariosDTO();
         dto.setId(usuario.getId());
         dto.setFoto_perfil(usuario.getFoto_perfil());
@@ -144,5 +156,4 @@ public class UsuariosService {
         dto.setUltimaActividad(usuario.getUltimaActividad());
         return dto;
     }
-
 }
