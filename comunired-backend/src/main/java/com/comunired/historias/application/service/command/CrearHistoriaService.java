@@ -13,6 +13,8 @@ import com.comunired.usuarios.domain.repository.UsuariosRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CrearHistoriaService implements CrearHistoriaUseCase {
 
@@ -37,6 +39,15 @@ public class CrearHistoriaService implements CrearHistoriaUseCase {
 
     @Override
     public HistoriaResponse ejecutar(CrearHistoriaCommand command) {
+        Optional<Historia> existente = repositoryPort.buscarDuplicado(
+                command.usuarioId(), command.texto(), command.colorFondo());
+        if (existente.isPresent()) {
+            Usuario usuario = usuariosRepository.findById(existente.get().getUsuarioId());
+            return mapper.toResponse(existente.get(), false,
+                    usuario != null ? usuario.getNombre() : "Usuario",
+                    usuario != null ? usuario.getFoto_perfil() : "");
+        }
+
         String imagenUrl = null;
         if (command.imagen() != null && !command.imagen().isEmpty()) {
             imagenUrl = storagePort.subir(command.imagen(), "historias");

@@ -6,6 +6,8 @@ import com.comunired.historias.infrastructure.mapper.HistoriaInfraMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +40,14 @@ public class HistoriaMongoAdapter implements HistoriaRepositoryPort {
     @Override
     public void guardarActualizada(Historia historia) {
         mongoRepository.save(mapper.toDocument(historia));
+    }
+
+    @Override
+    public Optional<Historia> buscarDuplicado(String usuarioId, String texto, String colorFondo) {
+        Instant hace5Minutos = Instant.now().minus(5, ChronoUnit.MINUTES);
+        return mongoRepository.buscarDuplicados(usuarioId, texto, colorFondo, hace5Minutos)
+            .stream()
+            .findFirst()
+            .map(mapper::toDomain);
     }
 }

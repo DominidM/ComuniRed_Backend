@@ -11,6 +11,7 @@ public class HistoriaInfraMapper {
 
     public HistoriaDocument toDocument(Historia historia) {
         HistoriaDocument doc = new HistoriaDocument();
+        doc.setId(historia.getId());
         doc.setUsuarioId(historia.getUsuarioId());
         doc.setTexto(historia.getTexto());
         doc.setImagenUrl(historia.getImagenUrl());

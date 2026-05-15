@@ -9,4 +9,5 @@ public interface HistoriaRepositoryPort {
     Optional<Historia> buscarPorId(String id);
     List<Historia> buscarActivas();
     void guardarActualizada(Historia historia);
+    Optional<Historia> buscarDuplicado(String usuarioId, String texto, String colorFondo);
 }
