@@ -1,6 +1,7 @@
 package com.comunired.quejas.infrastructure.adapter.out.persistence;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -14,12 +15,14 @@ public class QuejaDocument {
     private String titulo;
     private String descripcion;
 
+    @Indexed
     @Field("usuario_id")
     private String usuarioId;
 
     @Field("categoria_id")
     private String categoriaId;
 
+    @Indexed
     @Field("estado_id")
     private String estadoId;
 

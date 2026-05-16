@@ -62,6 +62,8 @@ public final class QuejaOutPorts {
 
         Optional<EstadoInfo> buscarPorId(String id);
 
+        java.util.Map<String, EstadoInfo> buscarPorIds(java.util.List<String> ids);
+
         record EstadoInfo(String id, String clave, String nombre) {
 
         }
@@ -71,6 +73,8 @@ public final class QuejaOutPorts {
 
         Optional<UsuarioInfo> buscarPorId(String usuarioId);
 
+        java.util.Map<String, UsuarioInfo> buscarPorIds(java.util.List<String> ids);
+
         record UsuarioInfo(String id, String nombre, String apellido, String fotoPerfil) {
 
         }
@@ -79,6 +83,8 @@ public final class QuejaOutPorts {
     public interface CategoriaQuejaPort {
 
         Optional<CategoriaInfo> buscarPorId(String categoriaId);
+
+        java.util.Map<String, CategoriaInfo> buscarPorIds(java.util.List<String> ids);
 
         record CategoriaInfo(String id, String nombre, String descripcion) {
 
@@ -94,6 +100,12 @@ public final class QuejaOutPorts {
         boolean yaVoto(String quejaId, String usuarioId);
 
         Optional<String> obtenerVotoUsuario(String quejaId, String usuarioId);
+
+        record VotoCounts(long si, long no) {}
+
+        java.util.Map<String, VotoCounts> contarVotosPorQuejaIds(java.util.List<String> quejaIds);
+
+        java.util.Map<String, String> obtenerVotosUsuarioPorQuejaIds(java.util.List<String> quejaIds, String usuarioId);
     }
 
     public interface ReaccionQuejaPort {
@@ -101,11 +113,17 @@ public final class QuejaOutPorts {
         java.util.Map<String, Long> contarReacciones(String quejaId);
 
         Optional<String> obtenerReaccionUsuario(String quejaId, String usuarioId);
+
+        java.util.Map<String, java.util.Map<String, Long>> contarReaccionesPorQuejaIds(java.util.List<String> quejaIds);
+
+        java.util.Map<String, String> obtenerReaccionesUsuarioPorQuejaIds(java.util.List<String> quejaIds, String usuarioId);
     }
 
     public interface ComentarioQuejaPort {
 
         List<ComentarioInfo> buscarPorQueja(String quejaId);
+
+        java.util.Map<String, List<ComentarioInfo>> buscarPorQuejaIds(java.util.List<String> quejaIds);
 
         record ComentarioInfo(
                 String id,

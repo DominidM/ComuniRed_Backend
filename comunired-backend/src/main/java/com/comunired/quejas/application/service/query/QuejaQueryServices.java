@@ -68,9 +68,8 @@ class ListarQuejasPaginadasService implements ListarQuejasPaginadasUseCase {
     public QuejaPageResponse ejecutar(String usuarioActualId, int page, int size) {
         Page<Queja> pageResult = repository.buscarPorEstadosClavePaginado(CLAVES_FEED, page, size);
 
-        List<QuejaResponse> content = pageResult.getContent().stream()
-                .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
-                .collect(Collectors.toList());
+        List<QuejaResponse> content = mapper.toResponseBatchConContexto(
+                pageResult.getContent(), usuarioActualId);
 
         return new QuejaPageResponse(
                 content,
@@ -99,9 +98,8 @@ class ListarQuejasAdminPaginadasService implements ListarQuejasAdminPaginadasUse
         Page<Queja> pageResult = repository.buscarTodasPaginado(
                 PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaCreacion")));
 
-        List<QuejaResponse> content = pageResult.getContent().stream()
-                .map(mapper::toResponseAdmin)
-                .collect(Collectors.toList());
+        List<QuejaResponse> content = mapper.toResponseBatch(
+                pageResult.getContent(), usuarioActualId);
 
         return new QuejaPageResponse(
                 content,

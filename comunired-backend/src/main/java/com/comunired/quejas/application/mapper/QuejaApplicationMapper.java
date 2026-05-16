@@ -6,6 +6,8 @@ import com.comunired.quejas.domain.entity.Queja;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -78,6 +80,116 @@ public class QuejaApplicationMapper {
 
     public QuejaResponse toResponseConContexto(Queja queja, String usuarioActualId) {
         return buildResponse(queja, usuarioActualId, true);
+    }
+
+    public List<QuejaResponse> toResponseBatchConContexto(List<Queja> quejas, String usuarioActualId) {
+        if (quejas.isEmpty()) return List.of();
+
+        List<String> quejaIds = quejas.stream().map(Queja::getId).distinct().toList();
+        List<String> userIds = quejas.stream().map(Queja::getUsuarioId).distinct().toList();
+        List<String> catIds = quejas.stream().map(Queja::getCategoriaId).distinct().toList();
+        List<String> estadoIds = quejas.stream().map(Queja::getEstadoId).distinct().toList();
+
+        var usuarios = usuarioPort.buscarPorIds(userIds);
+        var categorias = categoriaPort.buscarPorIds(catIds);
+        var estados = estadoPort.buscarPorIds(estadoIds);
+
+        Map<String, VotoQuejaPort.VotoCounts> votos =
+                usuarioActualId != null ? votoPort.contarVotosPorQuejaIds(quejaIds) : Map.of();
+        Map<String, Map<String, Long>> reacciones =
+                reaccionPort.contarReaccionesPorQuejaIds(quejaIds);
+        Map<String, List<ComentarioQuejaPort.ComentarioInfo>> comentariosMap =
+                comentarioPort.buscarPorQuejaIds(quejaIds);
+
+        Map<String, String> votoUsuario =
+                usuarioActualId != null
+                        ? votoPort.obtenerVotosUsuarioPorQuejaIds(quejaIds, usuarioActualId)
+                        : Map.of();
+        Map<String, String> reaccionUsuario =
+                usuarioActualId != null
+                        ? reaccionPort.obtenerReaccionesUsuarioPorQuejaIds(quejaIds, usuarioActualId)
+                        : Map.of();
+
+        return quejas.stream()
+                .map(q -> {
+                    String qid = q.getId();
+                    UsuarioResumen usuario = Optional.ofNullable(usuarios.get(q.getUsuarioId()))
+                            .map(u -> new UsuarioResumen(u.id(), u.nombre(), u.apellido(), u.fotoPerfil()))
+                            .orElse(null);
+                    CategoriaResumen categoria = Optional.ofNullable(categorias.get(q.getCategoriaId()))
+                            .map(c -> new CategoriaResumen(c.id(), c.nombre(), c.descripcion()))
+                            .orElse(null);
+                    EstadoResumen estado = Optional.ofNullable(estados.get(q.getEstadoId()))
+                            .map(e -> new EstadoResumen(e.id(), e.clave(), e.nombre()))
+                            .orElse(null);
+
+                    var v = votos.getOrDefault(qid, new VotoQuejaPort.VotoCounts(0, 0));
+                    VotosResumen votes = new VotosResumen(v.si(), v.no(), v.si() + v.no());
+
+                    var counts = reacciones.getOrDefault(qid, Map.of());
+                    long totalReacciones = counts.values().stream().mapToLong(Long::longValue).sum();
+                    String userReacc = reaccionUsuario.get(qid);
+                    ReaccionesResumen reactions = new ReaccionesResumen(counts, userReacc, totalReacciones);
+
+                    List<ComentarioResumen> comments = comentariosMap.getOrDefault(qid, List.of()).stream()
+                            .map(c -> new ComentarioResumen(
+                                    c.id(), c.texto(),
+                                    new UsuarioResumen(c.usuarioId(), c.usuarioNombre(), c.usuarioApellido(), c.usuarioFoto()),
+                                    c.fechaCreacion()))
+                            .toList();
+
+                    boolean canVote = usuarioActualId != null && !votoUsuario.containsKey(qid);
+                    String userVote = votoUsuario.get(qid);
+
+                    return new QuejaResponse(
+                            q.getId(), q.getTitulo(), q.getDescripcion(),
+                            usuario, categoria, estado,
+                            q.getUbicacion(), q.getImagenUrl(),
+                            q.getFechaCreacion(), q.getFechaActualizacion(),
+                            q.getNivelRiesgo(), q.getFechaClasificacion(),
+                            q.getClasificadoPorId(), q.getFechaAprobacion(),
+                            votes, reactions, comments, comments.size(), canVote, userVote
+                    );
+                })
+                .toList();
+    }
+
+    public List<QuejaResponse> toResponseBatch(List<Queja> quejas, String usuarioActualId) {
+        if (quejas.isEmpty()) return List.of();
+
+        List<String> userIds = quejas.stream().map(Queja::getUsuarioId).distinct().toList();
+        List<String> catIds = quejas.stream().map(Queja::getCategoriaId).distinct().toList();
+        List<String> estadoIds = quejas.stream().map(Queja::getEstadoId).distinct().toList();
+
+        var usuarios = usuarioPort.buscarPorIds(userIds);
+        var categorias = categoriaPort.buscarPorIds(catIds);
+        var estados = estadoPort.buscarPorIds(estadoIds);
+
+        return quejas.stream()
+                .map(q -> {
+                    UsuarioResumen usuario = Optional.ofNullable(usuarios.get(q.getUsuarioId()))
+                            .map(u -> new UsuarioResumen(u.id(), u.nombre(), u.apellido(), u.fotoPerfil()))
+                            .orElse(null);
+                    CategoriaResumen categoria = Optional.ofNullable(categorias.get(q.getCategoriaId()))
+                            .map(c -> new CategoriaResumen(c.id(), c.nombre(), c.descripcion()))
+                            .orElse(null);
+                    EstadoResumen estado = Optional.ofNullable(estados.get(q.getEstadoId()))
+                            .map(e -> new EstadoResumen(e.id(), e.clave(), e.nombre()))
+                            .orElse(null);
+
+                    return new QuejaResponse(
+                            q.getId(), q.getTitulo(), q.getDescripcion(),
+                            usuario, categoria, estado,
+                            q.getUbicacion(), q.getImagenUrl(),
+                            q.getFechaCreacion(), q.getFechaActualizacion(),
+                            q.getNivelRiesgo(), q.getFechaClasificacion(),
+                            q.getClasificadoPorId(), q.getFechaAprobacion(),
+                            new VotosResumen(0, 0, 0),
+                            new ReaccionesResumen(java.util.Map.of(), null, 0),
+                            List.of(), 0, false, null
+                    );
+                })
+                .toList();
     }
 
     private QuejaResponse buildResponse(Queja queja, String usuarioActualId, boolean cargarSocial) {

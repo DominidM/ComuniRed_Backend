@@ -24,6 +24,8 @@ interface QuejasMongoRepository extends MongoRepository<QuejaDocument, String> {
     List<QuejaDocument> findByEstadoId(String estadoId);
 
     Page<QuejaDocument> findByEstadoIdIn(List<String> estadoIds, Pageable pageable);
+
+    List<QuejaDocument> findByEstadoIdIn(List<String> estadoIds);
 }
 
 @Component
@@ -67,14 +69,28 @@ public class QuejaMongoAdapter implements QuejaRepositoryPort {
 
     @Override
     public List<Queja> buscarAprobadas() {
-        return mongo.findAll().stream()
+        List<String> estadoIds = List.of("aprobado", "publicado")
+                .stream()
+                .map(clave -> estadoPort.buscarPorClave(clave))
+                .filter(Optional::isPresent)
+                .map(opt -> opt.get().id())
+                .toList();
+        if (estadoIds.isEmpty()) return List.of();
+        return mongo.findByEstadoIdIn(estadoIds).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Queja> buscarParaRevisar() {
-        return mongo.findAll().stream()
+        List<String> estadoIds = List.of("pendiente", "aprobacion")
+                .stream()
+                .map(clave -> estadoPort.buscarPorClave(clave))
+                .filter(Optional::isPresent)
+                .map(opt -> opt.get().id())
+                .toList();
+        if (estadoIds.isEmpty()) return List.of();
+        return mongo.findByEstadoIdIn(estadoIds).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }

@@ -23,4 +23,7 @@ public interface ComentariosMongoRepository extends MongoRepository<ComentariosM
     
     @Query("{ 'queja_id': ?0, 'eliminado': true }")
     List<ComentariosModel> findByQuejaIdEliminadosOrderByFechaEliminacionDesc(String quejaId);
+
+    @Query("{ 'queja_id': { $in: ?0 }, 'eliminado': { $ne: true } }")
+    List<ComentariosModel> findByQuejaIdInActivos(List<String> quejaIds);
 }

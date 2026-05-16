@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface Estados_quejaMongoRepository extends MongoRepository<Estados_queja, String> {
     Optional<Estados_queja> findByNombre(String nombre);
+    Optional<Estados_queja> findByClave(String clave);
     Page<Estados_queja> findAll(Pageable pageable);
 
 }

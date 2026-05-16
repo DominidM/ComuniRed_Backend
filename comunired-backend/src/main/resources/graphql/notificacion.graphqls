@@ -1,0 +1,33 @@
+type Notificacion {
+  id: ID!
+  usuarioId: ID!
+  tipo: String!
+  titulo: String!
+  cuerpo: String!
+  referenciaId: String
+  leida: Boolean!
+  fechaCreacion: DateTime!
+  fechaLectura: DateTime
+}
+
+type NotificacionPage {
+  content: [Notificacion!]!
+  totalElements: Int!
+  totalPages: Int!
+  number: Int!
+  size: Int!
+}
+
+extend type Query {
+  misNotificaciones(usuarioId: ID!, page: Int!, size: Int!): NotificacionPage
+  contarNotificacionesNoLeidas(usuarioId: ID!): Int!
+}
+
+extend type Mutation {
+  marcarNotificacionLeida(id: ID!): Notificacion
+  marcarTodasNotificacionesLeidas(usuarioId: ID!): Boolean!
+}
+
+extend type Subscription {
+  nuevaNotificacion(usuario_id: ID!): Notificacion
+}
