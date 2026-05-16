@@ -23,6 +23,10 @@ public class Queja {
     // Aprobación
     private Instant fechaAprobacion;
 
+    // Ubicación geográfica (opcional)
+    private Double lat;
+    private Double lng;
+
     // -------------------------------------------------------------------------
     // Constructor privado — solo se instancia por factory methods
     // -------------------------------------------------------------------------
@@ -37,7 +41,9 @@ public class Queja {
             String usuarioId,
             String categoriaId,
             String ubicacion,
-            String estadoInicialId
+            String estadoInicialId,
+            Double lat,
+            Double lng
     ) {
         Queja q = new Queja();
         q.titulo = titulo;
@@ -46,6 +52,8 @@ public class Queja {
         q.categoriaId = categoriaId;
         q.ubicacion = ubicacion;
         q.estadoId = estadoInicialId;
+        q.lat = lat;
+        q.lng = lng;
         q.fechaCreacion = Instant.now();
         q.fechaActualizacion = Instant.now();
         return q;
@@ -68,7 +76,9 @@ public class Queja {
             String nivelRiesgo,
             Instant fechaClasificacion,
             String clasificadoPorId,
-            Instant fechaAprobacion
+            Instant fechaAprobacion,
+            Double lat,
+            Double lng
     ) {
         Queja q = new Queja();
         q.id = id;
@@ -85,6 +95,8 @@ public class Queja {
         q.fechaClasificacion = fechaClasificacion;
         q.clasificadoPorId = clasificadoPorId;
         q.fechaAprobacion = fechaAprobacion;
+        q.lat = lat;
+        q.lng = lng;
         return q;
     }
 
@@ -156,6 +168,8 @@ public class Queja {
     public Instant getFechaClasificacion() { return fechaClasificacion; }
     public String getClasificadoPorId() { return clasificadoPorId; }
     public Instant getFechaAprobacion() { return fechaAprobacion; }
+    public Double getLat() { return lat; }
+    public Double getLng() { return lng; }
 
     // Solo para persistencia
     public void setId(String id) { this.id = id; }

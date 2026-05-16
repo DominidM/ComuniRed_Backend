@@ -28,7 +28,9 @@ public final class QuejaResponses {
             List<ComentarioResumen> comments,
             int commentsCount,
             boolean canVote,
-            String userVote
+            String userVote,
+            Double lat,
+            Double lng
     ) {}
 
     public record QuejaPageResponse(

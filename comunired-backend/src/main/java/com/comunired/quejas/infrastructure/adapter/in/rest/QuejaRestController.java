@@ -53,6 +53,8 @@ public class QuejaRestController {
             @RequestParam String categoriaId,
             @RequestParam String ubicacion,
             @RequestParam String usuarioId,          
+            @RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lng,
             @RequestParam(required = false) MultipartFile imagen
     ) {
         String imagenUrl = (imagen != null && !imagen.isEmpty())
@@ -60,7 +62,7 @@ public class QuejaRestController {
                 : null;
 
         QuejaResponse response = crearQueja.ejecutar(new CrearQuejaCommand(
-                titulo, descripcion, categoriaId, ubicacion, usuarioId, imagenUrl
+                titulo, descripcion, categoriaId, ubicacion, usuarioId, imagenUrl, lat, lng
         ));
 
         return ResponseEntity.ok(response);

@@ -70,7 +70,9 @@ public class QuejaApplicationMapper {
                 List.of(),
                 0,
                 false,
-                null
+                null,
+                queja.getLat(),
+                queja.getLng()
         );
     }
 
@@ -148,7 +150,8 @@ public class QuejaApplicationMapper {
                             q.getFechaCreacion(), q.getFechaActualizacion(),
                             q.getNivelRiesgo(), q.getFechaClasificacion(),
                             q.getClasificadoPorId(), q.getFechaAprobacion(),
-                            votes, reactions, comments, comments.size(), canVote, userVote
+                            votes, reactions, comments, comments.size(), canVote, userVote,
+                            q.getLat(), q.getLng()
                     );
                 })
                 .toList();
@@ -186,7 +189,8 @@ public class QuejaApplicationMapper {
                             q.getClasificadoPorId(), q.getFechaAprobacion(),
                             new VotosResumen(0, 0, 0),
                             new ReaccionesResumen(java.util.Map.of(), null, 0),
-                            List.of(), 0, false, null
+                            List.of(), 0, false, null,
+                            q.getLat(), q.getLng()
                     );
                 })
                 .toList();
@@ -259,7 +263,9 @@ public class QuejaApplicationMapper {
                 comments,
                 comments.size(),
                 canVote,
-                userVote
+                userVote,
+                queja.getLat(),
+                queja.getLng()
         );
     }
 }

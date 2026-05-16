@@ -45,7 +45,9 @@ class CrearQuejaService implements CrearQuejaUseCase {
                 command.usuarioId(),
                 command.categoriaId(),
                 command.ubicacion(),
-                estadoId
+                estadoId,
+                command.lat(),
+                command.lng()
         );
 
         if (command.imagenUrl() != null) {
@@ -62,7 +64,7 @@ class CrearQuejaService implements CrearQuejaUseCase {
                 guardada.getFechaCreacion()
         ));
 
-        return mapper.toResponse(guardada);
+        return mapper.toResponseConContexto(guardada, command.usuarioId());
     }
 }
 

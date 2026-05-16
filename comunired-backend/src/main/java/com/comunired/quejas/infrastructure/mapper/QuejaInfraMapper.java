@@ -27,6 +27,8 @@ public class QuejaInfraMapper {
         doc.setFechaClasificacion(queja.getFechaClasificacion());
         doc.setClasificadoPorId(queja.getClasificadoPorId());
         doc.setFechaAprobacion(queja.getFechaAprobacion());
+        doc.setLat(queja.getLat());
+        doc.setLng(queja.getLng());
         return doc;
     }
 
@@ -45,7 +47,9 @@ public class QuejaInfraMapper {
                 doc.getNivelRiesgo(),
                 doc.getFechaClasificacion(),
                 doc.getClasificadoPorId(),
-                doc.getFechaAprobacion()
+                doc.getFechaAprobacion(),
+                doc.getLat(),
+                doc.getLng()
         );
     }
 }

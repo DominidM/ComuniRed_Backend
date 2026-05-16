@@ -57,7 +57,7 @@ class ListarQuejasPaginadasService implements ListarQuejasPaginadasUseCase {
     private final QuejaRepositoryPort repository;
     private final QuejaApplicationMapper mapper;
 
-    private static final List<String> CLAVES_FEED = List.of("votacion", "pendiente");
+    private static final List<String> CLAVES_FEED = List.of("votacion", "pendiente", "VOTACION", "PENDIENTE");
 
     ListarQuejasPaginadasService(QuejaRepositoryPort repository, QuejaApplicationMapper mapper) {
         this.repository = repository;

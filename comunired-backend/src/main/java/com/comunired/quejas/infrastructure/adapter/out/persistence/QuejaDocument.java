@@ -49,6 +49,9 @@ public class QuejaDocument {
     @Field("fecha_aprobacion")
     private Instant fechaAprobacion;
 
+    private Double lat;
+    private Double lng;
+
     // Getters
     public String getId() { return id; }
     public String getTitulo() { return titulo; }
@@ -64,6 +67,8 @@ public class QuejaDocument {
     public Instant getFechaClasificacion() { return fechaClasificacion; }
     public String getClasificadoPorId() { return clasificadoPorId; }
     public Instant getFechaAprobacion() { return fechaAprobacion; }
+    public Double getLat() { return lat; }
+    public Double getLng() { return lng; }
 
     // Setters
     public void setId(String id) { this.id = id; }
@@ -80,4 +85,6 @@ public class QuejaDocument {
     public void setFechaClasificacion(Instant fechaClasificacion) { this.fechaClasificacion = fechaClasificacion; }
     public void setClasificadoPorId(String clasificadoPorId) { this.clasificadoPorId = clasificadoPorId; }
     public void setFechaAprobacion(Instant fechaAprobacion) { this.fechaAprobacion = fechaAprobacion; }
+    public void setLat(Double lat) { this.lat = lat; }
+    public void setLng(Double lng) { this.lng = lng; }
 }

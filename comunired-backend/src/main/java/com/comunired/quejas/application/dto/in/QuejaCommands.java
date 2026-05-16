@@ -15,7 +15,9 @@ public final class QuejaCommands {
             String categoriaId,
             String ubicacion,
             String usuarioId,
-            String imagenUrl          // llega ya subida a Cloudinary desde el controller REST
+            String imagenUrl,          // llega ya subida a Cloudinary desde el controller REST
+            Double lat,
+            Double lng
     ) {}
 
     // PATCH /api/quejas/{id} — editar datos básicos

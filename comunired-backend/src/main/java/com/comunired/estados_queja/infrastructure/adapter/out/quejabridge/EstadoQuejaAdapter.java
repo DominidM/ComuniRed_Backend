@@ -30,6 +30,7 @@ public class EstadoQuejaAdapter implements EstadoQuejaPort {
                 .map(e -> {
                     var info = new EstadoInfo(e.getId(), e.getClave(), e.getNombre());
                     cache.put(e.getId(), info);
+                    cache.put(clave, info);
                     return info;
                 });
     }
