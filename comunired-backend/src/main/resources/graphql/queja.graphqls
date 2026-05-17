@@ -80,7 +80,7 @@ type Comentarios {
   usuario_id: ID!
   texto: String!
   fecha_creacion: DateTime!
-  fecha_actualizacion: DateTime
+  fecha_modificacion: DateTime
   eliminado: Boolean
   eliminado_por_id: ID
   razon_eliminacion: String
@@ -172,6 +172,7 @@ extend type Mutation {
   crearQueja(titulo: String!, descripcion: String!, categoriaId: ID!, ubicacion: String, lat: Float, lng: Float, imagen: Upload, usuarioId: ID!): Queja!
   actualizarQueja(id: ID!, titulo: String, descripcion: String, categoriaId: ID, estadoId: ID, ubicacion: String, imagen_url: String): Queja!
   eliminarQueja(id: ID!): Boolean!
+  votarQueja(quejaId: ID!, usuarioId: ID!, voto: String!): Queja!
   toggleReaccion(quejaId: ID!, tipoReaccion: String!, usuarioId: ID!): ReactionsData!
   clasificarRiesgo(quejaId: ID!, soporteId: ID!, nivelRiesgo: String!, observacion: String): Queja!
   cambiarEstadoQueja(quejaId: ID!, usuarioId: ID!, nuevoEstado: String!, observacion: String): Queja!

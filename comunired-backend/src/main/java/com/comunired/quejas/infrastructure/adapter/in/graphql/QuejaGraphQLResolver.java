@@ -5,6 +5,7 @@ import com.comunired.quejas.application.dto.in.QuejaCommands.CrearQuejaCommand;
 import com.comunired.quejas.application.dto.out.QuejaResponses.*;
 import com.comunired.quejas.application.port.in.QuejaPorts.*;
 import com.comunired.quejas.application.port.out.QuejaOutPorts.QuejaImagenPort;
+import com.comunired.reacciones.application.service.ReaccionesService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -25,6 +26,7 @@ public class QuejaGraphQLResolver {
     private final CrearQuejaUseCase crearQueja;
     private final ActualizarQuejaUseCase actualizarQueja;
     private final QuejaImagenPort imagenPort;
+    private final ReaccionesService reaccionesService;
 
     public QuejaGraphQLResolver(ObtenerQuejaUseCase obtenerQueja,
             ListarQuejasUseCase listarQuejas,
@@ -35,7 +37,8 @@ public class QuejaGraphQLResolver {
             ListarQuejasAdminPaginadasUseCase listarAdminPaginadas,
             CrearQuejaUseCase crearQueja,
             ActualizarQuejaUseCase actualizarQueja,
-            QuejaImagenPort imagenPort) {
+            QuejaImagenPort imagenPort,
+            ReaccionesService reaccionesService) {
         this.obtenerQueja = obtenerQueja;
         this.listarQuejas = listarQuejas;
         this.listarPaginadas = listarPaginadas;
@@ -46,6 +49,7 @@ public class QuejaGraphQLResolver {
         this.crearQueja = crearQueja;
         this.actualizarQueja = actualizarQueja;
         this.imagenPort = imagenPort;
+        this.reaccionesService = reaccionesService;
     }
     @QueryMapping
     public QuejaResponse obtenerQuejaPorId(@Argument String id,
@@ -110,6 +114,21 @@ public class QuejaGraphQLResolver {
         return actualizarQueja.ejecutar(new ActualizarQuejaCommand(
                 id, titulo, descripcion, categoriaId, ubicacion, imagenUrl
         ));
+    }
+
+    @MutationMapping
+    public QuejaResponse votarQueja(
+            @Argument String quejaId,
+            @Argument String usuarioId,
+            @Argument String voto
+    ) {
+        String tipoReaccion = switch (voto.toUpperCase()) {
+            case "SI", "YES", "ACCEPT" -> "accept";
+            case "NO", "REJECT" -> "reject";
+            default -> throw new IllegalArgumentException("Voto inválido: " + voto);
+        };
+        reaccionesService.toggleReaction(quejaId, tipoReaccion, usuarioId);
+        return obtenerQueja.ejecutar(quejaId, usuarioId);
     }
 
     @QueryMapping

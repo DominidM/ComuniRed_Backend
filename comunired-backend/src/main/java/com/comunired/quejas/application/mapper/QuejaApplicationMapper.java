@@ -81,11 +81,13 @@ public class QuejaApplicationMapper {
     }
 
     public QuejaResponse toResponseConContexto(Queja queja, String usuarioActualId) {
-        return buildResponse(queja, usuarioActualId, true);
+        String uid = (usuarioActualId != null && usuarioActualId.isBlank()) ? null : usuarioActualId;
+        return buildResponse(queja, uid, true);
     }
 
     public List<QuejaResponse> toResponseBatchConContexto(List<Queja> quejas, String usuarioActualId) {
         if (quejas.isEmpty()) return List.of();
+        String uid = (usuarioActualId != null && usuarioActualId.isBlank()) ? null : usuarioActualId;
 
         List<String> quejaIds = quejas.stream().map(Queja::getId).distinct().toList();
         List<String> userIds = quejas.stream().map(Queja::getUsuarioId).distinct().toList();
@@ -97,19 +99,19 @@ public class QuejaApplicationMapper {
         var estados = estadoPort.buscarPorIds(estadoIds);
 
         Map<String, VotoQuejaPort.VotoCounts> votos =
-                usuarioActualId != null ? votoPort.contarVotosPorQuejaIds(quejaIds) : Map.of();
+                uid != null ? votoPort.contarVotosPorQuejaIds(quejaIds) : Map.of();
         Map<String, Map<String, Long>> reacciones =
                 reaccionPort.contarReaccionesPorQuejaIds(quejaIds);
         Map<String, List<ComentarioQuejaPort.ComentarioInfo>> comentariosMap =
                 comentarioPort.buscarPorQuejaIds(quejaIds);
 
         Map<String, String> votoUsuario =
-                usuarioActualId != null
-                        ? votoPort.obtenerVotosUsuarioPorQuejaIds(quejaIds, usuarioActualId)
+                uid != null
+                        ? votoPort.obtenerVotosUsuarioPorQuejaIds(quejaIds, uid)
                         : Map.of();
         Map<String, String> reaccionUsuario =
-                usuarioActualId != null
-                        ? reaccionPort.obtenerReaccionesUsuarioPorQuejaIds(quejaIds, usuarioActualId)
+                uid != null
+                        ? reaccionPort.obtenerReaccionesUsuarioPorQuejaIds(quejaIds, uid)
                         : Map.of();
 
         return quejas.stream()
@@ -197,6 +199,7 @@ public class QuejaApplicationMapper {
     }
 
     private QuejaResponse buildResponse(Queja queja, String usuarioActualId, boolean cargarSocial) {
+        String uid = (usuarioActualId != null && usuarioActualId.isBlank()) ? null : usuarioActualId;
 
         UsuarioResumen usuario = usuarioPort.buscarPorId(queja.getUsuarioId())
                 .map(u -> new UsuarioResumen(u.id(), u.nombre(), u.apellido(), u.fotoPerfil()))
@@ -223,8 +226,8 @@ public class QuejaApplicationMapper {
 
             var counts = reaccionPort.contarReacciones(queja.getId());
             long totalReacciones = counts.values().stream().mapToLong(Long::longValue).sum();
-            String userReaccion = (usuarioActualId != null)
-                    ? reaccionPort.obtenerReaccionUsuario(queja.getId(), usuarioActualId).orElse(null)
+            String userReaccion = (uid != null)
+                    ? reaccionPort.obtenerReaccionUsuario(queja.getId(), uid).orElse(null)
                     : null;
             reactions = new ReaccionesResumen(counts, userReaccion, totalReacciones);
 
@@ -237,9 +240,9 @@ public class QuejaApplicationMapper {
             ))
                     .collect(Collectors.toList());
 
-            canVote = (usuarioActualId != null) && !votoPort.yaVoto(queja.getId(), usuarioActualId);
-            userVote = (usuarioActualId != null)
-                    ? votoPort.obtenerVotoUsuario(queja.getId(), usuarioActualId).orElse(null)
+            canVote = (uid != null) && !votoPort.yaVoto(queja.getId(), uid);
+            userVote = (uid != null)
+                    ? votoPort.obtenerVotoUsuario(queja.getId(), uid).orElse(null)
                     : null;
         }
 

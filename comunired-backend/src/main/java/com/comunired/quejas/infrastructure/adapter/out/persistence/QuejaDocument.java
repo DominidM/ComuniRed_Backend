@@ -1,6 +1,7 @@
 package com.comunired.quejas.infrastructure.adapter.out.persistence;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -8,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.Instant;
 
 @Document(collection = "quejas")
+@CompoundIndex(name = "idx_estado_fecha", def = "{'estadoId': 1, 'fechaCreacion': -1}")
 public class QuejaDocument {
 
     @Id

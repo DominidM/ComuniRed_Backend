@@ -76,7 +76,7 @@ public final class QuejaResponses {
     public record ComentarioResumen(
             String id,
             String texto,
-            UsuarioResumen autor,
+            UsuarioResumen author,
             Instant fecha_creacion
     ) {}
 }
