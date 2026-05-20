@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 class ObtenerQuejaService implements ObtenerQuejaUseCase {
@@ -45,9 +44,7 @@ class ListarQuejasService implements ListarQuejasUseCase {
 
     @Override
     public List<QuejaResponse> ejecutar(String usuarioActualId) {
-        return repository.buscarTodas().stream()
-                .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
-                .collect(Collectors.toList());
+        return mapper.toResponseBatchConContexto(repository.buscarTodas(), usuarioActualId);
     }
 }
 
@@ -125,9 +122,7 @@ class ListarQuejasPorUsuarioService implements ListarQuejasPorUsuarioUseCase {
 
     @Override
     public List<QuejaResponse> ejecutar(String usuarioId, String usuarioActualId) {
-        return repository.buscarPorUsuarioId(usuarioId).stream()
-                .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
-                .collect(Collectors.toList());
+        return mapper.toResponseBatchConContexto(repository.buscarPorUsuarioId(usuarioId), usuarioActualId);
     }
 }
 
@@ -144,9 +139,7 @@ class ListarQuejasAprobadasService implements ListarQuejasAprobadasUseCase {
 
     @Override
     public List<QuejaResponse> ejecutar(String usuarioActualId) {
-        return repository.buscarAprobadas().stream()
-                .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
-                .collect(Collectors.toList());
+        return mapper.toResponseBatchConContexto(repository.buscarAprobadas(), usuarioActualId);
     }
 }
 
@@ -163,8 +156,6 @@ class ListarQuejasParaRevisarService implements ListarQuejasParaRevisarUseCase {
 
     @Override
     public List<QuejaResponse> ejecutar(String usuarioActualId) {
-        return repository.buscarParaRevisar().stream()
-                .map(q -> mapper.toResponseConContexto(q, usuarioActualId))
-                .collect(Collectors.toList());
+        return mapper.toResponseBatchConContexto(repository.buscarParaRevisar(), usuarioActualId);
     }
 }
