@@ -31,7 +31,7 @@ public class HistoriaMongoAdapter implements HistoriaRepositoryPort {
 
     @Override
     public List<Historia> buscarActivas() {
-        return mongoRepository.findByActivaTrue()
+        return mongoRepository.findActivasNoExpiradas(Instant.now())
             .stream()
             .map(mapper::toDomain)
             .toList();
@@ -40,6 +40,11 @@ public class HistoriaMongoAdapter implements HistoriaRepositoryPort {
     @Override
     public void guardarActualizada(Historia historia) {
         mongoRepository.save(mapper.toDocument(historia));
+    }
+
+    @Override
+    public void eliminarPorId(String id) {
+        mongoRepository.deleteById(id);
     }
 
     @Override

@@ -10,8 +10,13 @@ public class Historia {
     private String usuarioId;
     private String texto;
     private String imagenUrl;
+    private String videoUrl;
     private String colorFondo;
     private int duracion;
+    private String cancionTitulo;
+    private String cancionArtista;
+    private String cancionPreviewUrl;
+    private String cancionCoverUrl;
     private boolean activa;
     private Instant fechaCreacion;
     private Instant fechaExpiracion;
@@ -28,15 +33,25 @@ public class Historia {
             String usuarioId,
             String texto,
             String imagenUrl,
+            String videoUrl,
             String colorFondo,
-            int duracion
+            int duracion,
+            String cancionTitulo,
+            String cancionArtista,
+            String cancionPreviewUrl,
+            String cancionCoverUrl
     ) {
         Historia h = new Historia();
         h.usuarioId = usuarioId;
         h.texto = texto;
         h.imagenUrl = imagenUrl;
+        h.videoUrl = videoUrl;
         h.colorFondo = colorFondo;
         h.duracion = duracion;
+        h.cancionTitulo = cancionTitulo;
+        h.cancionArtista = cancionArtista;
+        h.cancionPreviewUrl = cancionPreviewUrl;
+        h.cancionCoverUrl = cancionCoverUrl;
         h.activa = true;
         h.fechaCreacion = Instant.now();
         h.fechaExpiracion = Instant.now().plusSeconds(86400); // 24h
@@ -66,8 +81,13 @@ public class Historia {
             String usuarioId,
             String texto,
             String imagenUrl,
+            String videoUrl,
             String colorFondo,
             int duracion,
+            String cancionTitulo,
+            String cancionArtista,
+            String cancionPreviewUrl,
+            String cancionCoverUrl,
             boolean activa,
             Instant fechaCreacion,
             Instant fechaExpiracion,
@@ -78,8 +98,13 @@ public class Historia {
         h.usuarioId = usuarioId;
         h.texto = texto;
         h.imagenUrl = imagenUrl;
+        h.videoUrl = videoUrl;
         h.colorFondo = colorFondo;
         h.duracion = duracion;
+        h.cancionTitulo = cancionTitulo;
+        h.cancionArtista = cancionArtista;
+        h.cancionPreviewUrl = cancionPreviewUrl;
+        h.cancionCoverUrl = cancionCoverUrl;
         h.activa = activa;
         h.fechaCreacion = fechaCreacion;
         h.fechaExpiracion = fechaExpiracion;
@@ -104,12 +129,32 @@ public class Historia {
         return imagenUrl;
     }
 
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
     public String getColorFondo() {
         return colorFondo;
     }
 
     public int getDuracion() {
         return duracion;
+    }
+
+    public String getCancionTitulo() {
+        return cancionTitulo;
+    }
+
+    public String getCancionArtista() {
+        return cancionArtista;
+    }
+
+    public String getCancionPreviewUrl() {
+        return cancionPreviewUrl;
+    }
+
+    public String getCancionCoverUrl() {
+        return cancionCoverUrl;
     }
 
     public boolean isActiva() {

@@ -19,8 +19,13 @@ public class HistoriaDocument {
     private String usuarioId;
     private String texto;
     private String imagenUrl;
+    private String videoUrl;
     private String colorFondo;
     private int duracion;
+    private String cancionTitulo;
+    private String cancionArtista;
+    private String cancionPreviewUrl;
+    private String cancionCoverUrl;
     private boolean activa;
     private Instant fechaCreacion;
 

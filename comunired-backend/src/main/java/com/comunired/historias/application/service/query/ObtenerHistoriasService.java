@@ -11,6 +11,7 @@ import com.comunired.usuarios.domain.entity.Usuario;
 import com.comunired.usuarios.domain.repository.UsuariosRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -36,6 +37,7 @@ public class ObtenerHistoriasService implements ObtenerHistoriasUseCase {
     public List<HistoriaResponse> obtenerActivas(String usuarioSolicitanteId) {
         return repositoryPort.buscarActivas()
             .stream()
+            .filter(h -> h.getFechaExpiracion().isAfter(Instant.now()))
             .filter(h -> puedeVerHistoria(usuarioSolicitanteId, h.getUsuarioId()))
             .map(h -> {
                 Usuario usuario = usuarioRepository.findById(h.getUsuarioId());

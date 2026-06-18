@@ -7,5 +7,10 @@ public record CrearHistoriaCommand(
     String texto,
     String colorFondo,
     int duracion,
-    MultipartFile imagen
+    MultipartFile imagen,
+    MultipartFile video,
+    String cancionTitulo,
+    String cancionArtista,
+    String cancionPreviewUrl,
+    String cancionCoverUrl
 ) {}

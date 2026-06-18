@@ -15,8 +15,13 @@ public class HistoriaInfraMapper {
         doc.setUsuarioId(historia.getUsuarioId());
         doc.setTexto(historia.getTexto());
         doc.setImagenUrl(historia.getImagenUrl());
+        doc.setVideoUrl(historia.getVideoUrl());
         doc.setColorFondo(historia.getColorFondo());
         doc.setDuracion(historia.getDuracion());
+        doc.setCancionTitulo(historia.getCancionTitulo());
+        doc.setCancionArtista(historia.getCancionArtista());
+        doc.setCancionPreviewUrl(historia.getCancionPreviewUrl());
+        doc.setCancionCoverUrl(historia.getCancionCoverUrl());
         doc.setActiva(historia.isActiva());
         doc.setFechaCreacion(historia.getFechaCreacion());
         doc.setFechaExpiracion(historia.getFechaExpiracion());
@@ -37,8 +42,13 @@ public class HistoriaInfraMapper {
             doc.getUsuarioId(),
             doc.getTexto(),
             doc.getImagenUrl(),
+            doc.getVideoUrl(),
             doc.getColorFondo(),
             doc.getDuracion(),
+            doc.getCancionTitulo(),
+            doc.getCancionArtista(),
+            doc.getCancionPreviewUrl(),
+            doc.getCancionCoverUrl(),
             doc.isActiva(),
             doc.getFechaCreacion(),
             doc.getFechaExpiracion(),

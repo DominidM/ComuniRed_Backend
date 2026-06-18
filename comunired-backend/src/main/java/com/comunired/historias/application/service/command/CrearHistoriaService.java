@@ -53,12 +53,22 @@ public class CrearHistoriaService implements CrearHistoriaUseCase {
             imagenUrl = storagePort.subir(command.imagen(), "historias");
         }
 
+        String videoUrl = null;
+        if (command.video() != null && !command.video().isEmpty()) {
+            videoUrl = storagePort.subir(command.video(), "historias");
+        }
+
         Historia historia = Historia.crear(
                 command.usuarioId(),
                 command.texto(),
                 imagenUrl,
+                videoUrl,
                 command.colorFondo(),
-                command.duracion()
+                command.duracion(),
+                command.cancionTitulo(),
+                command.cancionArtista(),
+                command.cancionPreviewUrl(),
+                command.cancionCoverUrl()
         );
 
         Historia guardada = repositoryPort.guardar(historia);
