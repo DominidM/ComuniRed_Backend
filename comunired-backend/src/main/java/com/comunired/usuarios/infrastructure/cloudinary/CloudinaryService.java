@@ -78,6 +78,36 @@ public class CloudinaryService {
     }
 
     /**
+     * Sube video a Cloudinary y devuelve URL
+     */
+    public String subirVideo(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("El archivo no puede estar vacío");
+        }
+
+        logger.info("Subiendo video a Cloudinary: {} ({} bytes)", 
+            file.getOriginalFilename(), file.getSize());
+        
+        try {
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(
+                file.getBytes(),
+                ObjectUtils.asMap(
+                    "folder", "usuarios/videos",
+                    "resource_type", "video"
+                )
+            );
+
+            String url = (String) uploadResult.get("secure_url");
+            logger.info("Video subido: {}", url);
+            return url;
+            
+        } catch (IOException e) {
+            logger.error("Error subiendo video: {}", e.getMessage());
+            throw new IOException("Error al subir video a Cloudinary: " + e.getMessage());
+        }
+    }
+
+    /**
      * Elimina imagen de Cloudinary
      * @return true si se eliminó, false si hubo error
      */

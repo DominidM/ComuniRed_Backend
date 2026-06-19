@@ -1,6 +1,7 @@
 type Usuario {
   id: ID!
   foto_perfil: String
+  video_banner: String
   nombre: String!
   apellido: String!
   dni: String!
@@ -15,10 +16,26 @@ type Usuario {
   fecha_registro: DateTime
   ultimaActividad: DateTime
   estaEnLinea: Boolean
+  notificacionesEmail: Boolean
+  notificacionesPush: Boolean
+  notificacionesComentarios: Boolean
+  notificacionesReacciones: Boolean
+  notificacionesZona: Boolean
+  notificacionesEstado: Boolean
+}
+
+input NotificacionPreferenciasInput {
+  email: Boolean
+  push: Boolean
+  comentarios: Boolean
+  reacciones: Boolean
+  zona: Boolean
+  estado: Boolean
 }
 
 input UsuarioInput {
   foto_perfil: String
+  video_banner: String
   nombre: String!
   apellido: String!
   dni: String!
@@ -116,6 +133,7 @@ extend type Query {
   buscarUsuariosPorNombre(nombre: String!, page: Int!, size: Int!): UsuarioPage
   usuariosSugeridos(usuarioId: ID!, page: Int!, size: Int!): UsuarioPage
   usuariosNoSeguidos(usuarioId: ID!, page: Int!, size: Int!): UsuarioPage
+  obtenerPreferenciasNotificaciones(usuarioId: ID!): Usuario
 
   obtenerRoles(page: Int!, size: Int!): RolPage
   obtenerTodosLosRoles: [Rol!]!
@@ -148,8 +166,11 @@ extend type Mutation {
   actualizarUsuario(id: ID!, usuario: UsuarioInput!): Usuario
   eliminarUsuario(id: ID!): Boolean
   subirFotoPerfil(usuarioId: ID!, archivo: Upload!): String!
+  subirVideoBanner(usuarioId: ID!, archivo: Upload!): String!
+  guardarVideoBanner(usuarioId: ID!, url: String!): String!
   eliminarFotoPerfil(usuarioId: ID!): Boolean
   inicializarActividades: String!
+  actualizarPreferenciasNotificaciones(usuarioId: ID!, preferencias: NotificacionPreferenciasInput!): Usuario
 
   crearRol(nombre: String!, descripcion: String): Rol
   editarRol(id: ID!, nombre: String!, descripcion: String): Rol

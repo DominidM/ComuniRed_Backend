@@ -19,5 +19,6 @@ public interface UsuariosRepository {
     Page<Usuario> buscarPorTermino(String termino, Pageable pageable);
     Page<Usuario> buscarPorNombre(String nombre, Pageable pageable);
     Page<Usuario> obtenerExcluyendoIds(List<String> excluirIds, Pageable pageable);
+    Usuario findByDni(String dni);
 
 }

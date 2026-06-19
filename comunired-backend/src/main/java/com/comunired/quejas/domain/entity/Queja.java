@@ -1,6 +1,8 @@
 package com.comunired.quejas.domain.entity;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Queja {
 
@@ -12,6 +14,11 @@ public class Queja {
     private String estadoId;
     private String ubicacion;
     private String imagenUrl;
+    private List<String> imagenesUrl = new ArrayList<>();
+    private String musicaUrl;
+    private String musicaTrack;
+    private String musicaArtista;
+    private String musicaCover;
     private Instant fechaCreacion;
     private Instant fechaActualizacion;
 
@@ -71,6 +78,11 @@ public class Queja {
             String estadoId,
             String ubicacion,
             String imagenUrl,
+            List<String> imagenesUrl,
+            String musicaUrl,
+            String musicaTrack,
+            String musicaArtista,
+            String musicaCover,
             Instant fechaCreacion,
             Instant fechaActualizacion,
             String nivelRiesgo,
@@ -89,6 +101,11 @@ public class Queja {
         q.estadoId = estadoId;
         q.ubicacion = ubicacion;
         q.imagenUrl = imagenUrl;
+        q.imagenesUrl = imagenesUrl != null ? imagenesUrl : new ArrayList<>();
+        q.musicaUrl = musicaUrl;
+        q.musicaTrack = musicaTrack;
+        q.musicaArtista = musicaArtista;
+        q.musicaCover = musicaCover;
         q.fechaCreacion = fechaCreacion;
         q.fechaActualizacion = fechaActualizacion;
         q.nivelRiesgo = nivelRiesgo;
@@ -111,6 +128,24 @@ public class Queja {
         if (categoriaId != null) this.categoriaId = categoriaId;
         if (ubicacion != null) this.ubicacion = ubicacion;
         if (imagenUrl != null) this.imagenUrl = imagenUrl;
+        this.fechaActualizacion = Instant.now();
+    }
+
+    public void asignarImagenes(List<String> imagenesUrl) {
+        if (imagenesUrl != null) {
+            this.imagenesUrl = new ArrayList<>(imagenesUrl);
+            if (!imagenesUrl.isEmpty() && this.imagenUrl == null) {
+                this.imagenUrl = imagenesUrl.get(0);
+            }
+        }
+        this.fechaActualizacion = Instant.now();
+    }
+
+    public void asignarMusica(String musicaUrl, String track, String artista, String cover) {
+        this.musicaUrl = musicaUrl;
+        this.musicaTrack = track;
+        this.musicaArtista = artista;
+        this.musicaCover = cover;
         this.fechaActualizacion = Instant.now();
     }
 
@@ -162,6 +197,11 @@ public class Queja {
     public String getEstadoId() { return estadoId; }
     public String getUbicacion() { return ubicacion; }
     public String getImagenUrl() { return imagenUrl; }
+    public List<String> getImagenesUrl() { return imagenesUrl; }
+    public String getMusicaUrl() { return musicaUrl; }
+    public String getMusicaTrack() { return musicaTrack; }
+    public String getMusicaArtista() { return musicaArtista; }
+    public String getMusicaCover() { return musicaCover; }
     public Instant getFechaCreacion() { return fechaCreacion; }
     public Instant getFechaActualizacion() { return fechaActualizacion; }
     public String getNivelRiesgo() { return nivelRiesgo; }

@@ -54,6 +54,15 @@ class CrearQuejaService implements CrearQuejaUseCase {
             queja.asignarImagen(command.imagenUrl());
         }
 
+        if (command.imagenesUrl() != null && !command.imagenesUrl().isEmpty()) {
+            queja.asignarImagenes(command.imagenesUrl());
+        }
+
+        if (command.musicaUrl() != null) {
+            queja.asignarMusica(command.musicaUrl(), command.musicaTrack(),
+                    command.musicaArtista(), command.musicaCover());
+        }
+
         Queja guardada = repository.guardar(queja);
 
         events.publishEvent(new QuejaCreada(

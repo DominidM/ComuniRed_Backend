@@ -33,6 +33,23 @@ public class HistoriaInfraMapper {
                 return vd;
             })
             .collect(Collectors.toList()));
+        doc.setLikes(historia.getLikes().stream()
+            .map(l -> {
+                HistoriaDocument.LikeDocument ld = new HistoriaDocument.LikeDocument();
+                ld.setUsuarioId(l.usuarioId());
+                ld.setFechaLike(l.fechaLike());
+                return ld;
+            })
+            .collect(Collectors.toList()));
+        doc.setRespuestas(historia.getRespuestas().stream()
+            .map(r -> {
+                HistoriaDocument.RespuestaDocument rd = new HistoriaDocument.RespuestaDocument();
+                rd.setUsuarioId(r.usuarioId());
+                rd.setTexto(r.texto());
+                rd.setFechaRespuesta(r.fechaRespuesta());
+                return rd;
+            })
+            .collect(Collectors.toList()));
         return doc;
     }
 
@@ -54,6 +71,12 @@ public class HistoriaInfraMapper {
             doc.getFechaExpiracion(),
             doc.getVistas().stream()
                 .map(v -> new Historia.Vista(v.getUsuarioId(), v.getFechaVista()))
+                .collect(Collectors.toList()),
+            doc.getLikes().stream()
+                .map(l -> new Historia.Like(l.getUsuarioId(), l.getFechaLike()))
+                .collect(Collectors.toList()),
+            doc.getRespuestas().stream()
+                .map(r -> new Historia.Respuesta(r.getUsuarioId(), r.getTexto(), r.getFechaRespuesta()))
                 .collect(Collectors.toList())
         );
         return historia;

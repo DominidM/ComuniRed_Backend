@@ -72,6 +72,11 @@ type QuejaSimple {
   titulo: String!
   descripcion: String!
   imagen_url: String
+  imagenes_url: [String!]
+  musica_url: String
+  musica_track: String
+  musica_artista: String
+  musica_cover: String
 }
 
 type Comentarios {
@@ -104,6 +109,11 @@ type Queja {
   estado: Estados_queja
   ubicacion: String
   imagen_url: String
+  imagenes_url: [String!]
+  musica_url: String
+  musica_track: String
+  musica_artista: String
+  musica_cover: String
   fecha_creacion: DateTime!
   fecha_actualizacion: DateTime!
   evidence: [Evidencia!]
@@ -169,7 +179,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  crearQueja(titulo: String!, descripcion: String!, categoriaId: ID!, ubicacion: String, lat: Float, lng: Float, imagen: Upload, usuarioId: ID!): Queja!
+  crearQueja(titulo: String!, descripcion: String!, categoriaId: ID!, ubicacion: String, lat: Float, lng: Float, imagen: Upload, imagenes_url: [String], musica_url: String, musica_track: String, musica_artista: String, musica_cover: String, usuarioId: ID!): Queja!
   actualizarQueja(id: ID!, titulo: String, descripcion: String, categoriaId: ID, estadoId: ID, ubicacion: String, imagen_url: String): Queja!
   eliminarQueja(id: ID!): Boolean!
   votarQueja(quejaId: ID!, usuarioId: ID!, voto: String!): Queja!

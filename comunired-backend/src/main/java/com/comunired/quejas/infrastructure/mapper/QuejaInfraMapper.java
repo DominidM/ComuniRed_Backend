@@ -21,6 +21,11 @@ public class QuejaInfraMapper {
         doc.setEstadoId(queja.getEstadoId());
         doc.setUbicacion(queja.getUbicacion());
         doc.setImagenUrl(queja.getImagenUrl());
+        doc.setImagenesUrl(queja.getImagenesUrl());
+        doc.setMusicaUrl(queja.getMusicaUrl());
+        doc.setMusicaTrack(queja.getMusicaTrack());
+        doc.setMusicaArtista(queja.getMusicaArtista());
+        doc.setMusicaCover(queja.getMusicaCover());
         doc.setFechaCreacion(queja.getFechaCreacion());
         doc.setFechaActualizacion(queja.getFechaActualizacion());
         doc.setNivelRiesgo(queja.getNivelRiesgo());
@@ -42,6 +47,11 @@ public class QuejaInfraMapper {
                 doc.getEstadoId(),
                 doc.getUbicacion(),
                 doc.getImagenUrl(),
+                doc.getImagenesUrl(),
+                doc.getMusicaUrl(),
+                doc.getMusicaTrack(),
+                doc.getMusicaArtista(),
+                doc.getMusicaCover(),
                 doc.getFechaCreacion(),
                 doc.getFechaActualizacion(),
                 doc.getNivelRiesgo(),

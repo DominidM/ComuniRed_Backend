@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface UsuarioMongoRepository extends MongoRepository<Usuario, String> {
     Usuario findByEmail(String email);
+    Usuario findByDni(String dni);
     
     @Query(value = "{'rol_id': ?0}", count = true)
     long countByRolId(String rol_id);

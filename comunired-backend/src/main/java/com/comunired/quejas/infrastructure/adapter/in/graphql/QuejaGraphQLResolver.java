@@ -95,10 +95,19 @@ public class QuejaGraphQLResolver {
             @Argument String ubicacion,
             @Argument Double lat,
             @Argument Double lng,
+            @Argument("imagenes_url") List<String> imagenesUrl,
+            @Argument("musica_url") String musicaUrl,
+            @Argument("musica_track") String musicaTrack,
+            @Argument("musica_artista") String musicaArtista,
+            @Argument("musica_cover") String musicaCover,
             @Argument String usuarioId
     ) {
+        String primeraImagen = (imagenesUrl != null && !imagenesUrl.isEmpty()) ? imagenesUrl.get(0) : null;
         return crearQueja.ejecutar(new CrearQuejaCommand(
-                titulo, descripcion, categoriaId, ubicacion, usuarioId, null, lat, lng
+                titulo, descripcion, categoriaId, ubicacion, usuarioId,
+                primeraImagen, imagenesUrl,
+                musicaUrl, musicaTrack, musicaArtista, musicaCover,
+                lat, lng
         ));
     }
 

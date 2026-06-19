@@ -154,6 +154,12 @@ public class UsuariosService {
         dto.setFecha_nacimiento(usuario.getFecha_nacimiento());
         dto.setFecha_registro(usuario.getFecha_registro());
         dto.setUltimaActividad(usuario.getUltimaActividad());
+        dto.setNotificacionesEmail(usuario.getNotificacionesEmail());
+        dto.setNotificacionesPush(usuario.getNotificacionesPush());
+        dto.setNotificacionesComentarios(usuario.getNotificacionesComentarios());
+        dto.setNotificacionesReacciones(usuario.getNotificacionesReacciones());
+        dto.setNotificacionesZona(usuario.getNotificacionesZona());
+        dto.setNotificacionesEstado(usuario.getNotificacionesEstado());
         return dto;
     }
 }

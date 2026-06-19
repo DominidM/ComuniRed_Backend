@@ -66,4 +66,9 @@ public class UsuariosRepositoryImpl implements UsuariosRepository {
     public Page<Usuario> obtenerExcluyendoIds(List<String> excluirIds, Pageable pageable) {
         return usuarioMongoRepository.findByIdNotIn(excluirIds, pageable);
     }
+
+    @Override
+    public Usuario findByDni(String dni) {
+        return usuarioMongoRepository.findByDni(dni);
+    }
 }

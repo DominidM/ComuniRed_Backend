@@ -50,6 +50,8 @@ public final class QuejaOutPorts {
 
         String subirImagen(org.springframework.web.multipart.MultipartFile imagen);
 
+        List<String> subirImagenes(List<org.springframework.web.multipart.MultipartFile> imagenes);
+
         void eliminarImagen(String imagenUrl);
     }
 

@@ -33,10 +33,25 @@ public class HistoriaDocument {
     private Instant fechaExpiracion;  // TTL index — MongoDB borra automático
 
     private List<VistaDocument> vistas = new ArrayList<>();
+    private List<LikeDocument> likes = new ArrayList<>();
+    private List<RespuestaDocument> respuestas = new ArrayList<>();
 
     @Data
     public static class VistaDocument {
         private String usuarioId;
         private Instant fechaVista;
+    }
+
+    @Data
+    public static class LikeDocument {
+        private String usuarioId;
+        private Instant fechaLike;
+    }
+
+    @Data
+    public static class RespuestaDocument {
+        private String usuarioId;
+        private String texto;
+        private Instant fechaRespuesta;
     }
 }

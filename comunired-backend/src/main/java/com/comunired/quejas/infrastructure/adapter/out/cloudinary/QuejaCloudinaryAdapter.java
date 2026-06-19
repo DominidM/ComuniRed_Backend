@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -29,6 +30,14 @@ public class QuejaCloudinaryAdapter implements QuejaImagenPort {
         } catch (IOException e) {
             throw new RuntimeException("Error al subir imagen a Cloudinary", e);
         }
+    }
+
+    @Override
+    public List<String> subirImagenes(List<MultipartFile> imagenes) {
+        return imagenes.stream()
+                .filter(f -> !f.isEmpty())
+                .map(this::subirImagen)
+                .toList();
     }
 
     @Override

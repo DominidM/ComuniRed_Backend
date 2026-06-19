@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "quejas")
 @CompoundIndex(name = "idx_estado_fecha", def = "{'estadoId': 1, 'fechaCreacion': -1}")
@@ -32,6 +34,21 @@ public class QuejaDocument {
 
     @Field("imagen_url")
     private String imagenUrl;
+
+    @Field("imagenes_url")
+    private List<String> imagenesUrl = new ArrayList<>();
+
+    @Field("musica_url")
+    private String musicaUrl;
+
+    @Field("musica_track")
+    private String musicaTrack;
+
+    @Field("musica_artista")
+    private String musicaArtista;
+
+    @Field("musica_cover")
+    private String musicaCover;
 
     @Field("fecha_creacion")
     private Instant fechaCreacion;
@@ -63,6 +80,11 @@ public class QuejaDocument {
     public String getEstadoId() { return estadoId; }
     public String getUbicacion() { return ubicacion; }
     public String getImagenUrl() { return imagenUrl; }
+    public List<String> getImagenesUrl() { return imagenesUrl; }
+    public String getMusicaUrl() { return musicaUrl; }
+    public String getMusicaTrack() { return musicaTrack; }
+    public String getMusicaArtista() { return musicaArtista; }
+    public String getMusicaCover() { return musicaCover; }
     public Instant getFechaCreacion() { return fechaCreacion; }
     public Instant getFechaActualizacion() { return fechaActualizacion; }
     public String getNivelRiesgo() { return nivelRiesgo; }
@@ -81,6 +103,11 @@ public class QuejaDocument {
     public void setEstadoId(String estadoId) { this.estadoId = estadoId; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
     public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+    public void setImagenesUrl(List<String> imagenesUrl) { this.imagenesUrl = imagenesUrl; }
+    public void setMusicaUrl(String musicaUrl) { this.musicaUrl = musicaUrl; }
+    public void setMusicaTrack(String musicaTrack) { this.musicaTrack = musicaTrack; }
+    public void setMusicaArtista(String musicaArtista) { this.musicaArtista = musicaArtista; }
+    public void setMusicaCover(String musicaCover) { this.musicaCover = musicaCover; }
     public void setFechaCreacion(Instant fechaCreacion) { this.fechaCreacion = fechaCreacion; }
     public void setFechaActualizacion(Instant fechaActualizacion) { this.fechaActualizacion = fechaActualizacion; }
     public void setNivelRiesgo(String nivelRiesgo) { this.nivelRiesgo = nivelRiesgo; }

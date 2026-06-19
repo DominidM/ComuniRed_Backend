@@ -71,6 +71,8 @@ public class UsuariosResolver {
             foto_perfil = "";
         }
 
+        String video_banner = usuario.getVideo_banner();
+
         String nombre = usuario.getNombre();
         if (nombre == null) {
             missing = true;
@@ -143,6 +145,7 @@ public class UsuariosResolver {
         UsuariosDTO dto = new UsuariosDTO();
         dto.setId(id != null ? id : "");
         dto.setFoto_perfil(foto_perfil);
+        dto.setVideo_banner(video_banner);
         dto.setNombre(nombre);
         dto.setApellido(apellido);
         dto.setDni(dni);
@@ -448,6 +451,54 @@ public class UsuariosResolver {
     }
 
     @MutationMapping
+    public String subirVideoBanner(@Argument String usuarioId, @Argument MultipartFile archivo) {
+        try {
+            logger.info("Subiendo video banner para usuario: {}", usuarioId);
+
+            Usuario usuario = usuariosService.buscarPorId(usuarioId);
+            if (usuario == null) {
+                logger.error("Usuario no encontrado: {}", usuarioId);
+                throw new IllegalArgumentException("Usuario no encontrado");
+            }
+
+            String url = cloudinaryService.subirVideo(archivo);
+
+            usuario.setVideo_banner(url);
+            usuariosService.guardarUsuario(usuario);
+
+            logger.info("Video banner actualizado: {}", url);
+            return url;
+
+        } catch (Exception e) {
+            logger.error("Error subiendo video banner: {}", e.getMessage(), e);
+            throw new RuntimeException("Error subiendo video: " + e.getMessage());
+        }
+    }
+
+    @MutationMapping
+    public String guardarVideoBanner(@Argument String usuarioId, @Argument String url) {
+        try {
+            logger.info("Guardando video banner para usuario: {}", usuarioId);
+
+            Usuario usuario = usuariosService.buscarPorId(usuarioId);
+            if (usuario == null) {
+                logger.error("Usuario no encontrado: {}", usuarioId);
+                throw new IllegalArgumentException("Usuario no encontrado");
+            }
+
+            usuario.setVideo_banner(url);
+            usuariosService.guardarUsuario(usuario);
+
+            logger.info("Video banner guardado: {}", url);
+            return url;
+
+        } catch (Exception e) {
+            logger.error("Error guardando video banner: {}", e.getMessage(), e);
+            throw new RuntimeException("Error guardando video: " + e.getMessage());
+        }
+    }
+
+    @MutationMapping
     public Boolean eliminarFotoPerfil(@Argument String usuarioId) {
         try {
             logger.info("🗑️ Eliminando foto de perfil de usuario: {}", usuarioId);
@@ -503,6 +554,47 @@ public class UsuariosResolver {
         } catch (Exception e) {
             logger.error("Error inicializando actividades", e);
             return "❌ Error: " + e.getMessage();
+        }
+    }
+
+    @QueryMapping
+    public UsuariosDTO obtenerPreferenciasNotificaciones(@Argument String usuarioId) {
+        try {
+            Usuario u = usuariosService.buscarPorId(usuarioId);
+            if (u == null) return null;
+            return toDTO(u);
+        } catch (Exception e) {
+            logger.error("Error en obtenerPreferenciasNotificaciones(usuarioId={})", usuarioId, e);
+            return null;
+        }
+    }
+
+    @MutationMapping
+    public UsuariosDTO actualizarPreferenciasNotificaciones(
+            @Argument String usuarioId,
+            @Argument Map<String, Object> preferencias) {
+        try {
+            Usuario u = usuariosService.buscarPorId(usuarioId);
+            if (u == null) return null;
+
+            if (preferencias.containsKey("email"))
+                u.setNotificacionesEmail((Boolean) preferencias.get("email"));
+            if (preferencias.containsKey("push"))
+                u.setNotificacionesPush((Boolean) preferencias.get("push"));
+            if (preferencias.containsKey("comentarios"))
+                u.setNotificacionesComentarios((Boolean) preferencias.get("comentarios"));
+            if (preferencias.containsKey("reacciones"))
+                u.setNotificacionesReacciones((Boolean) preferencias.get("reacciones"));
+            if (preferencias.containsKey("zona"))
+                u.setNotificacionesZona((Boolean) preferencias.get("zona"));
+            if (preferencias.containsKey("estado"))
+                u.setNotificacionesEstado((Boolean) preferencias.get("estado"));
+
+            Usuario guardado = usuariosService.guardarUsuario(u);
+            return toDTO(guardado);
+        } catch (Exception e) {
+            logger.error("Error en actualizarPreferenciasNotificaciones(usuarioId={})", usuarioId, e);
+            return null;
         }
     }
 }

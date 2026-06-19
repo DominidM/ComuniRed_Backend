@@ -12,6 +12,7 @@ public class Usuario {
     @Id
     private String id;
     private String foto_perfil;
+    private String video_banner;
     private String nombre;
     private String apellido;
     private String dni;
@@ -35,11 +36,21 @@ public class Usuario {
     @JsonIgnore
     private LocalDateTime resetPasswordExpiry;
 
+    private Boolean notificacionesEmail;
+    private Boolean notificacionesPush;
+    private Boolean notificacionesComentarios;
+    private Boolean notificacionesReacciones;
+    private Boolean notificacionesZona;
+    private Boolean notificacionesEstado;
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     
     public String getFoto_perfil() { return foto_perfil; }
     public void setFoto_perfil(String foto_perfil) { this.foto_perfil = foto_perfil; }
+    
+    public String getVideo_banner() { return video_banner; }
+    public void setVideo_banner(String video_banner) { this.video_banner = video_banner; }
     
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
@@ -88,4 +99,22 @@ public class Usuario {
 
     public Instant getUltimaActividad() { return ultimaActividad; }
     public void setUltimaActividad(Instant ultimaActividad) { this.ultimaActividad = ultimaActividad; }
+
+    public Boolean getNotificacionesEmail() { return notificacionesEmail != null ? notificacionesEmail : true; }
+    public void setNotificacionesEmail(Boolean notificacionesEmail) { this.notificacionesEmail = notificacionesEmail; }
+
+    public Boolean getNotificacionesPush() { return notificacionesPush != null ? notificacionesPush : true; }
+    public void setNotificacionesPush(Boolean notificacionesPush) { this.notificacionesPush = notificacionesPush; }
+
+    public Boolean getNotificacionesComentarios() { return notificacionesComentarios != null ? notificacionesComentarios : true; }
+    public void setNotificacionesComentarios(Boolean notificacionesComentarios) { this.notificacionesComentarios = notificacionesComentarios; }
+
+    public Boolean getNotificacionesReacciones() { return notificacionesReacciones != null ? notificacionesReacciones : true; }
+    public void setNotificacionesReacciones(Boolean notificacionesReacciones) { this.notificacionesReacciones = notificacionesReacciones; }
+
+    public Boolean getNotificacionesZona() { return notificacionesZona != null ? notificacionesZona : true; }
+    public void setNotificacionesZona(Boolean notificacionesZona) { this.notificacionesZona = notificacionesZona; }
+
+    public Boolean getNotificacionesEstado() { return notificacionesEstado != null ? notificacionesEstado : true; }
+    public void setNotificacionesEstado(Boolean notificacionesEstado) { this.notificacionesEstado = notificacionesEstado; }
 }

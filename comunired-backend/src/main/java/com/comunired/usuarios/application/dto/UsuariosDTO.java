@@ -6,6 +6,7 @@ import java.time.Instant;
 public class UsuariosDTO {
     private String id;
     private String foto_perfil;
+    private String video_banner;
     private String nombre;
     private String apellido;
     private String dni;
@@ -22,11 +23,21 @@ public class UsuariosDTO {
     
     private Instant ultimaActividad;
 
+    private boolean notificacionesEmail = true;
+    private boolean notificacionesPush = true;
+    private boolean notificacionesComentarios = true;
+    private boolean notificacionesReacciones = true;
+    private boolean notificacionesZona = true;
+    private boolean notificacionesEstado = true;
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     
     public String getFoto_perfil() { return foto_perfil; }
     public void setFoto_perfil(String foto_perfil) { this.foto_perfil = foto_perfil; }
+    
+    public String getVideo_banner() { return video_banner; }
+    public void setVideo_banner(String video_banner) { this.video_banner = video_banner; }
     
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
@@ -69,4 +80,22 @@ public class UsuariosDTO {
     
     public Instant getUltimaActividad() { return ultimaActividad; }
     public void setUltimaActividad(Instant ultimaActividad) { this.ultimaActividad = ultimaActividad; }
+
+    public boolean isNotificacionesEmail() { return notificacionesEmail; }
+    public void setNotificacionesEmail(boolean notificacionesEmail) { this.notificacionesEmail = notificacionesEmail; }
+
+    public boolean isNotificacionesPush() { return notificacionesPush; }
+    public void setNotificacionesPush(boolean notificacionesPush) { this.notificacionesPush = notificacionesPush; }
+
+    public boolean isNotificacionesComentarios() { return notificacionesComentarios; }
+    public void setNotificacionesComentarios(boolean notificacionesComentarios) { this.notificacionesComentarios = notificacionesComentarios; }
+
+    public boolean isNotificacionesReacciones() { return notificacionesReacciones; }
+    public void setNotificacionesReacciones(boolean notificacionesReacciones) { this.notificacionesReacciones = notificacionesReacciones; }
+
+    public boolean isNotificacionesZona() { return notificacionesZona; }
+    public void setNotificacionesZona(boolean notificacionesZona) { this.notificacionesZona = notificacionesZona; }
+
+    public boolean isNotificacionesEstado() { return notificacionesEstado; }
+    public void setNotificacionesEstado(boolean notificacionesEstado) { this.notificacionesEstado = notificacionesEstado; }
 }
