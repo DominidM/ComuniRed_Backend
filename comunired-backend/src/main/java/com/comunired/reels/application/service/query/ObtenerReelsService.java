@@ -8,9 +8,12 @@ import com.comunired.reels.application.port.out.ReelRepositoryPort;
 import com.comunired.reels.domain.entity.Reel;
 import com.comunired.reels.infrastructure.adapter.out.persistence.ReelComentarioDocument;
 import com.comunired.reels.infrastructure.adapter.out.persistence.ReelComentarioMongoRepository;
+import com.comunired.usuarios.domain.entity.Usuario;
+import com.comunired.usuarios.domain.repository.UsuariosRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ObtenerReelsService implements ObtenerReelsUseCase {
@@ -18,12 +21,21 @@ public class ObtenerReelsService implements ObtenerReelsUseCase {
     private final ReelRepositoryPort repositoryPort;
     private final ReelAppMapper mapper;
     private final ReelComentarioMongoRepository comentarioRepo;
+    private final UsuariosRepository usuariosRepository;
 
     public ObtenerReelsService(ReelRepositoryPort repositoryPort, ReelAppMapper mapper,
-                               ReelComentarioMongoRepository comentarioRepo) {
+                               ReelComentarioMongoRepository comentarioRepo,
+                               UsuariosRepository usuariosRepository) {
         this.repositoryPort = repositoryPort;
         this.mapper = mapper;
         this.comentarioRepo = comentarioRepo;
+        this.usuariosRepository = usuariosRepository;
+    }
+
+    private String obtenerAvatarActual(String usuarioId) {
+        return Optional.ofNullable(usuariosRepository.findById(usuarioId))
+            .map(Usuario::getFoto_perfil)
+            .orElse(null);
     }
 
     @Override
@@ -76,7 +88,8 @@ public class ObtenerReelsService implements ObtenerReelsUseCase {
         Reel reel = repositoryPort.buscarPorId(reelId)
             .orElseThrow(() -> new RuntimeException("Reel no encontrado: " + reelId));
 
-        ReelComentarioDocument doc = new ReelComentarioDocument(reelId, usuarioId, usuarioNombre, usuarioAvatar, texto);
+        String avatarActual = obtenerAvatarActual(usuarioId);
+        ReelComentarioDocument doc = new ReelComentarioDocument(reelId, usuarioId, usuarioNombre, avatarActual, texto);
         ReelComentarioDocument saved = comentarioRepo.save(doc);
 
         reel.setComentariosCount(comentarioRepo.countByReelId(reelId));
@@ -95,7 +108,7 @@ public class ObtenerReelsService implements ObtenerReelsUseCase {
             .stream()
             .map(c -> new ReelComentarioResponse(
                 c.getId(), c.getReelId(), c.getUsuarioId(),
-                c.getUsuarioNombre(), c.getUsuarioAvatar(),
+                c.getUsuarioNombre(), obtenerAvatarActual(c.getUsuarioId()),
                 c.getTexto(), c.getFechaCreacion()
             ))
             .toList();
